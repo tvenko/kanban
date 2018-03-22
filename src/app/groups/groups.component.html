@@ -1,8 +1,43 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
-  <div class="placeholder">
-    <h1>This is page for managing Groups!</h1>
-    <hr>
-    <p>Well it's still needs to be implemented... ¯\_(ツ)_/¯</p>
+  <!-- New group modal toggle button -->
+  <button class="uk-button uk-button-primary uk-margin-medium-bottom uk-margin-large-right uk-position-bottom-right" uk-toggle="target: #new-group-modal">Nova skupina</button>
+  <!-- New group modal -->
+  <div id="new-group-modal" uk-modal>
+      <div class="uk-modal-dialog uk-modal-body uk-overflow-auto ">
+          <button class="uk-modal-close-default" type="button" uk-close></button>
+          <h2 class="uk-modal-title">Nova skupina</h2>
+          <!-- New group form --> 
+          <form>
+              <fieldset class="uk-fieldset">
+                    
+                  <div class="uk-margin">
+                      <input class="uk-input" type="text" placeholder="Ime skupine">
+                  </div>
+                  Člani
+                  <div class="uk-form-controls uk-margin" >
+                      <select class="uk-select" id="form-stacked-select">
+                          <option>Kanban master</option>
+                          <option>Product owner</option>
+                      </select>
+                  </div>
+                  <div class="uk-form-controls  uk-margin">
+                      <select class="uk-select" id="form-stacked-select">
+                          <option>Janez Novak</option>
+                          <option>Miha Klepač</option>
+                      </select>
+                  </div>
+                  <button class="uk-button uk-button-default uk-align-right" type="button">Dodaj člana</button>
+                  <span class="uk-label">Razvijalec: Janez Novak </span> <span class="uk-label uk-label-danger">Odstrani</span>
+          
+              </fieldset>
+          </form>
+
+          <p class="uk-text-right">
+              <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
+              <!-- TODO veži gumb na funkcijo -->
+              <button class="uk-button uk-button-primary" type="button">Shrani</button>
+          </p>
+      </div>
   </div>
 </div>
