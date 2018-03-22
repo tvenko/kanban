@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {Router} from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-main-navbar',
@@ -7,9 +9,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainNavbarComponent implements OnInit {
 
-  constructor() { }
+  route: string;
+
+  constructor(private router: Router, private location: Location) {}
 
   ngOnInit() {
+  }
+
+  isActiveRoute(route: string) {
+    if (this.location.path() !== null) {
+      return route === this.location.path();
+    }
+    return false;
+  }
+
+  isAdmin() {
+    // TODO: implementiraj metodo, ki bo preverjala ali je uporabnik administrator.
+    return true;
   }
 
 }

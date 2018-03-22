@@ -1,12 +1,8 @@
-.login {
+.placeholder {
   text-align: center;
   margin-top: 300px;
 }
 
-.login p {
+.placeholder p {
   color: gray;
-}
-
-.uk-navbar {
-  height: 60px;
 }
