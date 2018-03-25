@@ -36,9 +36,9 @@
             <span uk-icon="icon: pencil; ratio: 1.2" class="table-icons-edit" uk-toggle="target: #edit-user-modal" (click)="editUser(user)"></span> &nbsp;
             <span uk-icon="icon: ban; ratio: 1.2" class="table-icons-ban" (click)="lockUser(user)"></span>
           </td>
-          <td class="table-icons" *ngIf="user.locked == true" (mouseenter)="hover = true" (mouseleave)="hover = false">
-            <span *ngIf="hover == false"  uk-icon="icon: lock; ratio: 1.2" class="table-icons-locked"></span>
-            <span *ngIf="hover == true"  uk-icon="icon: unlock; ratio: 1.2" class="table-icons-unlock table-icons-locked" (click)="unlockUser(user)"></span>
+          <td class="table-icons" *ngIf="user.locked == true" (mouseenter)="hover[i] = true" (mouseleave)="hover[i] = false">
+            <span *ngIf="hover[i] == false"  uk-icon="icon: lock; ratio: 1.2" class="table-icons-locked"></span>
+            <span *ngIf="hover[i] == true"  uk-icon="icon: unlock; ratio: 1.2" class="table-icons-unlock table-icons-locked" (click)="unlockUser(user)"></span>
           </td>
         </tr>
       </tbody>

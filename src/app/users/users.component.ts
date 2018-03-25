@@ -12,7 +12,7 @@ export class UsersComponent implements OnInit {
   @ViewChild('closeEditUserModal') closeEditUserModal: ElementRef;
   @ViewChild('closeNewUserModal') closeNewUserModal: ElementRef;
 
-  hover = false;
+  hover = [];
   editedUser: User;
   error: string;
   users: User[] = [
@@ -57,6 +57,9 @@ export class UsersComponent implements OnInit {
       'kanbanMaster': new FormControl(null),
       'admin': new FormControl(null)
     });
+    for (let i = 0; i < this.users.length; i++) {
+      this.hover[i] = false;
+    }
   }
 
   editUser(user: User) {
