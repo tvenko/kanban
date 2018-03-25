@@ -1,42 +1,45 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
   <!-- New group modal toggle button -->
-  <button class="uk-button uk-button-primary uk-margin-medium-bottom uk-margin-large-right uk-position-bottom-right" uk-toggle="target: #new-group-modal">Nova skupina</button>
+  <button class="uk-button uk-button-primary uk-margin-medium-bottom uk-margin-large-right uk-position-bottom-right" (click)="loadModal()" uk-toggle="target: #new-group-modal">Nova skupina</button>
   <!-- New group modal -->
-  <div id="new-group-modal" uk-modal>
+  <div id="new-group-modal" class="uk-modal-container" uk-modal>
       <div class="uk-modal-dialog uk-modal-body uk-overflow-auto ">
           <button class="uk-modal-close-default" type="button" uk-close></button>
           <h2 class="uk-modal-title">Nova skupina</h2>
           <!-- New group form --> 
           <form>
-              <fieldset class="uk-fieldset">
-                    
-                  <div class="uk-margin">
-                      <input class="uk-input" type="text" placeholder="Ime skupine">
-                  </div>
-                  Člani
-                  <div class="uk-form-controls uk-margin" >
-                      <select class="uk-select" id="form-stacked-select">
-                          <option>Kanban master</option>
-                          <option>Product owner</option>
-                      </select>
-                  </div>
-                  <div class="uk-form-controls  uk-margin">
-                      <select class="uk-select" id="form-stacked-select">
-                          <option>Janez Novak</option>
-                          <option>Miha Klepač</option>
-                      </select>
-                  </div>
-                  <button class="uk-button uk-button-default uk-align-right" type="button">Dodaj člana</button>
-                  <span class="uk-label">Razvijalec: Janez Novak </span> <span class="uk-label uk-label-danger">Odstrani</span>
-          
+              <fieldset class="uk-fieldset">                  
+                   <div class="uk-margin">
+                       <input class="uk-input" type="text" placeholder="Ime skupine">
+                    </div>
+                    Člani
+                    <!-- Show all users --> 
+                    <hr>
+                    <div class="uk-form-controls  uk-margin">
+                        <!-- Show all users. Pass selected to function -->
+                        <select class="uk-select" id="form-stacked-select" [(ngModel)]="selectedUserInput" (change)="userSelection(selectedUserInput)" name="userSelect">
+                            <option *ngFor="let user of users" [ngValue]="user">{{user.firstName + " " + user.lastName}}</option>
+                        </select>
+                    </div>
+                    <!-- Show all roles for selected user if user is selected. If option is selected, save selection in roles array. -->
+                    <div *ngIf="selectedUser" class="uk-margin uk-grid-small uk-child-width-auto uk-grid"> 
+                        <label  *ngFor="let vloga of selectedUser.roles"><input class="uk-checkbox" type="checkbox" name="rolesCheckboxes" [(ngModel)]="roles[vloga].checked"> {{roles[vloga].name}}</label>
+                    </div>    
+                    <!-- Save new member -->
+                    <button class="uk-button uk-button-default" type="button" (click)="addMemberToGroup()">Dodaj člana</button>
+                    <!-- Show all selected users -->
+                    <hr>
+                     <span *ngFor="let member of group">            
+                      <span class="uk-label">{{memberToString(member)}}<button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-light" uk-icon="close" ></button> </span>
+                    </span>
               </fieldset>
           </form>
 
           <p class="uk-text-right">
               <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
-              <!-- TODO veži gumb na funkcijo -->
-              <button class="uk-button uk-button-primary" type="button">Shrani</button>
+              <!-- Save group -->
+              <button class="uk-button uk-button-primary" type="button" (click)="saveGroup()" >Shrani</button>
           </p>
       </div>
   </div>
