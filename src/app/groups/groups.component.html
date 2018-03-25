@@ -1,54 +1,75 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
-  <!-- New group modal toggle button -->
-  <button class="uk-button uk-button-primary uk-margin-medium-bottom uk-margin-large-right uk-position-bottom-right" (click)="loadModal()" uk-toggle="target: #new-group-modal">Nova skupina</button>
-  <!-- New group modal -->
-  <div id="new-group-modal" class="uk-modal-container" uk-modal>
-      <div class="uk-modal-dialog uk-modal-body uk-overflow-auto ">
-          <button class="uk-modal-close-default" type="button" uk-close></button>
-          <h2 class="uk-modal-title">Nova skupina</h2>
-          <!-- New group form --> 
-          <form>
-              <fieldset class="uk-fieldset">                  
-                   <div class="uk-margin">
-                       <input class="uk-input" type="text" placeholder="Ime skupine">
-                    </div>
-                    Člani
-                    <!-- Show all users --> 
-                    <hr>
-                    <div class="uk-form-controls  uk-margin">
-                        <!-- Show all users. Pass selected to function -->
-                        <select class="uk-select" id="form-stacked-select" [(ngModel)]="selectedUserInput" (change)="userSelection(selectedUserInput)" name="userSelect">
-                            <option *ngFor="let user of users" [ngValue]="user">{{user.firstName + " " + user.lastName}}</option>
-                        </select>
-                    </div>
-                    <!-- Show all roles for selected user if user is selected. If option is selected, save selection in roles array. -->
-                    <div *ngIf="selectedUser" class="uk-margin uk-grid-small uk-child-width-auto uk-grid"> 
-                        <label  *ngFor="let vloga of selectedUser.roles"><input class="uk-checkbox" type="checkbox" name="rolesCheckboxes" [(ngModel)]="roles[vloga].checked"> {{roles[vloga].name}}</label>
-                    </div>    
-                    <!-- Save new member -->
-                    <button class="uk-button uk-button-default" type="button" (click)="addMemberToGroup()">Dodaj člana</button>
-                    <!-- Show all selected users -->
-                    <hr>
-                     <span *ngFor="let member of group">  
-                      <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>             
-                      <!-- <span class="uk-label">{{memberToString(member)}} </span> -->
-                      <span *ngFor="let role of member.roles">
-                            <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
-                            <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
-                            <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
-                      </span>
-                      
-                      <button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-dark" uk-icon="close" ></button>
-                    </span>
-              </fieldset>
-          </form>
+    <!-- New group modal toggle button -->
+    <div>
+        <button class="uk-button uk-button-primary newGroupButton" (click)="loadModal()" uk-toggle="target: #new-group-modal">Nova skupina</button>
+    </div>
+    <br>
+    <!-- Groups display -->
+    <div uk-height-match="target: > div > .uk-card" class="uk-grid-small" uk-grid >
+        <div class="uk-card uk-card-default uk-card-body uk-card-hover groupCard" *ngFor="let group of groups">
+            <div class="uk-card-badge">
+                <button class="uk-icon-link uk-dark" uk-icon="pencil" (click)="editGroup(group)"></button>
+                <button class="uk-icon-link uk-dark" uk-icon="trash" (click)="deleteGroup(group)"></button>
+            </div>
+            <h3 class="uk-text-center uk-card-title" >{{group.name}}</h3>
+            <span *ngFor="let member of group.members" >
+                <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>
+                <span *ngFor="let role of member.roles">
+                    <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
+                    <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
+                    <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
+                </span> 
+                <br> 
+            </span>
+        </div>
+    </div>
 
-          <p class="uk-text-right">
-              <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
-              <!-- Save group -->
-              <button class="uk-button uk-button-primary" type="button" (click)="saveGroup()" >Shrani</button>
-          </p>
-      </div>
-  </div>
+    <!-- New group modal -->
+    <div id="new-group-modal" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-overflow-auto ">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            <h2 class="uk-modal-title">Nova skupina</h2>
+            <!-- New group form --> 
+            <form>
+                <fieldset class="uk-fieldset">                  
+                    <div class="uk-margin">
+                        <input class="uk-input" type="text" placeholder="Ime skupine" [(ngModel)]="groupName" name="groupNameInput">
+                        </div>
+                        Člani
+                        <!-- Show all users --> 
+                        <hr>
+                        <div class="uk-form-controls  uk-margin">
+                            <!-- Show all users. Pass selected to function -->
+                            <select class="uk-select" id="form-stacked-select" [(ngModel)]="selectedUserInput" (change)="userSelection(selectedUserInput)" name="userSelect">
+                                <option *ngFor="let user of users" [ngValue]="user">{{user.firstName + " " + user.lastName}}</option>
+                            </select>
+                        </div>
+                        <!-- Show all roles for selected user if user is selected. If option is selected, save selection in roles array. -->
+                        <div *ngIf="selectedUser" class="uk-margin uk-grid-small uk-child-width-auto uk-grid"> 
+                            <label  *ngFor="let vloga of selectedUser.roles"><input class="uk-checkbox" type="checkbox" name="rolesCheckboxes" [(ngModel)]="roles[vloga].checked"> {{roles[vloga].name}}</label>
+                        </div>    
+                        <!-- Save new member -->
+                        <button class="uk-button uk-button-default" type="button" (click)="addMemberToGroup()">Dodaj člana</button>
+                        <!-- Show all selected users -->
+                        <hr>
+                        <span *ngFor="let member of members">  
+                            <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>             
+                            <span *ngFor="let role of member.roles">
+                                    <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
+                                    <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
+                                    <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
+                            </span>                       
+                            <button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-dark" uk-icon="close" ></button>
+                        </span>
+                </fieldset>
+            </form>
+
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
+                <!-- Save group -->
+                <button class="uk-button uk-button-primary" type="button" (click)="saveGroup()" >Shrani</button>
+            </p>
+        </div>
+    </div>
 </div>

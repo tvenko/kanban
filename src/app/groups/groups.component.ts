@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { User } from './extraClasses';
-import { SelectedUser } from './extraClasses';
+import { User, } from './extraClasses';
+import { UserRole } from './extraClasses';
 import { Role } from './extraClasses';
+import { Group } from './extraClasses';
 declare var UIkit: any;
 
 @Component({
@@ -13,21 +14,42 @@ declare var UIkit: any;
 
 export class GroupsComponent implements OnInit {
   
-  
-
   users: User[];
   roles: Role[];
   selectedUser:User;
-  group:SelectedUser[];
+  members:UserRole[];
+  groups:Group[];
+  groupName:string;
 
   constructor() { 
     this.users = [];
     this.roles = [];
-    this.group =[];
+    this.members =[];
+    this.groups = [];
     this.selectedUser = null;
   }
 
   ngOnInit() {
+    this.loadGroups();
+  }
+
+  loadGroups(){
+    /*this.groups.push(new Group("Legvani", [new UserRole(this.users[0], [this.roles[0], this.roles[2]]),
+                                           new UserRole(this.users[1], [this.roles[1]]),
+                                           new UserRole(this.users[2], [this.roles[2]]),
+                                           new UserRole(this.users[3], [this.roles[2]])]));*/
+  }
+
+  deleteGroup(group:Group){
+    //TODO: confirm deletion
+    var confirmDelete = confirm("Zbrišem skupino?");
+    if (confirmDelete) {
+      this.groups = this.groups.filter(obj => obj !== group);
+      UIkit.notification('Skupina izbrisana.', {status: 'danger', timeout: 2000});
+    }
+  }
+
+  editGroup(group){
   }
 
 
@@ -37,7 +59,7 @@ export class GroupsComponent implements OnInit {
     this.loadRoles();
     this.loadUsers();
     this.resetRoles();
-    this.group = [];
+    this.members = [];
   }
 
   loadRoles(){
@@ -73,33 +95,31 @@ export class GroupsComponent implements OnInit {
     });
     if (!roleSelected){
       alert("Izberi vsaj eno vlogo.")
-    }else if(this.group.filter(obj => obj.user == this.selectedUser).length != 0){
+    }else if(this.members.filter(obj => obj.user == this.selectedUser).length != 0){
       alert("Uporabnik je v skupini.")
-    }else if (this.roles[0].checked && this.group.filter(obj => obj.roles.includes(this.roles[0])).length != 0){
+    }else if (this.roles[0].checked && this.members.filter(obj => obj.roles.includes(this.roles[0])).length != 0){
       alert("Vloga KanbanMaster je že zasedena!")
-    }else if (this.roles[1].checked && this.group.filter(obj => obj.roles.includes(this.roles[1])).length != 0){
+    }else if (this.roles[1].checked && this.members.filter(obj => obj.roles.includes(this.roles[1])).length != 0){
       alert("Vloga Product owner je že zasedena!");
     }else{
-      this.group.push(new SelectedUser(this.selectedUser,  this.roles.filter(function(role) { return role.checked; })));
+      this.members.push(new UserRole(this.selectedUser,  this.roles.filter(function(role) { return role.checked; })));
     } 
     //Reset roles
     this.resetRoles();
   }
   
-  removeMemberfromGroup($event, member:SelectedUser){
+  removeMemberfromGroup($event, member:UserRole){
     $event.stopPropagation();
-    this.group = this.group.filter(obj => obj !== member);
-    
+    this.members = this.members.filter(obj => obj !== member);
   }
-
   
-  memberToString(member:SelectedUser){
+ /* memberToString(member:UserRole){
     var temp = "";
     member.roles.forEach(role => {
       temp+=role.name + ", ";
     });
     return temp.substring(0, temp.length - 2) + ": " +member.user.firstName + " " + member.user.lastName;
-  }
+  }*/
 
   resetRoles(){
     this.roles.forEach(role => {
@@ -108,10 +128,12 @@ export class GroupsComponent implements OnInit {
   }
 
   saveGroup(){
-    if (this.group.filter(obj => obj.roles.includes(this.roles[0])).length == 0 || this.group.filter(obj => obj.roles.includes(this.roles[1])).length == 0 || this.group.filter(obj => obj.roles.includes(this.roles[2])).length == 0){
+    if (this.members.filter(obj => obj.roles.includes(this.roles[0])).length == 0 || this.members.filter(obj => obj.roles.includes(this.roles[1])).length == 0 || this.members.filter(obj => obj.roles.includes(this.roles[2])).length == 0){
       alert("Skupina mora vsebovati enega Product ownerja, enega KanbanMastra ter vsaj enega razvijalca.");
     }else{
-      alert("Skupina dodana.");
+      //TODO: post to DB, get again
+      this.groups.push(new Group(this.groupName, this.members));
+      UIkit.notification('Skupina dodana.', {status: 'success', timeout: 2000});
       UIkit.modal("#new-group-modal").hide();
     }
   } 
