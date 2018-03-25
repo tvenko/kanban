@@ -30,8 +30,16 @@
                     <button class="uk-button uk-button-default" type="button" (click)="addMemberToGroup()">Dodaj člana</button>
                     <!-- Show all selected users -->
                     <hr>
-                     <span *ngFor="let member of group">            
-                      <span class="uk-label">{{memberToString(member)}}<button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-light" uk-icon="close" ></button> </span>
+                     <span *ngFor="let member of group">  
+                      <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>             
+                      <!-- <span class="uk-label">{{memberToString(member)}} </span> -->
+                      <span *ngFor="let role of member.roles">
+                            <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
+                            <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
+                            <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
+                      </span>
+                      
+                      <button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-dark" uk-icon="close" ></button>
                     </span>
               </fieldset>
           </form>

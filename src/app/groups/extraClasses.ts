@@ -29,11 +29,11 @@ export class SelectedUser{
 
 export class Role{
   name:string;
-  value:number;
+  id:number;
   checked:boolean;
-  constructor(name,value){
+  constructor(name,id){
     this.name = name;
-    this.value = value;
+    this.id = id;
     this.checked = false;
   }
 

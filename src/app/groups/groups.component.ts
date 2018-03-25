@@ -88,7 +88,6 @@ export class GroupsComponent implements OnInit {
   
   removeMemberfromGroup($event, member:SelectedUser){
     $event.stopPropagation();
-    //TODO: don't close modal!
     this.group = this.group.filter(obj => obj !== member);
     
   }
