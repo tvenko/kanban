@@ -1,5 +1,14 @@
 .uk-position-top-center {
-  margin-top: 100px;
+  margin-top: 120px;
+}
+
+.add-user-button {
+  margin-top: 20px;
+  margin-right: 40px;
+}
+
+.add-user-button:hover {
+  cursor: pointer;
 }
 
 .table-cell {

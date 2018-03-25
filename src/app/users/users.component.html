@@ -1,5 +1,11 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
+
+  <div class="uk-align-right">
+    <button class="uk-button uk-button-primary add-user-button" uk-toggle="target: #new-user-modal">Dodaj uporabnika</button>
+  </div>
+
+  <!-- tabela uporabnikov -->
   <div class="uk-position-top-center">
     <table class="uk-table uk-table-hover uk-table-divider uk-table-justify">
       <thead>
@@ -95,6 +101,68 @@
         <div class="uk-text-right">
           <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
           <button class="uk-button uk-button-primary" type="submit" [disabled]="!editUserForm.valid">Shrani</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+
+<!-- Add new user modal -->
+<div id="new-user-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" uk-close #closeNewUserModal></button>
+    <h2 class="uk-modal-title">Dodaj uporabnika</h2>
+    <!-- Edit user form -->
+    <form (ngSubmit)="postNewUser()" [formGroup]="newUserForm">
+      <fieldset class="uk-fieldset">
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="first-name">Ime</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="first-name" type="text" formControlName="firstName">
+          </div>
+        </div>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="last-name">Priimek</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="last-name" type="text" formControlName="lastName">
+          </div>
+        </div>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="email">Elektronksi naslov</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="email" type="email" formControlName="email">
+          </div>
+        </div>
+
+        <div>
+          <p><label class="uk-form-label">Uporabniške vloge</label></p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="developer"> Developer</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="productOwner"> Product owner</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="kanbanMaster"> Kanban Master</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="admin"> Admin</label>
+          </p>
+        </div>
+
+        <div *ngIf="error != null">
+          <div class="uk-alert-danger" uk-alert>
+            <p>{{ error }}</p>
+          </div>
+        </div>
+
+        <div class="uk-text-right">
+          <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
+          <button class="uk-button uk-button-primary" type="submit" [disabled]="!newUserForm.valid">Shrani</button>
         </div>
       </fieldset>
     </form>

@@ -10,6 +10,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 export class UsersComponent implements OnInit {
 
   @ViewChild('closeEditUserModal') closeEditUserModal: ElementRef;
+  @ViewChild('closeNewUserModal') closeNewUserModal: ElementRef;
 
   hover = false;
   editedUser: User;
@@ -18,14 +19,36 @@ export class UsersComponent implements OnInit {
     new User('Janez', 'Novak', ['developer', 'kanban master'], 'janez@mail.com', false),
     new User('Micka', 'Kovac', ['developer'], 'micka@mail.com', false),
     new User('Tina', 'Kabina', ['product owner'], 'tina@mail.com', true),
+    new User('Jaka', 'Kaka', ['developer', 'kanban master', 'product owner', 'admin'], 'jaka.zelo.dolg.mail@mail.com', false),
+    new User('Janez', 'Novak', ['developer', 'kanban master'], 'janez@mail.com', false),
+    new User('Micka', 'Kovac', ['developer'], 'micka@mail.com', false),
+    new User('Tina', 'Kabina', ['product owner'], 'tina@mail.com', true),
+    new User('Jaka', 'Kaka', ['developer', 'kanban master', 'product owner', 'admin'], 'jaka.zelo.dolg.mail@mail.com', false),
+    new User('Janez', 'Novak', ['developer', 'kanban master'], 'janez@mail.com', false),
+    new User('Micka', 'Kovac', ['developer'], 'micka@mail.com', false),
+    new User('Tina', 'Kabina', ['product owner'], 'tina@mail.com', true),
+    new User('Jaka', 'Kaka', ['developer', 'kanban master', 'product owner', 'admin'], 'jaka.zelo.dolg.mail@mail.com', false),
+    new User('Janez', 'Novak', ['developer', 'kanban master'], 'janez@mail.com', false),
+    new User('Micka', 'Kovac', ['developer'], 'micka@mail.com', false),
+    new User('Tina', 'Kabina', ['product owner'], 'tina@mail.com', true),
     new User('Jaka', 'Kaka', ['developer', 'kanban master', 'product owner', 'admin'], 'jaka.zelo.dolg.mail@mail.com', false)
   ];
   editUserForm: FormGroup;
+  newUserForm: FormGroup;
 
   constructor() { }
 
   ngOnInit() {
     this.editUserForm = new FormGroup({
+      'firstName': new FormControl(null, Validators.required),
+      'lastName': new FormControl(null, Validators.required),
+      'email': new FormControl(null, [Validators.email, Validators.required]),
+      'developer': new FormControl(null),
+      'productOwner': new FormControl(null),
+      'kanbanMaster': new FormControl(null),
+      'admin': new FormControl(null)
+    });
+    this.newUserForm = new FormGroup({
       'firstName': new FormControl(null, Validators.required),
       'lastName': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.email, Validators.required]),
@@ -77,6 +100,38 @@ export class UsersComponent implements OnInit {
       // ne vem kako drugace zapreti modal zato simuliram klik na X
       this.closeEditUserModal.nativeElement.click();
       // TODO: update user in database
+    } else {
+      this.error = 'Izbrati morate vsaj eno uporabniško vlogo';
+    }
+  }
+
+  postNewUser() {
+    const roles = [];
+    if (this.newUserForm.get('developer').value) {
+      roles.push('developer');
+    }
+    if (this.newUserForm.get('productOwner').value) {
+      roles.push('product owner');
+    }
+    if (this.newUserForm.get('kanbanMaster').value) {
+      roles.push('kanban master');
+    }
+    if (this.newUserForm.get('admin').value) {
+      roles.push('admin');
+    }
+    if (roles.length > 0) {
+      const newUser: User = {
+        firstName: this.newUserForm.get('firstName').value,
+        lastName: this.newUserForm.get('lastName').value,
+        email: this.newUserForm.get('email').value,
+        roles: roles,
+        locked: false
+      };
+      this.error = null;
+      // ne vem kako drugace zapreti modal zato simuliram klik na X
+      this.users.push(newUser);
+      this.closeNewUserModal.nativeElement.click();
+      // TODO: send new user in database
     } else {
       this.error = 'Izbrati morate vsaj eno uporabniško vlogo';
     }
