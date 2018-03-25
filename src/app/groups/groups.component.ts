@@ -133,8 +133,9 @@ export class GroupsComponent implements OnInit {
     }else{
       //TODO: post to DB, get again
       this.groups.push(new Group(this.groupName, this.members));
-      UIkit.notification('Skupina dodana.', {status: 'success', timeout: 2000});
       UIkit.modal("#new-group-modal").hide();
+      UIkit.notification('Skupina dodana.', {status: 'success', timeout: 2000});
+      
     }
   } 
 
