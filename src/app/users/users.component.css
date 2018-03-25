@@ -1,8 +1,39 @@
-.placeholder {
-  text-align: center;
-  margin-top: 300px;
+.uk-position-top-center {
+  margin-top: 100px;
 }
 
-.placeholder p {
-  color: gray;
+.table-cell {
+  padding-right: 40px;
+}
+
+.table-locked {
+  color: grey;
+}
+
+.table-icons {
+  float: right;
+  width: 80px;
+}
+
+.table-icons-edit:hover {
+  color: black;
+  cursor: pointer;
+}
+
+.table-icons-ban:hover {
+  color: red;
+  cursor: pointer;
+}
+
+.table-icons-locked {
+  padding-left: 20px;
+}
+
+.table-icons-unlock {
+  color: black;
+  cursor: pointer;
+}
+
+.edit-user-checkboxes {
+  padding-left: 20px;
 }

@@ -14,6 +14,7 @@ import { BoardComponent } from './board/board.component';
 import { DocumentationComponent } from './documentation/documentation.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { ProjectsComponent } from './projects/projects.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 
 @NgModule({
@@ -33,6 +34,8 @@ import { ProjectsComponent } from './projects/projects.component';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

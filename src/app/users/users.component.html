@@ -1,8 +1,102 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
-  <div class="placeholder">
-    <h1>This is Admin page for managing Users!</h1>
-    <hr>
-    <p>Well it's still needs to be implemented... ¯\_(ツ)_/¯</p>
+  <div class="uk-position-top-center">
+    <table class="uk-table uk-table-hover uk-table-divider uk-table-justify">
+      <thead>
+        <tr>
+          <th class="uk-table-shrink">#</th>
+          <th>Ime</th>
+          <th>Priimek</th>
+          <th>Elektronski naslov</th>
+          <th class="uk-table-expand">Uporabniška vloge</th>
+          <th class="uk-width-small"></th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let user of users; let i = index">
+        <tr [ngClass] = "{'table-locked': user.locked == true}">
+          <td class="table-cell">{{ i+1 }}</td>
+          <td class="table-cell">{{ user?.firstName }}</td>
+          <td class="table-cell">{{ user?.lastName }}</td>
+          <td class="table-cell">{{ user?.email }}</td>
+          <td class="table-cell">
+            <span *ngFor="let role of user?.roles">
+              <span class="uk-label" *ngIf="role == 'developer'">{{ role }}</span>
+              <span class="uk-label uk-label-success" *ngIf="role == 'product owner'">{{ role }}</span>
+              <span class="uk-label uk-label-warning" *ngIf="role == 'kanban master'">{{ role }}</span>
+              <span class="uk-label uk-label-danger" *ngIf="role == 'admin'">{{ role }}</span>
+            </span>
+          </td>
+          <td class="table-icons" *ngIf="user.locked == false">
+            <span uk-icon="icon: pencil; ratio: 1.2" class="table-icons-edit" uk-toggle="target: #edit-user-modal" (click)="editUser(user)"></span> &nbsp;
+            <span uk-icon="icon: ban; ratio: 1.2" class="table-icons-ban" (click)="lockUser(user)"></span>
+          </td>
+          <td class="table-icons" *ngIf="user.locked == true" (mouseenter)="hover = true" (mouseleave)="hover = false">
+            <span *ngIf="hover == false"  uk-icon="icon: lock; ratio: 1.2" class="table-icons-locked"></span>
+            <span *ngIf="hover == true"  uk-icon="icon: unlock; ratio: 1.2" class="table-icons-unlock table-icons-locked" (click)="unlockUser(user)"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Edit user modal -->
+<div id="edit-user-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" uk-close #closeEditUserModal></button>
+    <h2 class="uk-modal-title">uporabnik {{ editedUser?.firstName }} {{ editedUser?.lastName }}</h2>
+    <!-- Edit user form -->
+    <form (ngSubmit)="postEditUser()" [formGroup]="editUserForm">
+      <fieldset class="uk-fieldset">
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="first-name">Ime</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="first-name" type="text" formControlName="firstName">
+          </div>
+        </div>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="last-name">Priimek</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="last-name" type="text" formControlName="lastName">
+          </div>
+        </div>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="email">Elektronksi naslov</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="email" type="email" formControlName="email">
+          </div>
+        </div>
+
+        <div>
+          <p><label class="uk-form-label">Uporabniške vloge</label></p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="developer"> Developer</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="productOwner"> Product owner</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="kanbanMaster"> Kanban Master</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="admin"> Admin</label>
+          </p>
+        </div>
+
+        <div *ngIf="error != null">
+          <div class="uk-alert-danger" uk-alert>
+            <p>{{ error }}</p>
+          </div>
+        </div>
+
+        <div class="uk-text-right">
+          <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
+          <button class="uk-button uk-button-primary" type="submit" [disabled]="!editUserForm.valid">Shrani</button>
+        </div>
+      </fieldset>
+    </form>
   </div>
 </div>
