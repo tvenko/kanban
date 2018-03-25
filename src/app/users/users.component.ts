@@ -11,6 +11,8 @@ export class UsersComponent implements OnInit {
 
   @ViewChild('closeEditUserModal') closeEditUserModal: ElementRef;
   @ViewChild('closeNewUserModal') closeNewUserModal: ElementRef;
+  @ViewChild('notificationNewUser') notificationNewUser: ElementRef;
+  @ViewChild('notificationUpdateUser') notificationUpdateUser: ElementRef;
 
   hover = [];
   editedUser: User;
@@ -102,6 +104,7 @@ export class UsersComponent implements OnInit {
       this.error = null;
       // ne vem kako drugace zapreti modal zato simuliram klik na X
       this.closeEditUserModal.nativeElement.click();
+      this.notificationUpdateUser.nativeElement.click();
       // TODO: update user in database
     } else {
       this.error = 'Izbrati morate vsaj eno uporabniško vlogo';
@@ -134,6 +137,7 @@ export class UsersComponent implements OnInit {
       // ne vem kako drugace zapreti modal zato simuliram klik na X
       this.users.push(newUser);
       this.closeNewUserModal.nativeElement.click();
+      this.notificationNewUser.nativeElement.click();
       // TODO: send new user in database
     } else {
       this.error = 'Izbrati morate vsaj eno uporabniško vlogo';

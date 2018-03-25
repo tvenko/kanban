@@ -167,4 +167,10 @@
       </fieldset>
     </form>
   </div>
+
+  <button class="uk-hidden" type="button" #notificationNewUser
+          onclick="UIkit.notification({message: 'Nov uporabnik uspešno dodan', status:'success'})"></button>
+  <button class="uk-hidden" type="button" #notificationUpdateUser
+          onclick="UIkit.notification({message: 'Uporabnik uspešno posodobljen', status:'success'})"></button>
+
 </div>
