@@ -1,0 +1,1 @@
+web: gunicorn smrpo_backend.wsgi --log-file -
