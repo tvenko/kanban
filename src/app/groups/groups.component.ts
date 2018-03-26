@@ -20,6 +20,7 @@ export class GroupsComponent implements OnInit {
   members:UserRole[];
   groups:Group[];
   groupName:string;
+  selectedUserInput:User; //??
 
   constructor() { 
     this.users = [];
@@ -27,6 +28,7 @@ export class GroupsComponent implements OnInit {
     this.members =[];
     this.groups = [];
     this.selectedUser = null;
+    this.selectedUserInput = null;
   }
 
   ngOnInit() {
@@ -41,7 +43,6 @@ export class GroupsComponent implements OnInit {
   }
 
   deleteGroup(group:Group){
-    //TODO: confirm deletion
     var confirmDelete = confirm("Zbrišem skupino?");
     if (confirmDelete) {
       this.groups = this.groups.filter(obj => obj !== group);
@@ -54,6 +55,8 @@ export class GroupsComponent implements OnInit {
 
 
   //******** NEW GROUP MODAL *********//
+
+  //TODO: reset izbranega userja in njegovih vlog ob novem odprianju modala
 
   loadModal(){
     this.loadRoles();
