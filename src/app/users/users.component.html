@@ -1,7 +1,7 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
 
-  <div class="uk-align-right">
+  <div class="uk-align-left">
     <button class="uk-button uk-button-primary add-user-button" uk-toggle="target: #new-user-modal">Dodaj uporabnika</button>
   </div>
 
@@ -50,22 +50,22 @@
 <div id="edit-user-modal" uk-modal>
   <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
     <button class="uk-modal-close-default" type="button" uk-close></button>
-    <h2 class="uk-modal-title">uporabnik {{ editedUser?.firstName }} {{ editedUser?.lastName }}</h2>
+    <h2 class="uk-modal-title">uporabnik {{ editedUser?.name }} {{ editedUser?.surname }}</h2>
     <!-- Edit user form -->
     <form (ngSubmit)="postEditUser()" [formGroup]="editUserForm">
       <fieldset class="uk-fieldset">
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="first-name">Ime</label>
+          <label class="uk-form-label" for="name">Ime</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="first-name" type="text" placeholder="Ime" formControlName="firstName">
+            <input class="uk-input" id="name" type="text" placeholder="Ime" formControlName="name">
           </div>
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="last-name">Priimek</label>
+          <label class="uk-form-label" for="surname">Priimek</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="last-name" type="text" placeholder="Priimek" formControlName="lastName">
+            <input class="uk-input" id="surname" type="text" placeholder="Priimek" formControlName="surname">
           </div>
         </div>
 
@@ -79,7 +79,7 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="password">Geslo</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="password" type="email" placeholder="Password" formControlName="password">
+            <input class="uk-input" id="password" type="text" placeholder="Password" formControlName="password">
           </div>
         </div>
 
@@ -125,16 +125,16 @@
       <fieldset class="uk-fieldset">
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="first-name">Ime</label>
+          <label class="uk-form-label" for="name">Ime</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="first-name" type="text" placeholder="Ime" formControlName="firstName">
+            <input class="uk-input" id="name" type="text" placeholder="Ime" formControlName="name">
           </div>
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="last-name">Priimek</label>
+          <label class="uk-form-label" for="surname">Priimek</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="last-name" type="text" placeholder="Priimek" formControlName="lastName">
+            <input class="uk-input" id="surname" type="text" placeholder="Priimek" formControlName="surname">
           </div>
         </div>
 
@@ -148,7 +148,7 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="password">Geslo</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="password" type="email" placeholder="Password" formControlName="password">
+            <input class="uk-input" id="password" type="text" placeholder="Password" formControlName="password">
           </div>
         </div>
 

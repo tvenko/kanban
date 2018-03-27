@@ -25,8 +25,8 @@ export class UsersComponent implements OnInit {
 
   ngOnInit() {
     this.editUserForm = new FormGroup({
-      'firstName': new FormControl(null, Validators.required),
-      'lastName': new FormControl(null, Validators.required),
+      'name': new FormControl(null, Validators.required),
+      'surname': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.email, Validators.required]),
       'password': new FormControl(null, Validators.required),
       'developer': new FormControl(null),
@@ -35,8 +35,8 @@ export class UsersComponent implements OnInit {
       'admin': new FormControl(null)
     });
     this.newUserForm = new FormGroup({
-      'firstName': new FormControl(null, Validators.required),
-      'lastName': new FormControl(null, Validators.required),
+      'name': new FormControl(null, Validators.required),
+      'surname': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.email, Validators.required]),
       'password': new FormControl(null, Validators.required),
       'developer': new FormControl(null),
@@ -57,8 +57,8 @@ export class UsersComponent implements OnInit {
   editUser(user: User) {
     this.editedUser = user;
     this.editUserForm.setValue({
-      firstName: user.name,
-      lastName: user.surname,
+      name: user.name,
+      surname: user.surname,
       email: user.email,
       password: user.password,
       developer: user.roles.includes('developer'),
@@ -86,8 +86,8 @@ export class UsersComponent implements OnInit {
     if (roles.length > 0) {
       this.users[index] = {
         id_user: this.editedUser.id_user,
-        name: this.editUserForm.get('firstName').value,
-        surname: this.editUserForm.get('lastName').value,
+        name: this.editUserForm.get('nameame').value,
+        surname: this.editUserForm.get('surname').value,
         email: this.editUserForm.get('email').value,
         password: this.editUserForm.get('password').value,
         roles: roles,
@@ -122,8 +122,8 @@ export class UsersComponent implements OnInit {
     if (roles.length > 0) {
       const newUser: User = {
         id_user: null,
-        name: this.newUserForm.get('firstName').value,
-        surname: this.newUserForm.get('lastName').value,
+        name: this.newUserForm.get('name').value,
+        surname: this.newUserForm.get('surname').value,
         email: this.newUserForm.get('email').value,
         password: this.newUserForm.get('password').value,
         roles: roles,
