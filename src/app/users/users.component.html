@@ -19,10 +19,10 @@
         </tr>
       </thead>
       <tbody *ngFor="let user of users; let i = index">
-        <tr [ngClass] = "{'table-locked': user.locked == true}">
+        <tr [ngClass] = "{'table-locked': user.activate == false}">
           <td class="table-cell">{{ i+1 }}</td>
-          <td class="table-cell">{{ user?.firstName }}</td>
-          <td class="table-cell">{{ user?.lastName }}</td>
+          <td class="table-cell">{{ user?.name }}</td>
+          <td class="table-cell">{{ user?.surname }}</td>
           <td class="table-cell">{{ user?.email }}</td>
           <td class="table-cell">
             <span *ngFor="let role of user?.roles">
@@ -32,11 +32,11 @@
               <span class="uk-label uk-label-danger" *ngIf="role == 'admin'">{{ role }}</span>
             </span>
           </td>
-          <td class="table-icons" *ngIf="user.locked == false">
+          <td class="table-icons" *ngIf="user.activate == true">
             <span uk-icon="icon: pencil; ratio: 1.2" class="table-icons-edit" uk-toggle="target: #edit-user-modal" (click)="editUser(user)"></span> &nbsp;
             <span uk-icon="icon: ban; ratio: 1.2" class="table-icons-ban" (click)="lockUser(user)"></span>
           </td>
-          <td class="table-icons" *ngIf="user.locked == true" (mouseenter)="hover[i] = true" (mouseleave)="hover[i] = false">
+          <td class="table-icons" *ngIf="user.activate == false" (mouseenter)="hover[i] = true" (mouseleave)="hover[i] = false">
             <span *ngIf="hover[i] == false"  uk-icon="icon: lock; ratio: 1.2" class="table-icons-locked"></span>
             <span *ngIf="hover[i] == true"  uk-icon="icon: unlock; ratio: 1.2" class="table-icons-unlock table-icons-locked" (click)="unlockUser(user)"></span>
           </td>
@@ -58,21 +58,21 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="first-name">Ime</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="first-name" type="text" formControlName="firstName">
+            <input class="uk-input" id="first-name" type="text" placeholder="Ime" formControlName="firstName">
           </div>
         </div>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="last-name">Priimek</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="last-name" type="text" formControlName="lastName">
+            <input class="uk-input" id="last-name" type="text" placeholder="Priimek" formControlName="lastName">
           </div>
         </div>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="email">Elektronksi naslov</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="email" type="email" formControlName="email">
+            <input class="uk-input" id="email" type="email" placeholder="Email" formControlName="email">
           </div>
         </div>
 
@@ -120,21 +120,21 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="first-name">Ime</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="first-name" type="text" formControlName="firstName">
+            <input class="uk-input" id="first-name" type="text" placeholder="Ime" formControlName="firstName">
           </div>
         </div>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="last-name">Priimek</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="last-name" type="text" formControlName="lastName">
+            <input class="uk-input" id="last-name" type="text" placeholder="Priimek" formControlName="lastName">
           </div>
         </div>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="email">Elektronksi naslov</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="email" type="email" formControlName="email">
+            <input class="uk-input" id="email" type="email" placeholder="Email" formControlName="email">
           </div>
         </div>
 

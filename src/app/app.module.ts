@@ -15,6 +15,8 @@ import { DocumentationComponent } from './documentation/documentation.component'
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { ProjectsComponent } from './projects/projects.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {UsersService} from './shared/services/users.service';
+import {HttpClientModule} from '@angular/common/http';
 
 
 @NgModule({
@@ -32,12 +34,13 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [UsersService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

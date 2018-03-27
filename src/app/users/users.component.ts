@@ -1,5 +1,7 @@
 import {Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UsersService} from '../shared/services/users.service';
+import {User} from '../shared/models/user.interface';
 
 @Component({
   selector: 'app-users',
@@ -17,34 +19,19 @@ export class UsersComponent implements OnInit {
   hover = [];
   editedUser: User;
   error: string;
-  users: User[] = [
-    new User('Janez', 'Novak', ['developer', 'kanban master'], 'janez@mail.com', false),
-    new User('Micka', 'Kovac', ['developer'], 'micka@mail.com', false),
-    new User('Tina', 'Kabina', ['product owner'], 'tina@mail.com', true),
-    new User('Jaka', 'Kaka', ['developer', 'kanban master', 'product owner', 'admin'], 'jaka.zelo.dolg.mail@mail.com', false),
-    new User('Janez', 'Novak', ['developer', 'kanban master'], 'janez@mail.com', false),
-    new User('Micka', 'Kovac', ['developer'], 'micka@mail.com', false),
-    new User('Tina', 'Kabina', ['product owner'], 'tina@mail.com', true),
-    new User('Jaka', 'Kaka', ['developer', 'kanban master', 'product owner', 'admin'], 'jaka.zelo.dolg.mail@mail.com', false),
-    new User('Janez', 'Novak', ['developer', 'kanban master'], 'janez@mail.com', false),
-    new User('Micka', 'Kovac', ['developer'], 'micka@mail.com', false),
-    new User('Tina', 'Kabina', ['product owner'], 'tina@mail.com', true),
-    new User('Jaka', 'Kaka', ['developer', 'kanban master', 'product owner', 'admin'], 'jaka.zelo.dolg.mail@mail.com', false),
-    new User('Janez', 'Novak', ['developer', 'kanban master'], 'janez@mail.com', false),
-    new User('Micka', 'Kovac', ['developer'], 'micka@mail.com', false),
-    new User('Tina', 'Kabina', ['product owner'], 'tina@mail.com', true),
-    new User('Jaka', 'Kaka', ['developer', 'kanban master', 'product owner', 'admin'], 'jaka.zelo.dolg.mail@mail.com', false)
-  ];
+  users: User[];
   editUserForm: FormGroup;
   newUserForm: FormGroup;
+  test: any;
 
-  constructor() { }
+  constructor(private usersService: UsersService) { }
 
   ngOnInit() {
     this.editUserForm = new FormGroup({
       'firstName': new FormControl(null, Validators.required),
       'lastName': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.email, Validators.required]),
+      'password': new FormControl(null, Validators.required),
       'developer': new FormControl(null),
       'productOwner': new FormControl(null),
       'kanbanMaster': new FormControl(null),
@@ -54,22 +41,29 @@ export class UsersComponent implements OnInit {
       'firstName': new FormControl(null, Validators.required),
       'lastName': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.email, Validators.required]),
+      'password': new FormControl(null, Validators.required),
       'developer': new FormControl(null),
       'productOwner': new FormControl(null),
       'kanbanMaster': new FormControl(null),
       'admin': new FormControl(null)
     });
-    for (let i = 0; i < this.users.length; i++) {
-      this.hover[i] = false;
-    }
+    this.usersService.getUsers().subscribe(users => {
+      this.users = <User[]> users;
+      for (let i = 0; i < this.users.length; i++) {
+        this.hover[i] = false;
+      }
+    }, err => {
+      console.log('error geting users from backend');
+    });
   }
 
   editUser(user: User) {
     this.editedUser = user;
     this.editUserForm.setValue({
-      firstName: user.firstName,
-      lastName: user.lastName,
+      firstName: user.name,
+      lastName: user.surname,
       email: user.email,
+      password: user.password,
       developer: user.roles.includes('developer'),
       productOwner: user.roles.includes('product owner'),
       kanbanMaster: user.roles.includes('kanban master'),
@@ -94,11 +88,13 @@ export class UsersComponent implements OnInit {
     }
     if (roles.length > 0) {
       this.users[index] = {
-        firstName: this.editUserForm.get('firstName').value,
-        lastName: this.editUserForm.get('lastName').value,
+        id_user: this.editedUser.id_user,
+        name: this.editUserForm.get('firstName').value,
+        surname: this.editUserForm.get('lastName').value,
         email: this.editUserForm.get('email').value,
+        password: this.editUserForm.get('password').value,
         roles: roles,
-        locked: this.editedUser.locked
+        activate: this.editedUser.activate
       };
       this.editedUser = null;
       this.error = null;
@@ -127,11 +123,13 @@ export class UsersComponent implements OnInit {
     }
     if (roles.length > 0) {
       const newUser: User = {
-        firstName: this.newUserForm.get('firstName').value,
-        lastName: this.newUserForm.get('lastName').value,
+        id_user: null,
+        name: this.newUserForm.get('firstName').value,
+        surname: this.newUserForm.get('lastName').value,
         email: this.newUserForm.get('email').value,
+        password: this.newUserForm.get('password').value,
         roles: roles,
-        locked: false
+        activate: false
       };
       this.error = null;
       // ne vem kako drugace zapreti modal zato simuliram klik na X
@@ -145,31 +143,13 @@ export class UsersComponent implements OnInit {
   }
 
   lockUser(user: User) {
-    user.locked = true;
+    user.activate = false;
     // TODO: save to database
   }
 
   unlockUser(user: User) {
-    user.locked = false;
+    user.activate = true;
     // TODO: save to database
-  }
-
-}
-
-class User {
-
-  firstName: string;
-  lastName: string;
-  roles;
-  email: string;
-  locked: boolean;
-
-  constructor(firstName: string, lastName: string, roles: any, email: string, locked: boolean) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.roles = roles;
-    this.email = email;
-    this.locked = locked;
   }
 
 }
