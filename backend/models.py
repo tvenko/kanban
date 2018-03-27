@@ -7,7 +7,6 @@ class User(Model):
     email = CharField(max_length=100)
     password = CharField(max_length=100)
     activate = BooleanField(default=False)
-    display_critical_cards_n_days = IntegerField()
 
 
 class Task(Model):
