@@ -18,7 +18,7 @@ export class User {
   }
 }
 
-export class SelectedUser{
+export class UserRole{
   user:User;
   roles:Role[];
   constructor(user, roles){
@@ -35,6 +35,18 @@ export class Role{
     this.name = name;
     this.id = id;
     this.checked = false;
+  }
+
+}
+
+export class Group{
+  id:number;
+  name:string;
+  members:UserRole[];
+  constructor(name:string, members:UserRole[], id:number){
+    this.name = name;
+    this.members = members;
+    this.id = id;
   }
 
 }
