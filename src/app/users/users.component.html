@@ -49,7 +49,7 @@
 <!-- Edit user modal -->
 <div id="edit-user-modal" uk-modal>
   <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
-    <button class="uk-modal-close-default" type="button" uk-close #closeEditUserModal></button>
+    <button class="uk-modal-close-default" type="button" uk-close></button>
     <h2 class="uk-modal-title">uporabnik {{ editedUser?.firstName }} {{ editedUser?.lastName }}</h2>
     <!-- Edit user form -->
     <form (ngSubmit)="postEditUser()" [formGroup]="editUserForm">
@@ -73,6 +73,13 @@
           <label class="uk-form-label" for="email">Elektronksi naslov</label>
           <div class="uk-form-controls">
             <input class="uk-input" id="email" type="email" placeholder="Email" formControlName="email">
+          </div>
+        </div>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="password">Geslo</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="password" type="email" placeholder="Password" formControlName="password">
           </div>
         </div>
 
@@ -111,7 +118,7 @@
 <!-- Add new user modal -->
 <div id="new-user-modal" uk-modal>
   <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
-    <button class="uk-modal-close-default" type="button" uk-close #closeNewUserModal></button>
+    <button class="uk-modal-close-default" type="button" uk-close></button>
     <h2 class="uk-modal-title">Dodaj uporabnika</h2>
     <!-- Edit user form -->
     <form (ngSubmit)="postNewUser()" [formGroup]="newUserForm">
@@ -135,6 +142,13 @@
           <label class="uk-form-label" for="email">Elektronksi naslov</label>
           <div class="uk-form-controls">
             <input class="uk-input" id="email" type="email" placeholder="Email" formControlName="email">
+          </div>
+        </div>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="password">Geslo</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="password" type="email" placeholder="Password" formControlName="password">
           </div>
         </div>
 
@@ -167,10 +181,4 @@
       </fieldset>
     </form>
   </div>
-
-  <button class="uk-hidden" type="button" #notificationNewUser
-          onclick="UIkit.notification({message: 'Nov uporabnik uspešno dodan', status:'success'})"></button>
-  <button class="uk-hidden" type="button" #notificationUpdateUser
-          onclick="UIkit.notification({message: 'Uporabnik uspešno posodobljen', status:'success'})"></button>
-
 </div>
