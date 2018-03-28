@@ -21,9 +21,11 @@ export class User {
 export class UserRole{
   user:User;
   roles:Role[];
+  active:boolean;
   constructor(user, roles){
     this.roles = roles;
     this.user = user;
+    this.active = true;
   }
 }
 
