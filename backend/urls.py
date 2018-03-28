@@ -17,5 +17,6 @@ groups_urls = [
 urlpatterns = [
     url(r'^', include(users_urls)),
     url(r'^', include(roles_urls)),
-    url(r'^', include(groups_urls))
+    url(r'^', include(groups_urls)),
+    url(r'^docs/', views.schema_view)
 ]
