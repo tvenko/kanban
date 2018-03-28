@@ -2,4 +2,3 @@
 gunicorn
 psycopg2
 django-cors-headers
-django-rest-swagger

@@ -15,3 +15,5 @@ tests/report/
 *.pyc
 /.idea
 *.sqlite3
+.idea
+workplace.xml
