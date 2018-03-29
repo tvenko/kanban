@@ -47,7 +47,7 @@ class UserList(generics.ListCreateAPIView):
                 roles_query = roles.filter(id=query.role_id.id)
                 roles_list.append(roles_query[0].title)
             user_allowed_roles = UserSerializer(user).data
-            user_allowed_roles["allowed_user_roles"] = roles_list
+            user_allowed_roles["roles"] = roles_list
             user_roles.append(user_allowed_roles)
             counter += 1
         return Response(user_roles)
