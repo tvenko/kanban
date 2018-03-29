@@ -36,10 +36,9 @@ class UserList(generics.ListCreateAPIView):
     def get(self, request, **kwargs):
         roles = Role.objects.all()
         allowed_roles = AllowedRole.objects.all()
-        users = User.objects.all().order_by("password")
+        users = User.objects.all().order_by("surname")
 
         user_roles = []
-        counter = 0
         for user in users:
             roles_list = []
             allowed_roles_query = allowed_roles.filter(user_id=user.id)
@@ -49,14 +48,17 @@ class UserList(generics.ListCreateAPIView):
             user_allowed_roles = UserSerializer(user).data
             user_allowed_roles["roles"] = roles_list
             user_roles.append(user_allowed_roles)
-            counter += 1
-        return Response(user_roles)
+
+        return Response(user_roles, status=status.HTTP_202_ACCEPTED)
 
     def post(self, request, **kwargs):
         data = JSONParser().parse(request)
         serializer = UserSerializer(data=data)
 
+        success_status=False
+
         if serializer.is_valid():
+            success_status=True
             serializer.save()
 
         if "roles" in data:
@@ -66,7 +68,10 @@ class UserList(generics.ListCreateAPIView):
                 role = Role.objects.get(pk=role_id)
                 AllowedRole.objects.create(user_id=user, role_id=role)
 
-        return JsonResponse(serializer.errors, status=status.HTTP_201_CREATED)
+        if success_status:
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return JsonResponse(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 class UserUpdate(generics.UpdateAPIView):
@@ -86,7 +91,10 @@ class UserUpdate(generics.UpdateAPIView):
         data = JSONParser().parse(request)
         serializer = UserSerializer(user, data=data)
 
+        success_status=False
+
         if serializer.is_valid():
+            success_status=True
             serializer.save()
 
         if "roles" in data:
@@ -101,7 +109,10 @@ class UserUpdate(generics.UpdateAPIView):
                 if i.role_id.id not in data["roles"]:
                     i.delete()
 
-        return JsonResponse(serializer.errors, status=400)
+        if success_status:
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+        return JsonResponse(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 def get_user_group_roles(dev_group_memb_id):
@@ -134,27 +145,23 @@ class DeveloperGroupMembershipList(generics.ListCreateAPIView):
         group_memberships = DeveloperGroupMembership.objects.all()
         users = User.objects.all()
 
-        group_roles = {}
-        counter = 0
+        group_roles = []
         for group in groups:
             allowed_roles_query = group_memberships.filter(
                 developer_group_id=group.id)
             group_data = DeveloperGroupSerializer(group).data
-            user_roles_dict = {}
-            counter2 = 0
+            user_roles_dict = []
             for z in allowed_roles_query:
                 user_roles = get_user_group_roles(z.id)
                 user_details = users.filter(id=z.user_id.id)[0]
                 user_data = UserSerializer(user_details).data
                 user_data["allowed_group_roles"] = user_roles
                 user_data["group_active"] = z.active
-                user_roles_dict[counter2] = user_data
-                counter2 += 1
+                user_roles_dict.append(user_data)
             group_data["users"] = user_roles_dict
-            group_roles[counter] = group_data
-            counter += 1
+            group_roles.append(group_data)
 
-        return JsonResponse(group_roles, safe=False)
+        return Response(group_roles, status=status.HTTP_202_ACCEPTED)
 
     def post(self, request, **kwargs):
         data = JSONParser().parse(request)
@@ -162,7 +169,8 @@ class DeveloperGroupMembershipList(generics.ListCreateAPIView):
 
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+
         return JsonResponse(serializer.errors, status=400)
 
 
@@ -195,5 +203,5 @@ class RoleList(generics.ListAPIView):
         for i in roles:
             all_roles.append(i.title)
 
-        return JsonResponse(all_roles, safe=False)
+        return JsonResponse(all_roles, safe=False, status=status.HTTP_202_ACCEPTED)
 
