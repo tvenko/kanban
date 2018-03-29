@@ -23,6 +23,7 @@ export class GroupsComponent implements OnInit {
   selectedGroup: Group;
   groupName: string;
   groupNameInput: FormControl;
+  groupModalTitle: string;
 
   constructor() {
     this.users = [];
@@ -56,8 +57,7 @@ export class GroupsComponent implements OnInit {
   }
 
   editGroup(group: Group) {
-    //TODO: CARD TITLE: UREDI SKUPINO
-    //TODO: VČASIH NE DELA UREJANJE
+    this.groupModalTitle = "Uredi skupino";
     this.selectedGroup = group;
     this.groupNameInput.setValue(group.name);
     this.members = group.members;
@@ -67,6 +67,7 @@ export class GroupsComponent implements OnInit {
 
   loadModal() {
     this.groupNameInput.setValue('');
+    this.groupModalTitle = "Nova skupina";
     this.selectedGroup = null;
     this.loadRoles();
     this.loadUsers();
@@ -115,7 +116,22 @@ export class GroupsComponent implements OnInit {
 
   removeMemberfromGroup($event, member: UserRole) {
     $event.stopPropagation();
-    this.members = this.members.filter(obj => obj !== member);
+    //New group (remove user)
+    if(this.groupModalTitle == "Nova skupina"){
+      this.members = this.members.filter(obj => obj !== member);
+    //Editing group (set unactive)
+    }else{
+      if(member.roles.length == 1 && member.roles[0].id == 2){
+         member.active = false;
+      }else{
+        alert("Odstranitev uporabnika z vlogo KanbanMaster ali Product owner ni mogoča.")
+      }
+    }
+  }
+
+  addMemberBackToGroup($event, member: UserRole){
+    $event.stopPropagation();
+    member.active = true;
   }
 
   resetRoles() {

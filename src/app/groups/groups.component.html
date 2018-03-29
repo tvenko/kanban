@@ -14,12 +14,22 @@
             </div>
             <h3 class="uk-text-center uk-card-title" >{{group.name}}</h3>
             <span *ngFor="let member of group.members" >
-                <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>
-                <span *ngFor="let role of member.roles">
-                    <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
-                    <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
-                    <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
-                </span> 
+                <!-- Inactive members -->
+                <ng-container *ngIf="!member.active" class="uk-text-muted">
+                        <span>{{member.user.firstName + " " + member.user.lastName}} (neaktiven):</span>             
+                        <span *ngFor="let role of member.roles">
+                            <span>{{ role.name }}</span>
+                        </span>   
+                </ng-container>
+                <!-- Active members -->
+                <ng-container *ngIf="member.active" class="uk-text-muted"> 
+                    <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>
+                    <span *ngFor="let role of member.roles">
+                        <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
+                        <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
+                        <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
+                    </span> 
+                </ng-container> 
                 <br> 
             </span>
         </div>
@@ -29,7 +39,7 @@
     <div id="new-group-modal" uk-modal>
         <div class="uk-modal-dialog uk-modal-body uk-overflow-auto ">
             <button class="uk-modal-close-default" type="button" uk-close></button>
-            <h2 class="uk-modal-title">Nova skupina</h2>
+            <h2 class="uk-modal-title">{{groupModalTitle}}</h2>
             <!-- New group form --> 
             <form>
                 <fieldset class="uk-fieldset">   
@@ -43,7 +53,10 @@
                     <div class="uk-form-controls  uk-margin">
                         <!-- Show all users. Pass selected to function -->
                         <select class="uk-select" id="form-stacked-select" [(ngModel)]="selectedUser" (change)="resetRoles()" name="userSelect">
-                            <option *ngFor="let user of users" [ngValue]="user">{{user.firstName + " " + user.lastName}}</option>
+                            <ng-container *ngFor="let user of users">
+                                <option disabled *ngIf="!user.active" [ngValue]="user">{{user.firstName + " " + user.lastName }} (neaktiven)</option>
+                                <option *ngIf="user.active" [ngValue]="user">{{user.firstName + " " + user.lastName}}</option>
+                            </ng-container>    
                         </select>
                     </div>
                     <!-- Show all roles for selected user if user is selected. If option is selected, save selection in roles array. -->
@@ -52,20 +65,32 @@
                     </div>    
                     <!-- Save new member -->
                     <button class="uk-button uk-button-default" type="button" (click)="addMemberToGroup()">Dodaj člana</button>
-                    <!-- Show all selected users -->
+                    <!-- Show all selected users and selected roles -->
                     <hr>
                     <span *ngFor="let member of members">  
-                        <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>             
-                        <span *ngFor="let role of member.roles">
-                                <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
-                                <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
-                                <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
-                        </span>                       
-                        <button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-dark" type="button" uk-icon="close" ></button>
+                        <!-- Inactive members -->
+                        <ng-container *ngIf="!member.active" class="uk-text-muted">
+                            <span>{{member.user.firstName + " " + member.user.lastName}}</span>             
+                            <span *ngFor="let role of member.roles">
+                                <span>{{ role.name }}</span>
+                            </span>   
+                            <!-- Remove member from group -->
+                            <button (click)="addMemberBackToGroup($event,member)" class="uk-icon-link uk-dark" type="button" uk-icon="unlock" ></button>
+                        </ng-container>
+                        <!-- Active members -->
+                        <ng-container *ngIf="member.active" class="uk-text-muted">
+                            <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>             
+                            <span *ngFor="let role of member.roles">
+                                    <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
+                                    <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
+                                    <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
+                            </span>   
+                            <!-- Remove member from group -->
+                            <button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-dark" type="button" uk-icon="close" ></button>
+                        </ng-container>
                     </span>
                 </fieldset>
             </form>
-
             <p class="uk-text-right">
                 <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
                 <!-- Save group -->
