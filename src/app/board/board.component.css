@@ -1,8 +1,66 @@
-.placeholder {
-  text-align: center;
-  margin-top: 300px;
+
+.my-container {
+  margin-left: 80px;
+  margin-right: 80px;
+  display: flex;
+  justify-content: center;
 }
 
-.placeholder p {
-  color: gray;
+.board {
+  top: 40px;
+  margin: auto;
+  position: relative;
+  display: flex;
+  flex-flow: row;
+  flex-wrap: nowrap;
+  list-style: none;
+  width: 100%;
+}
+
+.board-item {
+  position: relative;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 5px 0;
+  padding: 5px 10px;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.board-item:hover {
+  color: midnightblue;
+  will-change: box-shadow;
+  cursor: pointer;
+  background: lightgray;
+  transition: box-shadow .2s cubic-bezier(.4, 0, 1, 1), background-color .2s cubic-bezier(.4, 0, .2, 1), color .2s cubic-bezier(.4, 0, .2, 1);
+  box-shadow: 0 5px 6px 0 rgba(0, 0, 0, .14), 0 3px 1px -6px rgba(0, 0, 0, .2), 2px 5px 3px 0 rgba(0, 0, 0, .12);
+}
+
+ol.coulmn {
+  border-top: 2px solid;
+  margin: 2px;
+  vertical-align: top;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .12);
+  flex-direction: column;
+  height: 800px;
+  padding: 10px;
+  border-radius: 2px;
+  overflow: hidden;
+  width: 100%;
+  min-width: 150px;
+  border-top: 5px solid
+}
+
+.cards-container {
+  height: 700px;
+  overflow-y: scroll;
+}
+
+.cards-container::-webkit-scrollbar {
+  display: none !important
 }
