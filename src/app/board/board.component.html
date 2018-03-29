@@ -1,8 +1,16 @@
 <app-main-navbar></app-main-navbar>
-<div class="uk-container">
-  <div class="placeholder">
-    <h1>This is main page for project with Kanban board!</h1>
-    <hr>
-    <p>Well it's still needs to be implemented... ¯\_(ツ)_/¯</p>
+<div class="my-container">
+  <div class="board">
+
+    <ol class="coulmn" [ngStyle]="{'border-top-color': colors[i]} " *ngFor="let column of columns; let i = index">
+      <h3>{{ column.title }}</h3>
+      <hr>
+      <div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)">
+        <li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngFor="let card of column.cards">
+          <h3>{{ card.title }}</h3>
+          <div>{{ card.content }}</div>
+        </li>
+      </div>
+    </ol>
   </div>
 </div>
