@@ -12,22 +12,22 @@
                 <button class="uk-icon-link uk-dark" uk-icon="pencil"  (click)="editGroup(group)" uk-toggle="target: #new-group-modal"></button>
                 <button class="uk-icon-link uk-dark" uk-icon="trash"  (click)="deleteGroup(group)"></button>
             </div>
-            <h3 class="uk-text-center uk-card-title" >{{group.name}}</h3>
-            <span *ngFor="let member of group.members" >
+            <h3 class="uk-text-center uk-card-title" >{{group.title}}</h3>
+            <span *ngFor="let member of group.users" >
                 <!-- Inactive members -->
-                <ng-container *ngIf="!member.active" class="uk-text-muted">
-                        <span>{{member.user.firstName + " " + member.user.lastName}} (neaktiven):</span>             
-                        <span *ngFor="let role of member.roles">
-                            <span>{{ role.name }}</span>
+                <ng-container *ngIf="!member.group_active" class="uk-text-muted">
+                        <span>{{member.name + " " + member.surname}} (neaktiven):</span>             
+                        <span *ngFor="let role of member.allowed_group_roles">
+                            <span>{{ role }}</span>
                         </span>   
                 </ng-container>
                 <!-- Active members -->
-                <ng-container *ngIf="member.active" class="uk-text-muted"> 
-                    <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>
-                    <span *ngFor="let role of member.roles">
-                        <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
-                        <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
-                        <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
+                <ng-container *ngIf="member.group_active" class="uk-text-muted"> 
+                    <span class="uk-text-primary">{{member.name + " " + member.surname}}</span>
+                    <span *ngFor="let role of member.allowed_group_roles">
+                        <span class="uk-label uk-label-success" *ngIf="role == 'product owner'">{{ role }}</span>
+                        <span class="uk-label uk-label-warning" *ngIf="role == 'kanban master'">{{ role }}</span>
+                        <span class="uk-label" *ngIf="role == 'developer'">{{ role }}</span>
                     </span> 
                 </ng-container> 
                 <br> 
@@ -54,14 +54,19 @@
                         <!-- Show all users. Pass selected to function -->
                         <select class="uk-select" id="form-stacked-select" [(ngModel)]="selectedUser" (change)="resetRoles()" name="userSelect">
                             <ng-container *ngFor="let user of users">
-                                <option disabled *ngIf="!user.active" [ngValue]="user">{{user.firstName + " " + user.lastName }} (neaktiven)</option>
-                                <option *ngIf="user.active" [ngValue]="user">{{user.firstName + " " + user.lastName}}</option>
+                                <option disabled *ngIf="!user.activate" [ngValue]="user">{{user.name + " " + user.surname }} (neaktiven)</option>
+                                <option *ngIf="user.activate" [ngValue]="user">{{user.name + " " + user.surname}}</option>
                             </ng-container>    
                         </select>
                     </div>
                     <!-- Show all roles for selected user if user is selected. If option is selected, save selection in roles array. -->
                     <div *ngIf="selectedUser" class="uk-margin uk-grid-small uk-child-width-auto uk-grid"> 
-                        <label  *ngFor="let vloga of selectedUser.roles"><input class="uk-checkbox" type="checkbox" name="rolesCheckboxes" [(ngModel)]="roles[vloga].checked"> {{roles[vloga].name}}</label>
+                            <!-- [(ngModel)]="roles[vloga].checked"> -->
+                        <ng-container *ngFor="let vloga of selectedUser.roles">
+                            <label *ngIf="vloga != 'admin'" >
+                                <input class="uk-checkbox" type="checkbox" [(ngModel)]="roles[vloga]" name="selectedRoleOption"> {{vloga}}
+                            </label>
+                        </ng-container>
                     </div>    
                     <!-- Save new member -->
                     <button class="uk-button uk-button-default" type="button" (click)="addMemberToGroup()">Dodaj člana</button>
@@ -69,22 +74,22 @@
                     <hr>
                     <span *ngFor="let member of members">  
                         <!-- Inactive members -->
-                        <ng-container *ngIf="!member.active" class="uk-text-muted">
-                            <span>{{member.user.firstName + " " + member.user.lastName}}</span>             
-                            <span *ngFor="let role of member.roles">
-                                <span>{{ role.name }}</span>
+                        <ng-container *ngIf="!member.group_active" class="uk-text-muted">
+                            <span>{{member.name + " " + member.surname}}</span>             
+                            <span *ngFor="let role of member.allowed_group_roles">
+                                <span>{{ role }}</span>
                             </span>   
                             <!-- Remove member from group -->
                             <button (click)="addMemberBackToGroup($event,member)" class="uk-icon-link uk-dark" type="button" uk-icon="unlock" ></button>
                         </ng-container>
                         <!-- Active members -->
-                        <ng-container *ngIf="member.active" class="uk-text-muted">
-                            <span class="uk-text-primary">{{member.user.firstName + " " + member.user.lastName}}</span>             
-                            <span *ngFor="let role of member.roles">
-                                    <span class="uk-label uk-label-success" *ngIf="role.id == 1">{{ role.name }}</span>
-                                    <span class="uk-label uk-label-warning" *ngIf="role.id == 0">{{ role.name }}</span>
-                                    <span class="uk-label" *ngIf="role.id == 2">{{ role.name }}</span>
-                            </span>   
+                        <ng-container *ngIf="member.group_active" class="uk-text-muted">
+                            <span class="uk-text-primary">{{member.name+ " " + member.surname}}</span>             
+                            <span *ngFor="let role of member.allowed_group_roles">
+                                    <span class="uk-label uk-label-success" *ngIf="role == 'product owner'">{{ role }}</span>
+                                    <span class="uk-label uk-label-warning" *ngIf="role == 'kanban master'">{{ role }}</span>
+                                    <span class="uk-label" *ngIf="role == 'developer'">{{ role }}</span>
+                            </span> 
                             <!-- Remove member from group -->
                             <button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-dark" type="button" uk-icon="close" ></button>
                         </ng-container>

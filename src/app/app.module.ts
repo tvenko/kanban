@@ -17,6 +17,7 @@ import { ProjectsComponent } from './projects/projects.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {UsersService} from './shared/services/users.service';
 import {HttpClientModule} from '@angular/common/http';
+import { GroupsService } from './shared/services/groups.service';
 
 
 @NgModule({
@@ -40,7 +41,7 @@ import {HttpClientModule} from '@angular/common/http';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [UsersService],
+  providers: [UsersService, GroupsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
