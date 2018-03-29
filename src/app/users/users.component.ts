@@ -19,7 +19,6 @@ export class UsersComponent implements OnInit {
   users: User[];
   editUserForm: FormGroup;
   newUserForm: FormGroup;
-  test: any;
 
   constructor(private usersService: UsersService) { }
 
@@ -44,6 +43,10 @@ export class UsersComponent implements OnInit {
       'kanbanMaster': new FormControl(null),
       'admin': new FormControl(null)
     });
+    this.getUsers();
+  }
+
+  getUsers() {
     this.usersService.getUsers().subscribe(users => {
       this.users = <User[]> users;
       for (let i = 0; i < this.users.length; i++) {
@@ -69,37 +72,43 @@ export class UsersComponent implements OnInit {
   }
 
   postEditUser() {
-    const index = this.users.indexOf(this.editedUser);
     const roles = [];
     if (this.editUserForm.get('developer').value) {
-      roles.push('developer');
+      roles.push(1);
     }
     if (this.editUserForm.get('productOwner').value) {
-      roles.push('product owner');
+      roles.push(2);
     }
     if (this.editUserForm.get('kanbanMaster').value) {
-      roles.push('kanban master');
+      roles.push(3);
     }
     if (this.editUserForm.get('admin').value) {
-      roles.push('admin');
+      roles.push(4);
     }
     if (roles.length > 0) {
-      this.users[index] = {
-        id_user: this.editedUser.id_user,
-        name: this.editUserForm.get('nameame').value,
+      const user: User = {
+        id: this.editedUser.id,
+        name: this.editUserForm.get('name').value,
         surname: this.editUserForm.get('surname').value,
         email: this.editUserForm.get('email').value,
         password: this.editUserForm.get('password').value,
         roles: roles,
         activate: this.editedUser.activate
       };
-      this.editedUser = null;
-      this.error = null;
-      UIkit.modal('edit-user-modal').hide();
-      UIkit.notification(
-        'Uporabnik ' + this.editedUser.name + ' ' + this.editedUser.surname + 'je uspešno posodobljen',
-        {status: 'success', timeout: 2000}
+      console.log(user.id, this.editedUser.id);
+      this.usersService.updateUser(user, user.id).subscribe(res => {
+        UIkit.modal('#edit-user-modal').hide();
+        UIkit.notification(
+          'Uporabnik ' + user.name + ' ' + user.surname + ' je uspešno posodobljen',
+          {status: 'success', timeout: 2000}
         );
+        this.getUsers();
+        this.editedUser = null;
+        this.error = null;
+      }, err => {
+        this.error = 'Uporabnika ' + user.name + ' ' + user.surname +
+          ' ni bilo mogoče posodobiti. Nekaj se je zalomilo na strežniku, prosimo poskusite kasneje.';
+      });
     } else {
       this.error = 'Izbrati morate vsaj eno uporabniško vlogo';
     }
@@ -108,20 +117,20 @@ export class UsersComponent implements OnInit {
   postNewUser() {
     const roles = [];
     if (this.newUserForm.get('developer').value) {
-      roles.push('developer');
+      roles.push(1);
     }
     if (this.newUserForm.get('productOwner').value) {
-      roles.push('product owner');
+      roles.push(2);
     }
     if (this.newUserForm.get('kanbanMaster').value) {
-      roles.push('kanban master');
+      roles.push(3);
     }
     if (this.newUserForm.get('admin').value) {
-      roles.push('admin');
+      roles.push(4);
     }
     if (roles.length > 0) {
       const newUser: User = {
-        id_user: null,
+        id: null,
         name: this.newUserForm.get('name').value,
         surname: this.newUserForm.get('surname').value,
         email: this.newUserForm.get('email').value,
@@ -134,6 +143,7 @@ export class UsersComponent implements OnInit {
         this.users.push(newUser);
         UIkit.modal('#new-user-modal').hide();
         UIkit.notification('Nov uporabnik uspešno dodan', {status: 'success', timeout: 2000});
+        this.getUsers();
       }, err => {
         this.error = 'Uporabnika ni bilo mogoče registrirati. Nekaj se je zalomilo na strežniku, prosimo poskusite kasneje.';
       });
@@ -143,13 +153,66 @@ export class UsersComponent implements OnInit {
   }
 
   lockUser(user: User) {
-    user.activate = false;
-    // TODO: save to database
+    const lockedUser: User = {
+      id: user.id,
+      name: user.name,
+      surname: user.surname,
+      email: user.email,
+      password: user.password,
+      roles: this.rolesMapper(user.roles),
+      activate: false
+    };
+    this.usersService.updateUser(lockedUser, lockedUser.id).subscribe(
+      res => user.activate = false,
+      err => console.log('ERROR locking user')
+      );
   }
 
   unlockUser(user: User) {
-    user.activate = true;
-    // TODO: save to database
+    const unlockedUser: User = {
+      id: user.id,
+      name: user.name,
+      surname: user.surname,
+      email: user.email,
+      password: user.password,
+      roles: this.rolesMapper(user.roles),
+      activate: true
+    };
+    this.usersService.updateUser(unlockedUser, unlockedUser.id).subscribe(
+      res => user.activate = true,
+      err => console.log('ERROR unlocking user')
+    );
   }
 
+  closeModal() {
+    this.editedUser = null;
+    this.error = null;
+  }
+
+  private rolesMapper(roles: string[]) {
+    const mappedRoles = [];
+    console.log(roles[0]);
+    for (const role of roles) {
+      console.log(role);
+      switch (role) {
+        case 'developer': {
+          mappedRoles.push(1);
+          break;
+        }
+        case 'product owner': {
+          mappedRoles.push(2);
+          break;
+        }
+        case 'kanban master': {
+          mappedRoles.push(3);
+          break;
+        }
+        case 'admin': {
+          mappedRoles.push(4);
+          break;
+        }
+      }
+    }
+    return mappedRoles;
+  }
 }

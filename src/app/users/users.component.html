@@ -49,37 +49,37 @@
 <!-- Edit user modal -->
 <div id="edit-user-modal" uk-modal>
   <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
-    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <button class="uk-modal-close-default" type="button" uk-close (click)="closeModal()"></button>
     <h2 class="uk-modal-title">uporabnik {{ editedUser?.name }} {{ editedUser?.surname }}</h2>
     <!-- Edit user form -->
     <form (ngSubmit)="postEditUser()" [formGroup]="editUserForm">
       <fieldset class="uk-fieldset">
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="name">Ime</label>
+          <label class="uk-form-label" for="edit-name">Ime</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="name" type="text" placeholder="Ime" formControlName="name">
+            <input class="uk-input" id="edit-name" type="text" placeholder="Ime" formControlName="name">
           </div>
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="surname">Priimek</label>
+          <label class="uk-form-label" for="edit-surname">Priimek</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="surname" type="text" placeholder="Priimek" formControlName="surname">
+            <input class="uk-input" id="edit-surname" type="text" placeholder="Priimek" formControlName="surname">
           </div>
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="email">Elektronksi naslov</label>
+          <label class="uk-form-label" for="edit-email">Elektronksi naslov</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="email" type="email" placeholder="Email" formControlName="email">
+            <input class="uk-input" id="edit-email" type="email" placeholder="Email" formControlName="email">
           </div>
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="password">Geslo</label>
+          <label class="uk-form-label" for="edit-password">Geslo</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="password" type="text" placeholder="Password" formControlName="password">
+            <input class="uk-input" id="edit-password" type="text" placeholder="Password" formControlName="password">
           </div>
         </div>
 
@@ -106,7 +106,7 @@
         </div>
 
         <div class="uk-text-right">
-          <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
+          <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
           <button class="uk-button uk-button-primary" type="submit" [disabled]="!editUserForm.valid">Shrani</button>
         </div>
       </fieldset>
@@ -118,37 +118,37 @@
 <!-- Add new user modal -->
 <div id="new-user-modal" uk-modal>
   <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
-    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <button class="uk-modal-close-default" type="button" uk-close (click)="closeModal()"></button>
     <h2 class="uk-modal-title">Dodaj uporabnika</h2>
     <!-- Edit user form -->
     <form (ngSubmit)="postNewUser()" [formGroup]="newUserForm">
       <fieldset class="uk-fieldset">
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="name">Ime</label>
+          <label class="uk-form-label" for="new-name">Ime</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="name" type="text" placeholder="Ime" formControlName="name">
+            <input class="uk-input" id="new-name" type="text" placeholder="Ime" formControlName="name">
           </div>
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="surname">Priimek</label>
+          <label class="uk-form-label" for="new-surname">Priimek</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="surname" type="text" placeholder="Priimek" formControlName="surname">
+            <input class="uk-input" id="new-surname" type="text" placeholder="Priimek" formControlName="surname">
           </div>
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="email">Elektronksi naslov</label>
+          <label class="uk-form-label" for="new-email">Elektronksi naslov</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="email" type="email" placeholder="Email" formControlName="email">
+            <input class="uk-input" id="new-email" type="email" placeholder="Email" formControlName="email">
           </div>
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="password">Geslo</label>
+          <label class="uk-form-label" for="new-password">Geslo</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="password" type="text" placeholder="Password" formControlName="password">
+            <input class="uk-input" id="new-password" type="text" placeholder="Password" formControlName="password">
           </div>
         </div>
 
@@ -175,7 +175,7 @@
         </div>
 
         <div class="uk-text-right">
-          <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
+          <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
           <button class="uk-button uk-button-primary" type="submit" [disabled]="!newUserForm.valid">Shrani</button>
         </div>
       </fieldset>
