@@ -2,8 +2,11 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole
-from backend.serializers import UserSerializer, DeveloperGroupSerializer
-
+from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import generics
 
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from rest_framework.decorators import api_view, renderer_classes
@@ -14,21 +17,28 @@ from . import urls
 @api_view()
 @renderer_classes([SwaggerUIRenderer, OpenAPIRenderer])
 def schema_view(request):
+    """
+    Schema for swagger
+    """
+
     generator = schemas.SchemaGenerator(title='API Docs', patterns=urls.urlpatterns, url='/api/v1/')
     return response.Response(generator.get_schema())
 
 
-@csrf_exempt
-def user_list(request):
+class UserList(generics.ListCreateAPIView):
     """
     List all users, or create a new one.
     """
-    if request.method == 'GET':
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, **kwargs):
         roles = Role.objects.all()
         allowed_roles = AllowedRole.objects.all()
-        users = User.objects.all()
+        users = User.objects.all().order_by("password")
 
-        user_roles = {}
+        user_roles = []
         counter = 0
         for user in users:
             roles_list = []
@@ -38,59 +48,67 @@ def user_list(request):
                 roles_list.append(roles_query[0].title)
             user_allowed_roles = UserSerializer(user).data
             user_allowed_roles["allowed_user_roles"] = roles_list
-            user_roles[counter] = user_allowed_roles
+            user_roles.append(user_allowed_roles)
             counter += 1
+        return Response(user_roles)
 
-        return JsonResponse(user_roles, safe=False)
-
-    elif request.method == 'POST':
+    def post(self, request, **kwargs):
         data = JSONParser().parse(request)
         serializer = UserSerializer(data=data)
 
         if serializer.is_valid():
             serializer.save()
 
-        user_id = serializer.data["id"]
-        for role_id in data["roles"]:
-            user = User.objects.get(pk=user_id)
-            role = Role.objects.get(pk=role_id)
-            AllowedRole.objects.create(user_id=user, role_id=role)
+        if "roles" in data:
+            user_id = serializer.data["id"]
+            for role_id in data["roles"]:
+                user = User.objects.get(pk=user_id)
+                role = Role.objects.get(pk=role_id)
+                AllowedRole.objects.create(user_id=user, role_id=role)
 
-        return JsonResponse(serializer.errors, status=400)
+        return JsonResponse(serializer.errors, status=status.HTTP_201_CREATED)
 
 
-@csrf_exempt
-def user_detail(request, pk):
+class UserUpdate(generics.UpdateAPIView):
     """
-    Retrieve, update or delete a user.
+    Update user.
     """
 
-    try:
-        user = User.objects.get(pk=pk)
-    except User.DoesNotExist:
-        return HttpResponse(status=404)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-    if request.method == 'GET':
-        serializer = UserSerializer(user)
-        return JsonResponse(serializer.data)
+    def put(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(pk=kwargs["pk"])
+        except User.DoesNotExist:
+            return HttpResponse(status=404)
 
-    elif request.method == 'PUT':
         data = JSONParser().parse(request)
         serializer = UserSerializer(user, data=data)
+
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
 
-    elif request.method == 'DELETE':
-        user.delete()
-        return HttpResponse(status=204)
+        if "roles" in data:
+            user_id = serializer.data["id"]
+            allowed_roles = AllowedRole.objects.filter(user_id=user_id)
+            for role in data["roles"]:
+                if role not in list(allowed_roles.values_list('role_id', flat=True)):
+                    user = User.objects.get(pk=user_id)
+                    roles = Role.objects.get(pk=role)
+                    AllowedRole.objects.create(user_id=user, role_id=roles)
+            for i in allowed_roles:
+                if i.role_id.id not in data["roles"]:
+                    i.delete()
+
+        return JsonResponse(serializer.errors, status=400)
 
 
 def get_user_group_roles(dev_group_memb_id):
     """
     Get all user roles on DeveloperGroup
     """
+
     roles = Role.objects.all()
     group_roles = GroupRole.objects.all()
 
@@ -103,12 +121,15 @@ def get_user_group_roles(dev_group_memb_id):
     return roles_list
 
 
-@csrf_exempt
-def group_list(request):
+class DeveloperGroupMembershipList(generics.ListCreateAPIView):
     """
-    List all users roles.
+    List all developer group memberships, or create a new one.
     """
-    if request.method == 'GET':
+
+    queryset = DeveloperGroupMembership.objects.all()
+    serializer_class = DeveloperGroupMembershipSerializer
+
+    def get(self, request, **kwargs):
         groups = DeveloperGroup.objects.all()
         group_memberships = DeveloperGroupMembership.objects.all()
         users = User.objects.all()
@@ -116,7 +137,8 @@ def group_list(request):
         group_roles = {}
         counter = 0
         for group in groups:
-            allowed_roles_query = group_memberships.filter(developer_group_id=group.id)
+            allowed_roles_query = group_memberships.filter(
+                developer_group_id=group.id)
             group_data = DeveloperGroupSerializer(group).data
             user_roles_dict = {}
             counter2 = 0
@@ -134,13 +156,39 @@ def group_list(request):
 
         return JsonResponse(group_roles, safe=False)
 
+    def post(self, request, **kwargs):
+        data = JSONParser().parse(request)
+        serializer = DeveloperGroupSerializer(data=data)
 
-@csrf_exempt
-def all_roles_list(request):
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+
+class DeveloperGroupList(generics.ListAPIView):
     """
-    List all roles.
+    List all groups.
     """
-    if request.method == 'GET':
+
+    queryset = DeveloperGroup.objects.all()
+    serializer_class = DeveloperGroupSerializer
+
+
+class DeveloperGroupDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a developer group.
+    """
+    queryset = DeveloperGroup.objects.all()
+    serializer_class = DeveloperGroupSerializer
+
+
+class RoleList(generics.ListAPIView):
+    """
+    List all roles, or create a new one.
+    """
+
+    def get(self, request, *args, **kwargs):
         roles = Role.objects.all()
 
         all_roles = []
@@ -148,3 +196,4 @@ def all_roles_list(request):
             all_roles.append(i.title)
 
         return JsonResponse(all_roles, safe=False)
+

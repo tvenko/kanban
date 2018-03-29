@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import User, Role, AllowedRole, DeveloperGroup
+from . models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -27,4 +27,10 @@ class DeveloperGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DeveloperGroup
+        fields = '__all__'
+
+class DeveloperGroupMembershipSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DeveloperGroupMembership
         fields = '__all__'
