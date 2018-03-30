@@ -127,7 +127,7 @@ def get_user_group_roles(dev_group_memb_id):
     group_roles_query = group_roles.filter(developer_group_membership_id=dev_group_memb_id)
     for query in group_roles_query:
         roles_query = roles.filter(id=query.role_id.id)
-        roles_list.append(roles_query[0].title)
+        roles_list.append(roles_query[0].id)
 
     return roles_list
 
