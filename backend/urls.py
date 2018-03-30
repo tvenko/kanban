@@ -13,7 +13,6 @@ roles_urls = [
 groups_urls = [
     url(r'^groups/(?P<pk>[0-9]+)/$', views.DeveloperGroupDetail.as_view()),
     url(r'^groups/$', views.DeveloperGroupList.as_view()),
-    url(r'^groups_membership/$', views.DeveloperGroupMembershipList.as_view())
 ]
 
 urlpatterns = [

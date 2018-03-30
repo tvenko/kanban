@@ -21,7 +21,7 @@ def schema_view(request):
     Schema for swagger
     """
 
-    generator = schemas.SchemaGenerator(title='API Docs', patterns=urls.urlpatterns, url='/api/v1/')
+    generator = schemas.SchemaGenerator(title='API Docs', patterns=urls.urlpatterns, url='/')
     return response.Response(generator.get_schema())
 
 
@@ -132,13 +132,13 @@ def get_user_group_roles(dev_group_memb_id):
     return roles_list
 
 
-class DeveloperGroupMembershipList(generics.ListCreateAPIView):
+class DeveloperGroupList(generics.ListCreateAPIView):
     """
-    List all developer group memberships, or create a new one.
+    List all groups.
     """
 
-    queryset = DeveloperGroupMembership.objects.all()
-    serializer_class = DeveloperGroupMembershipSerializer
+    queryset = DeveloperGroup.objects.all()
+    serializer_class = DeveloperGroupSerializer
 
     def get(self, request, **kwargs):
         groups = DeveloperGroup.objects.all()
@@ -165,30 +165,105 @@ class DeveloperGroupMembershipList(generics.ListCreateAPIView):
 
     def post(self, request, **kwargs):
         data = JSONParser().parse(request)
-        serializer = DeveloperGroupSerializer(data=data)
+        developer_group_title=data["title"]
+        developer_group = DeveloperGroup(title=developer_group_title)
+        developer_group.save()
 
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        for user_data in data["users"]:
+            user = User.objects.get(pk=user_data["id"])
+            developer_group = DeveloperGroup.objects.get(pk=developer_group.id)
+            developer_group_membership = DeveloperGroupMembership(user_id=user, developer_group_id=developer_group, active=user_data["group_active"])
+            developer_group_membership.save()
 
-        return JsonResponse(serializer.errors, status=400)
+            for group_role in user_data["allowed_group_roles"]:
+                role = Role.objects.get(pk=group_role)
+                GroupRole.objects.create(developer_group_membership_id=developer_group_membership, role_id=role)
 
+        return Response(data=None, status=status.HTTP_200_OK)
 
-class DeveloperGroupList(generics.ListAPIView):
-    """
-    List all groups.
-    """
-
-    queryset = DeveloperGroup.objects.all()
-    serializer_class = DeveloperGroupSerializer
-
-
+from datetime import datetime
 class DeveloperGroupDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update or delete a developer group.
     """
+
     queryset = DeveloperGroup.objects.all()
     serializer_class = DeveloperGroupSerializer
+
+    def get(self, request, **kwargs):
+        group = DeveloperGroup.objects.get(pk=kwargs["pk"])
+        group_memberships = DeveloperGroupMembership.objects.all()
+        users = User.objects.all()
+
+        group_roles = []
+        allowed_roles_query = group_memberships.filter(
+            developer_group_id=group.id)
+        group_data = DeveloperGroupSerializer(group).data
+        user_roles_dict = []
+        for z in allowed_roles_query:
+            user_roles = get_user_group_roles(z.id)
+            user_details = users.filter(id=z.user_id.id)[0]
+            user_data = UserSerializer(user_details).data
+            user_data["allowed_group_roles"] = user_roles
+            user_data["group_active"] = z.active
+            user_roles_dict.append(user_data)
+        group_data["users"] = user_roles_dict
+        group_roles.append(group_data)
+
+        return Response(group_roles, status=status.HTTP_202_ACCEPTED)
+
+    def put(self, request, *args, **kwargs):
+        data = JSONParser().parse(request)
+        group = DeveloperGroup.objects.get(pk=kwargs["pk"])
+        group.title = data["title"]
+        group.save()
+
+        developer_group_membership_list = list(
+            DeveloperGroupMembership.objects.filter(
+                developer_group_id=kwargs["pk"]).values_list('user_id',
+                                                             flat=True))
+
+        developer_group_membership = DeveloperGroupMembership.objects.filter(
+            developer_group_id=kwargs["pk"])
+
+        for user_data in data["users"]:
+            user_id = user_data["id"]
+
+            if user_id not in developer_group_membership_list:
+                user = User.objects.get(pk=user_id)
+                developer_group = DeveloperGroup.objects.get(
+                    pk=kwargs["pk"])
+                developer_group_membership = DeveloperGroupMembership(
+                    user_id=user, developer_group_id=developer_group,
+                    active=user_data["group_active"])
+                developer_group_membership.save()
+
+                for group_role in user_data["allowed_group_roles"]:
+                    role = Role.objects.get(pk=group_role)
+                    GroupRole.objects.create(
+                        developer_group_membership_id=developer_group_membership,
+                        role_id=role)
+            else:
+                developer_group_membership_user = developer_group_membership.get(user_id=user_id)
+                if developer_group_membership_user.active == False and user_data["group_active"] == True:
+                    developer_group_membership_user.deleted_at = None
+                else:
+                    developer_group_membership_user.deleted_at = datetime.now()
+                developer_group_membership_user.active = user_data["group_active"]
+                developer_group_membership_user.save()
+
+                allowed_roles = GroupRole.objects.filter(developer_group_membership_id=developer_group_membership_user.id)
+
+                for role in user_data["allowed_group_roles"]:
+                    if role not in list(
+                            allowed_roles.values_list('role_id', flat=True)):
+                        roles = Role.objects.get(pk=role)
+                        GroupRole.objects.create(developer_group_membership_id=developer_group_membership_user, role_id=roles)
+                for i in allowed_roles:
+                    if i.role_id.id not in user_data["allowed_group_roles"]:
+                        i.delete()
+
+        return Response(data=None, status=status.HTTP_200_OK)
 
 
 class RoleList(generics.ListAPIView):

@@ -73,8 +73,8 @@ class DeveloperGroup(Model):
 class DeveloperGroupMembership(Model):
     user_id = ForeignKey('User', on_delete=CASCADE)
     developer_group_id = ForeignKey('DeveloperGroup', on_delete=CASCADE)
-    created_at = DateTimeField()
-    deleted_at = DateTimeField()
+    created_at = DateTimeField(auto_now_add=True)
+    deleted_at = DateTimeField(null=True, blank=True)
     active = BooleanField(default=False)
 
 
