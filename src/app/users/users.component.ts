@@ -105,6 +105,7 @@ export class UsersComponent implements OnInit {
         this.getUsers();
         this.editedUser = null;
         this.error = null;
+        this.editUserForm.reset();
       }, err => {
         this.error = 'Uporabnika ' + user.name + ' ' + user.surname +
           ' ni bilo mogoče posodobiti. Nekaj se je zalomilo na strežniku, prosimo poskusite kasneje.';
@@ -143,6 +144,7 @@ export class UsersComponent implements OnInit {
         this.users.push(newUser);
         UIkit.modal('#new-user-modal').hide();
         UIkit.notification('Nov uporabnik uspešno dodan', {status: 'success', timeout: 2000});
+        this.newUserForm.reset();
         this.getUsers();
       }, err => {
         this.error = 'Uporabnika ni bilo mogoče registrirati. Nekaj se je zalomilo na strežniku, prosimo poskusite kasneje.';
@@ -187,6 +189,8 @@ export class UsersComponent implements OnInit {
   closeModal() {
     this.editedUser = null;
     this.error = null;
+    this.newUserForm.reset();
+    this.editUserForm.reset();
   }
 
   private rolesMapper(roles: string[]) {
