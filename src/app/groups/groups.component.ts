@@ -1,8 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-//import { User, } from './extraClasses';
-import { UserRole } from './extraClasses';
-import { Role } from './extraClasses';
-//import { Group } from './extraClasses';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {GroupsService} from '../shared/services/groups.service';
 import {Group, GroupMember} from '../shared/models/group.interface';
@@ -21,7 +17,7 @@ declare var UIkit: any;
 export class GroupsComponent implements OnInit {
 
   users: User[];
-  roles: {[name:string] : boolean;} = {};
+  roles: {[id:number] : boolean;} = {};
   selectedUser: User;
   members: GroupMember[];
   groups: Group[];
@@ -29,6 +25,7 @@ export class GroupsComponent implements OnInit {
   groupName: string;
   groupNameInput: FormControl;
   groupModalTitle: string;
+  roleNames = ["", "Razvijalec", "Product owner", "Kanban master"];
 
   constructor(private groupsService: GroupsService, private usersService: UsersService) {
     this.users = [];
@@ -66,7 +63,7 @@ export class GroupsComponent implements OnInit {
   }
 
   editGroup(group: Group) {
-    
+    this.loadUsers();
     this.groupModalTitle = "Uredi skupino";
     this.selectedGroup = group;
     this.groupNameInput.setValue(group.title);
@@ -89,9 +86,9 @@ export class GroupsComponent implements OnInit {
   loadRoles() {
     //this.roles = [new Role('KanbanMaster', 0), new Role('Product owner', 1), new Role('Razvijalec', 2)];
     this.roles = {
-      "developer" : false,
-      "kanban master" : false ,
-      "product owner" : false ,
+      1 : false, //Developer
+      2 : false, //Product owner
+      3 : false, //Kanban master
     };
   }
 
@@ -113,22 +110,22 @@ export class GroupsComponent implements OnInit {
   //Add selected member with selected roles to group
   addMemberToGroup() {
     //Check restrictions (only one KanbanMaster and only one Produt owner and at least one role is selected)
-    let selectedRoles:string[] = [];
+    let selectedRoles:number[] = [];
     for (let role in this.roles) {
       if (this.roles[role]){
-         selectedRoles.push(role);
+        selectedRoles.push(parseInt(role));
       }
     }
+
     if (selectedRoles.length == 0) {
       alert('Izberi vsaj eno vlogo.');
     } else if (this.members.filter(obj => obj.id == this.selectedUser.id).length != 0) {
       alert('Uporabnik je v skupini.');
-    } else if (this.roles["kanban master"] && this.members.filter(obj => obj.allowed_group_roles.includes("kanban master")).length != 0) {
+    } else if (this.roles[3] && this.members.filter(obj => obj.allowed_group_roles.includes(3) && obj.group_active).length != 0) {
       alert('Vloga KanbanMaster je že zasedena!');
-    } else if (this.roles["product owner"] && this.members.filter(obj => obj.allowed_group_roles.includes("product owner")).length != 0) {
+    } else if (this.roles[2] && this.members.filter(obj => obj.allowed_group_roles.includes(2) && obj.group_active).length != 0) {
       alert('Vloga Product owner je že zasedena!');
     } else {
-      //TODO: kako dodam userja
       const groupMember: GroupMember = {
         group_active: true,
         allowed_group_roles:selectedRoles,
@@ -140,8 +137,6 @@ export class GroupsComponent implements OnInit {
         password:this.selectedUser.password};
 
       this.members.push(groupMember);
-
-      //this.members.push(new GroupMember(this.selectedUser,  this.roles.filter(function(role) { return role.checked; })));
     }
     //Reset roles
     this.resetRoles();
@@ -154,17 +149,25 @@ export class GroupsComponent implements OnInit {
       this.members = this.members.filter(obj => obj !== member);
     //Editing group (set unactive)
     }else{
-      if(member.allowed_group_roles.length == 1 && member.allowed_group_roles[0] == "developer"){
+      if(!member.allowed_group_roles.includes(3)){
          member.group_active = false;
       }else{
-        alert("Odstranitev uporabnika z vlogo KanbanMaster ali Product owner ni mogoča.")
+        alert("Odstranitev uporabnika z vlogo KanbanMaster ni mogoča.")
       }
     }
   }
 
-  addMemberBackToGroup($event, member: UserRole){
+  addMemberBackToGroup($event, member: GroupMember){
     $event.stopPropagation();
-    member.active = true;
+    //Allow back to group if role is not taken
+    if(member.allowed_group_roles.includes(2) && this.members.filter(obj => obj.allowed_group_roles.includes(2) && obj.group_active).length > 0
+    || member.allowed_group_roles.includes(3) && this.members.filter(obj => obj.allowed_group_roles.includes(3) && obj.group_active).length > 0)
+    {
+      alert("Že obstaja uporabnik z to vlogo.")
+    }else{
+      member.group_active = true;
+    }
+    
   }
 
   resetRoles() {
@@ -176,38 +179,52 @@ export class GroupsComponent implements OnInit {
   saveGroup() {
     if (this.groupNameInput.value == '') {
       alert('Vnesi ime skupine.');
-    } else if (this.members.filter(obj => obj.allowed_group_roles.includes("kanban master")).length == 0 || this.members.filter(obj => obj.allowed_group_roles.includes("product owner")).length == 0 || this.members.filter(obj => obj.allowed_group_roles.includes("developer")).length == 0) {
+    } else if (this.members.filter(obj => obj.allowed_group_roles.includes(3) && obj.group_active).length == 0 || this.members.filter(obj => obj.allowed_group_roles.includes(2) && obj.group_active).length == 0 || this.members.filter(obj => obj.allowed_group_roles.includes(1) && obj.group_active).length == 0) {
       alert('Skupina mora vsebovati enega Product ownerja, enega KanbanMastra ter vsaj enega razvijalca.');
     } else {
       if (this.selectedGroup != null) {
+        //Create object
+        const group: Group = {
+          id:this.selectedGroup.id,
+          title:this.groupName,
+          users:this.members
+        };
         //Update group
-        //TODO: update groups
-        /*this.groups = this.groups.filter(obj => obj !== this.selectedGroup);
-        this.groups.push(new Group(this.groupName, this.members, 10));
-        UIkit.modal('#new-group-modal').hide();
-        UIkit.notification('Skupina urejena.', {status: 'success', timeout: 2000});
-        UIkit.modal('#new-group-modal').hide();*/
+        this.groupsService.updateGroup(group).subscribe(res => {        
+          UIkit.modal('#new-group-modal').hide();
+          UIkit.notification('Skupina urejena.', {status: 'success', timeout: 2000});
+          UIkit.modal('#new-group-modal').hide();
+          this.loadGroups();
+        }, err => {
+          UIkit.notification('Napaka pri urejanju skupine.', {status: 'danger', timeout: 2000});
+          console.log(err);
+        }); 
+
+
       } else {
         //New group
-        //TODO: post groups
-        //this.groups.push(new Group(this.groupName, this.members, 10));
+        //Create object
         const group: Group = {
           id:null,
           title:this.groupName,
           users:this.members
-          };
-          this.groupsService.postGroup(group).subscribe(res => {        
-            UIkit.modal('#new-group-modal').hide();
-            UIkit.notification('Skupina dodana.', {status: 'success', timeout: 2000});
-            UIkit.modal('#new-group-modal').hide();
-          }, err => {
-            console.log('Error saving new group');
-          });  
-
-      }
-      //TODO: get groups
-      this.loadGroups();
+        };
+        //Send request
+        this.groupsService.postGroup(group).subscribe(res => {        
+          UIkit.modal('#new-group-modal').hide();
+          UIkit.notification('Skupina dodana.', {status: 'success', timeout: 2000});
+          UIkit.modal('#new-group-modal').hide();
+          this.loadGroups();
+        }, err => {
+          UIkit.notification('Napaka pri dodajanju nove skupine.', {status: 'danger', timeout: 2000});
+          console.log(err);
+        });  
+      }    
     }
+
   }
 
+    cancelGroup(){
+      this.loadGroups();
+    }
 }

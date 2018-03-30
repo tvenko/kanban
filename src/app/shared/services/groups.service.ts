@@ -9,7 +9,7 @@ export class GroupsService {
   constructor(private http: HttpClient) { }
 
   getGroups() {
-    return this.http.get(Config.API + '/groups_membership/');
+    return this.http.get(Config.API + '/groups/');
   }
 
   deleteGroup(id:number){
@@ -20,5 +20,10 @@ export class GroupsService {
     return this.http.post(Config.API + '/groups/', group);
   }
 
+  updateGroup(group:Group){
+    return this.http.put(Config.API + '/groups/' + group.id + "/", group);
+  }
+
 
 }
+
