@@ -15,10 +15,12 @@
             <h3 class="uk-text-center uk-card-title" >{{group.title}}</h3>
             <span *ngFor="let member of group.users" >
                 <!-- Inactive members -->
-                <ng-container *ngIf="!member.group_active" class="uk-text-muted">
-                        <span>{{member.name + " " + member.surname}} (neaktiven):</span>             
+                <ng-container *ngIf="!member.group_active" >
+                        <span class="uk-text-muted">{{member.name + " " + member.surname}} (neaktiven):</span>             
                         <span *ngFor="let role of member.allowed_group_roles">
-                            <span>{{ roleNames[role] | lowercase }}</span>
+                            <span class="uk-label uk-label-success" *ngIf="role == 2"> Product owner</span>
+                            <span class="uk-label uk-label-warning" *ngIf="role == 3"> Kanban master</span>
+                            <span class="uk-label" *ngIf="role == 1"> Razvijalec</span>
                         </span>   
                 </ng-container>
                 <!-- Active members -->
@@ -76,9 +78,11 @@
                     <span *ngFor="let member of members">  
                         <!-- Inactive members -->
                         <ng-container *ngIf="!member.group_active" class="uk-text-muted">
-                            <span>{{member.name + " " + member.surname}}:</span>             
+                            <span>{{member.name + " " + member.surname}}  (neaktiven)</span>             
                             <span *ngFor="let role of member.allowed_group_roles">
-                                <span>{{ roleNames[role] | lowercase}} </span>
+                                <span class="uk-label uk-label-success" *ngIf="role == 2"> Product owner</span>
+                                <span class="uk-label uk-label-warning" *ngIf="role == 3"> Kanban master</span>
+                                <span class="uk-label" *ngIf="role == 1"> Razvijalec</span>
                             </span>   
                             <!-- Remove member from group -->
                             <button (click)="addMemberBackToGroup($event,member)" class="uk-icon-link uk-dark" type="button" uk-icon="unlock" ></button>
@@ -94,6 +98,7 @@
                             <!-- Remove member from group -->
                             <button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-dark" type="button" uk-icon="close" ></button>
                         </ng-container>
+                        <br>
                     </span>
                 </fieldset>
             </form>
