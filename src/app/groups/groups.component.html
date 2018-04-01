@@ -56,9 +56,9 @@
                         <!-- Show all users. -->
                         <select class="uk-select" id="form-stacked-select" [(ngModel)]="selectedUser" (change)="resetRoles()" name="userSelect">
                             <ng-container *ngFor="let user of users">
-                                <option disabled *ngIf="!user.activate" [ngValue]="user">{{user.name + " " + user.surname }} (neaktiven)</option>
-                                <option disabled *ngIf="user.activate && (user.roles.length == 1 && user.roles[0] == 'admin')" [ngValue]="user">{{user.name + " " + user.surname }} (admin)</option>
-                                <option *ngIf="user.activate && !(user.roles.length == 1 && user.roles[0] == 'admin')" [ngValue]="user">{{user.name + " " + user.surname}}</option>
+                                <option disabled *ngIf="!user.is_active" [ngValue]="user">{{user.name + " " + user.surname }} (neaktiven)</option>
+                                <option disabled *ngIf="user.is_active && (user.roles.length == 1 && user.roles[0] == 'admin')" [ngValue]="user">{{user.name + " " + user.surname }} (admin)</option>
+                                <option *ngIf="user.is_active && !(user.roles.length == 1 && user.roles[0] == 'admin')" [ngValue]="user">{{user.name + " " + user.surname}}</option>
                             </ng-container>    
                         </select>
                     </div>

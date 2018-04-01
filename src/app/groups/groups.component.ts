@@ -131,7 +131,7 @@ export class GroupsComponent implements OnInit {
         allowed_group_roles:selectedRoles,
         id:this.selectedUser.id,
         email:this.selectedUser.email,
-        activate:this.selectedUser.activate,
+        is_active:this.selectedUser.is_active,
         name:this.selectedUser.name,
         surname:this.selectedUser.surname,
         password:this.selectedUser.password};

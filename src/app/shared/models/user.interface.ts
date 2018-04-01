@@ -5,6 +5,6 @@ export interface User {
   surname: string;
   email: string;
   password: string;
-  activate: boolean;
+  is_active: boolean;
   roles: string[];
 }

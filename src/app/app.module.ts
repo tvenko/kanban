@@ -19,6 +19,11 @@ import {UsersService} from './shared/services/users.service';
 import {HttpClientModule} from '@angular/common/http';
 import { GroupsService } from './shared/services/groups.service';
 
+import { AuthGuard } from './shared/guards/auth.guard';
+import { AuthenticationService } from './shared/services/authentication.service';
+import { JwtModule } from '@auth0/angular-jwt';
+import { HttpModule } from '@angular/http';
+
 
 @NgModule({
   declarations: [
@@ -39,9 +44,18 @@ import { GroupsService } from './shared/services/groups.service';
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: () => {
+          return localStorage.getItem('auth_token');
+        },
+        whitelistedDomains: ['localhost:3000', 'smrpo-backend.herokuapp.com']
+      }
+    }),
   ],
-  providers: [UsersService, GroupsService],
+  providers: [UsersService, GroupsService, AuthGuard, AuthenticationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

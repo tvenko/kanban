@@ -19,7 +19,7 @@
         </tr>
       </thead>
       <tbody *ngFor="let user of users; let i = index">
-        <tr [ngClass] = "{'table-locked': user.activate == false}">
+        <tr [ngClass] = "{'table-locked': user.is_active == false}">
           <td class="table-cell">{{ i+1 }}</td>
           <td class="table-cell">{{ user?.name }}</td>
           <td class="table-cell">{{ user?.surname }}</td>
@@ -32,11 +32,11 @@
               <span class="uk-label uk-label-danger" *ngIf="role == 'admin'">{{ role }}</span>
             </span>
           </td>
-          <td class="table-icons" *ngIf="user.activate == true">
+          <td class="table-icons" *ngIf="user.is_active == true">
             <span uk-icon="icon: pencil; ratio: 1.2" class="table-icons-edit" uk-toggle="target: #edit-user-modal" (click)="editUser(user)"></span> &nbsp;
             <span uk-icon="icon: ban; ratio: 1.2" class="table-icons-ban" (click)="lockUser(user)"></span>
           </td>
-          <td class="table-icons" *ngIf="user.activate == false" (mouseenter)="hover[i] = true" (mouseleave)="hover[i] = false">
+          <td class="table-icons" *ngIf="user.is_active == false" (mouseenter)="hover[i] = true" (mouseleave)="hover[i] = false">
             <span *ngIf="hover[i] == false"  uk-icon="icon: lock; ratio: 1.2" class="table-icons-locked"></span>
             <span *ngIf="hover[i] == true"  uk-icon="icon: unlock; ratio: 1.2" class="table-icons-unlock table-icons-locked" (click)="unlockUser(user)"></span>
           </td>
@@ -70,7 +70,7 @@
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="edit-email">Elektronksi naslov</label>
+          <label class="uk-form-label" for="edit-email">Elektronski naslov</label>
           <div class="uk-form-controls">
             <input class="uk-input" id="edit-email" type="email" placeholder="Email" formControlName="email">
           </div>
@@ -79,7 +79,7 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="edit-password">Geslo</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="edit-password" type="text" placeholder="Password" formControlName="password">
+            <input class="uk-input" id="edit-password" type="password" placeholder="Password" formControlName="password">
           </div>
         </div>
 
@@ -139,7 +139,7 @@
         </div>
 
         <div class="uk-margin">
-          <label class="uk-form-label" for="new-email">Elektronksi naslov</label>
+          <label class="uk-form-label" for="new-email">Elektronski naslov</label>
           <div class="uk-form-controls">
             <input class="uk-input" id="new-email" type="email" placeholder="Email" formControlName="email">
           </div>
@@ -148,7 +148,7 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="new-password">Geslo</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="new-password" type="text" placeholder="Password" formControlName="password">
+            <input class="uk-input" id="new-password" type="password" placeholder="Password" formControlName="password">
           </div>
         </div>
 

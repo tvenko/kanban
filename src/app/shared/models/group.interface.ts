@@ -6,7 +6,7 @@ export interface GroupMember{
     surname:string;
     email:string;
     password:string;
-    activate:boolean;
+    is_active:boolean;
     allowed_group_roles:number[];
     group_active:boolean;
 }

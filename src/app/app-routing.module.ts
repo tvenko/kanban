@@ -8,19 +8,20 @@ import {DocumentationComponent} from './documentation/documentation.component';
 import {GroupsComponent} from './groups/groups.component';
 import {ProjectsComponent} from './projects/projects.component';
 import {UsersComponent} from './users/users.component';
+import { AuthGuard } from './shared/guards/auth.guard';
 
 
 const appRoutes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/login', pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
-  { path: 'users', component: UsersComponent },
-  { path: 'board', component: BoardComponent },
-  { path: 'analytics', component: AnalyticsComponent },
-  { path: 'documentation', component: DocumentationComponent },
-  { path: 'groups', component: GroupsComponent },
-  { path: 'projects', component: ProjectsComponent },
-  { path: 'not-found', component: PageNotFoundComponent },
-  { path: '**', redirectTo: '/not-found' }
+  { path: 'users', component: UsersComponent, canActivate: [AuthGuard] },
+  { path: 'board', component: BoardComponent, canActivate: [AuthGuard] },
+  { path: 'analytics', component: AnalyticsComponent, canActivate: [AuthGuard] },
+  { path: 'documentation', component: DocumentationComponent, canActivate: [AuthGuard] },
+  { path: 'groups', component: GroupsComponent, canActivate: [AuthGuard] },
+  { path: 'projects', component: ProjectsComponent, canActivate: [AuthGuard] },
+  { path: 'not-found', component: PageNotFoundComponent, canActivate: [AuthGuard] },
+  { path: '**', redirectTo: '/not-found', canActivate: [AuthGuard] }
 ];
 
 @NgModule({

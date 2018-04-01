@@ -93,7 +93,7 @@ export class UsersComponent implements OnInit {
         email: this.editUserForm.get('email').value,
         password: this.editUserForm.get('password').value,
         roles: roles,
-        activate: this.editedUser.activate
+        is_active: this.editedUser.is_active
       };
       console.log(user.id, this.editedUser.id);
       this.usersService.updateUser(user, user.id).subscribe(res => {
@@ -137,7 +137,7 @@ export class UsersComponent implements OnInit {
         email: this.newUserForm.get('email').value,
         password: this.newUserForm.get('password').value,
         roles: roles,
-        activate: true
+        is_active: true
       };
       this.usersService.postUser(newUser).subscribe(res => {
         this.error = null;
@@ -162,10 +162,10 @@ export class UsersComponent implements OnInit {
       email: user.email,
       password: user.password,
       roles: this.rolesMapper(user.roles),
-      activate: false
+      is_active: false
     };
     this.usersService.updateUser(lockedUser, lockedUser.id).subscribe(
-      res => user.activate = false,
+      res => user.is_active = false,
       err => console.log('ERROR locking user')
       );
   }
@@ -178,10 +178,10 @@ export class UsersComponent implements OnInit {
       email: user.email,
       password: user.password,
       roles: this.rolesMapper(user.roles),
-      activate: true
+      is_active: true
     };
     this.usersService.updateUser(unlockedUser, unlockedUser.id).subscribe(
-      res => user.activate = true,
+      res => user.is_active = true,
       err => console.log('ERROR unlocking user')
     );
   }
