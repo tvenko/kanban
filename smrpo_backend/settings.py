@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=60), # TODO: renew
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(weeks=60), # TODO: renew, workaround
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
     'JWT_GET_USER_SECRET_KEY': 'backend.models.jwt_get_secret_key',
     'JWT_ALLOW_REFRESH': True,
