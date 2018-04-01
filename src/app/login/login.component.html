@@ -12,7 +12,10 @@
   </div>
 </div>
 <div class="uk-container">
-  <div class="login">
+  <div class="login" *ngIf="!unlocked">
+    <h1>Dostop zaklenjen.<br>Nepravilne podatke ste vnesli trikrat.</h1>
+  </div>
+  <div *ngIf="unlocked" class="login">
     <h1>Za uporabo aplikacije se prijavi.</h1>
     <hr>
     <br>
