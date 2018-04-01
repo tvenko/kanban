@@ -24,6 +24,11 @@ import { AuthenticationService } from './shared/services/authentication.service'
 import { JwtModule } from '@auth0/angular-jwt';
 import { HttpModule } from '@angular/http';
 
+function tokenGetterFunc()
+{
+  return localStorage.getItem('auth_token');
+}
+
 
 @NgModule({
   declarations: [
@@ -48,9 +53,7 @@ import { HttpModule } from '@angular/http';
     HttpModule,
     JwtModule.forRoot({
       config: {
-        tokenGetter: () => {
-          return localStorage.getItem('auth_token');
-        },
+        tokenGetter: tokenGetterFunc,
         whitelistedDomains: ['localhost:3000', 'smrpo-backend.herokuapp.com']
       }
     }),
