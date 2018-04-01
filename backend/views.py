@@ -7,22 +7,38 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
+from rest_framework import views
+from rest_framework import permissions
 
 from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework import response, schemas
 from . import urls
 
+import uuid
 
+# TODO: remove session auth, remove auth for swagger
 @api_view()
 @renderer_classes([SwaggerUIRenderer, OpenAPIRenderer])
 def schema_view(request):
     """
     Schema for swagger
     """
-
     generator = schemas.SchemaGenerator(title='API Docs', patterns=urls.urlpatterns, url='/')
     return response.Response(generator.get_schema())
+
+class InvalidateToken(views.APIView):
+    """
+    Use this endpoint to log out all sessions for a given user (jwt).
+
+    Basically invalidate all issued jwt tokens. Not really needed but hey, it's there and it works.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        user.jwt_secret = uuid.uuid4()
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserList(generics.ListCreateAPIView):
@@ -36,7 +52,7 @@ class UserList(generics.ListCreateAPIView):
     def get(self, request, **kwargs):
         roles = Role.objects.all()
         allowed_roles = AllowedRole.objects.all()
-        users = User.objects.all().order_by("surname")
+        users = User.objects.all().filter(is_superuser=False).order_by("surname")
 
         user_roles = []
         for user in users:
@@ -53,6 +69,7 @@ class UserList(generics.ListCreateAPIView):
 
     def post(self, request, **kwargs):
         data = JSONParser().parse(request)
+        print(data)
         serializer = UserSerializer(data=data)
 
         success_status=False
@@ -60,6 +77,8 @@ class UserList(generics.ListCreateAPIView):
         if serializer.is_valid():
             success_status=True
             serializer.save()
+        else:
+            pass
 
         if "roles" in data:
             user_id = serializer.data["id"]

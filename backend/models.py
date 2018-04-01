@@ -1,12 +1,32 @@
 from django.db.models import *
+from django.contrib.auth.models import AbstractUser
+import uuid
+
+class User(AbstractUser):
+    #id = AutoField(primary_key=True)
+    name = CharField(max_length=100) # Could be removed. Kept for compatibility reasons.
+    surname = CharField(max_length=100) # Could be removed. Same reason.
+    email = CharField(max_length=100, unique=True)
+    jwt_secret = UUIDField(default=uuid.uuid4)
+
+    # These fields are inherited from AbstractUser.
+    #password = CharField(max_length=100)
+    #is_active = BooleanField(default=False)
+    #first_name, last_name.
+
+    # Workaround for jwt authentication and superuser tool.
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+    username = CharField(max_length=100, null=True)
+    
+    #def get_username(self):
+    #    return str(self.id)
+    #def natural_key(self):
+    #    return self.get_username()
 
 
-class User(Model):
-    name = CharField(max_length=100)
-    surname = CharField(max_length=100)
-    email = CharField(max_length=100)
-    password = CharField(max_length=100)
-    activate = BooleanField(default=False)
+def jwt_get_secret_key(user_model):
+    return user_model.jwt_secret
 
 
 class Task(Model):
@@ -86,7 +106,7 @@ class AllowedRole(Model):
     class Meta:
         unique_together = (('user_id', 'role_id'),)
 
-    user_id = ForeignKey('User', on_delete=CASCADE)
+    user_id = ForeignKey('backend.User', on_delete=CASCADE)
     role_id = ForeignKey('Role', on_delete=CASCADE)
 
 
