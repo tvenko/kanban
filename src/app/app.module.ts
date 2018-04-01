@@ -24,7 +24,7 @@ import { AuthenticationService } from './shared/services/authentication.service'
 import { JwtModule } from '@auth0/angular-jwt';
 import { HttpModule } from '@angular/http';
 
-function tokenGetterFunc()
+export function tokenGetterFunc()
 {
   return localStorage.getItem('auth_token');
 }
