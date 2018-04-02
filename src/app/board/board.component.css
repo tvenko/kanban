@@ -7,7 +7,7 @@
 }
 
 .board {
-  top: 40px;
+  top: 10px;
   margin: auto;
   position: relative;
   display: flex;
@@ -41,19 +41,25 @@
   box-shadow: 0 5px 6px 0 rgba(0, 0, 0, .14), 0 3px 1px -6px rgba(0, 0, 0, .2), 2px 5px 3px 0 rgba(0, 0, 0, .12);
 }
 
-ol.coulmn {
+.coulmn-container {
+  flex-direction: row;
+  margin: auto;
+  display: flex;
+  width: 100%;
+}
+
+.coulmn {
   border-top: 2px solid;
-  margin: 2px;
   vertical-align: top;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .12);
-  flex-direction: column;
-  height: 800px;
+  height: 85vh;
   padding: 10px;
   border-radius: 2px;
   overflow: hidden;
   width: 100%;
   min-width: 150px;
-  border-top: 5px solid
+  border-top: 5px solid;
+  margin: 2px;
 }
 
 .cards-container {
@@ -63,4 +69,27 @@ ol.coulmn {
 
 .cards-container::-webkit-scrollbar {
   display: none !important
+}
+
+.add-column {
+  padding: 0;
+  flex-basis: 0;
+  width: 0;
+  opacity: 0;
+}
+
+.add-column:hover {
+  cursor: pointer;
+  width: 40px;
+  opacity: 1;
+}
+
+.add-column-last {
+  width: 0;
+  opacity: 0;
+}
+
+.add-column-last:hover {
+  cursor: pointer;
+  opacity: 1;
 }
