@@ -108,6 +108,11 @@ class UserUpdate(generics.UpdateAPIView):
             return HttpResponse(status=404)
 
         data = JSONParser().parse(request)
+
+        # Set to existing hash if password is null.
+        if data["password"] is None:
+            data["password"] = getattr(user, "password")
+
         serializer = UserSerializer(user, data=data)
 
         success_status=False
@@ -115,6 +120,8 @@ class UserUpdate(generics.UpdateAPIView):
         if serializer.is_valid():
             success_status=True
             serializer.save()
+        else:
+            print(serializer.errors)
 
         if "roles" in data:
             user_id = serializer.data["id"]
