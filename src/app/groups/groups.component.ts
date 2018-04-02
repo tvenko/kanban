@@ -43,6 +43,9 @@ export class GroupsComponent implements OnInit {
   loadGroups() {
     this.groupsService.getGroups().subscribe(groups => {
       this.groups = <Group[]> groups;
+      this.groups.sort(function (a, b) {
+        return a.id - b.id;
+      });
     }, err => {
       console.log('error geting groups from backend');
     });                                          
@@ -119,13 +122,16 @@ export class GroupsComponent implements OnInit {
 
     if (selectedRoles.length == 0) {
       alert('Izberi vsaj eno vlogo.');
-    } else if (this.members.filter(obj => obj.id == this.selectedUser.id).length != 0) {
-      alert('Uporabnik je v skupini.');
-    } else if (this.roles[3] && this.members.filter(obj => obj.allowed_group_roles.includes(3) && obj.group_active).length != 0) {
+   /*  }else if (this.members.filter(obj => obj.id == this.selectedUser.id).length != 0) {
+      alert('Uporabnik je v skupini.');*/
+    } else if (this.roles[3] && this.members.filter(obj => obj.allowed_group_roles.includes(3) && obj.group_active && obj.id != this.selectedUser.id).length != 0) {
       alert('Vloga KanbanMaster je že zasedena!');
-    } else if (this.roles[2] && this.members.filter(obj => obj.allowed_group_roles.includes(2) && obj.group_active).length != 0) {
+    } else if (this.roles[2] && this.members.filter(obj => obj.allowed_group_roles.includes(2) && obj.group_active && obj.id != this.selectedUser.id).length != 0) {
       alert('Vloga Product owner je že zasedena!');
     } else {
+      if (this.members.filter(obj => obj.id == this.selectedUser.id).length != 0) {
+        this.members = this.members.filter(obj => obj.id != this.selectedUser.id)
+      }
       const groupMember: GroupMember = {
         group_active: true,
         allowed_group_roles:selectedRoles,
@@ -200,6 +206,7 @@ export class GroupsComponent implements OnInit {
           console.log(err);
         }); 
 
+        UIkit.modal('#new-group-modal').hide();
 
       } else {
         //New group
@@ -219,6 +226,8 @@ export class GroupsComponent implements OnInit {
           UIkit.notification('Napaka pri dodajanju nove skupine.', {status: 'danger', timeout: 2000});
           console.log(err);
         });  
+
+        UIkit.modal('#new-group-modal').hide();
       }    
     }
 
