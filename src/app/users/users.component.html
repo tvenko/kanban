@@ -83,6 +83,17 @@
           </div>
         </div>
 
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-password-match">Ponovno vpiši geslo</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="edit-password-match" type="password" placeholder="Password" formControlName="passwordMatch">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!editUserForm.get('passwordMatch').valid && editUserForm.get('passwordMatch').touched && editUserForm.get('passwordMatch').dirty">
+          Gesli se ne ujemata</span>
+
         <div>
           <p><label class="uk-form-label">Uporabniške vloge</label></p>
           <p class="uk-margin edit-user-checkboxes">
@@ -151,6 +162,17 @@
             <input class="uk-input" id="new-password" type="password" placeholder="Password" formControlName="password">
           </div>
         </div>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="new-password-match">Ponovno vpiši geslo</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="new-password-match" type="password" placeholder="Password" formControlName="passwordMatch">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('passwordMatch').valid && newUserForm.get('passwordMatch').touched && newUserForm.get('passwordMatch').dirty">
+          Gesli se ne ujemata</span>
 
         <div>
           <p><label class="uk-form-label">Uporabniške vloge</label></p>

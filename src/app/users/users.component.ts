@@ -28,6 +28,7 @@ export class UsersComponent implements OnInit {
       'surname': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.email, Validators.required]),
       'password': new FormControl(null, Validators.required),
+      'passwordMatch': new FormControl(null, [Validators.required, this.matchEditPassword.bind(this)]),
       'developer': new FormControl(null),
       'productOwner': new FormControl(null),
       'kanbanMaster': new FormControl(null),
@@ -38,6 +39,7 @@ export class UsersComponent implements OnInit {
       'surname': new FormControl(null, Validators.required),
       'email': new FormControl(null, [Validators.email, Validators.required]),
       'password': new FormControl(null, Validators.required),
+      'passwordMatch': new FormControl(null, [Validators.required, this.matchNewPassword.bind(this)]),
       'developer': new FormControl(null),
       'productOwner': new FormControl(null),
       'kanbanMaster': new FormControl(null),
@@ -63,7 +65,8 @@ export class UsersComponent implements OnInit {
       name: user.name,
       surname: user.surname,
       email: user.email,
-      password: user.password,
+      password: null,
+      passwordMatch: null,
       developer: user.roles.includes('developer'),
       productOwner: user.roles.includes('product owner'),
       kanbanMaster: user.roles.includes('kanban master'),
@@ -161,7 +164,7 @@ export class UsersComponent implements OnInit {
       surname: user.surname,
       email: user.email,
       password: user.password,
-      roles: this.rolesMapper(user.roles),
+      roles: this.usersService.rolesMapper(user.roles),
       is_active: false
     };
     this.usersService.updateUser(lockedUser, lockedUser.id).subscribe(
@@ -177,7 +180,7 @@ export class UsersComponent implements OnInit {
       surname: user.surname,
       email: user.email,
       password: user.password,
-      roles: this.rolesMapper(user.roles),
+      roles: this.usersService.rolesMapper(user.roles),
       is_active: true
     };
     this.usersService.updateUser(unlockedUser, unlockedUser.id).subscribe(
@@ -193,30 +196,21 @@ export class UsersComponent implements OnInit {
     this.editUserForm.reset();
   }
 
-  private rolesMapper(roles: string[]) {
-    const mappedRoles = [];
-    console.log(roles[0]);
-    for (const role of roles) {
-      console.log(role);
-      switch (role) {
-        case 'developer': {
-          mappedRoles.push(1);
-          break;
-        }
-        case 'product owner': {
-          mappedRoles.push(2);
-          break;
-        }
-        case 'kanban master': {
-          mappedRoles.push(3);
-          break;
-        }
-        case 'admin': {
-          mappedRoles.push(4);
-          break;
-        }
+  matchNewPassword(control: FormControl): {[s: string]: boolean} {
+    if (this.newUserForm) {
+      if (control.value !== this.newUserForm.controls.password.value) {
+        return {'Passwords doesnt match': true};
       }
     }
-    return mappedRoles;
+    return null;
+  }
+
+  matchEditPassword(control: FormControl): {[s: string]: boolean} {
+    if (this.editUserForm) {
+      if (control.value !== this.editUserForm.controls.password.value) {
+        return {'Passwords doesnt match': true};
+      }
+    }
+    return null;
   }
 }

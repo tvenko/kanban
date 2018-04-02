@@ -23,9 +23,9 @@ import { AuthGuard } from './shared/guards/auth.guard';
 import { AuthenticationService } from './shared/services/authentication.service';
 import { JwtModule } from '@auth0/angular-jwt';
 import { HttpModule } from '@angular/http';
+import {BoardsService} from './shared/services/boards.service';
 
-export function tokenGetterFunc()
-{
+export function tokenGetterFunc() {
   return localStorage.getItem('auth_token');
 }
 
@@ -58,7 +58,7 @@ export function tokenGetterFunc()
       }
     }),
   ],
-  providers: [UsersService, GroupsService, AuthGuard, AuthenticationService],
+  providers: [UsersService, GroupsService, AuthGuard, AuthenticationService, BoardsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
