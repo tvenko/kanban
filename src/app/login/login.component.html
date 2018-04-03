@@ -12,15 +12,12 @@
   </div>
 </div>
 <div class="uk-container">
-  <div class="login" *ngIf="!unlocked">
-    <h1>Dostop zaklenjen.<br>Nepravilne podatke ste vnesli trikrat.</h1>
-  </div>
-  <div *ngIf="unlocked" class="login">
-    <h1>Za uporabo aplikacije se prijavi.</h1>
+  <div class="login">
+    <h1 *ngIf="unlocked">Za uporabo aplikacije se prijavi.<br><br></h1><h1 *ngIf="!unlocked">Dostop zaklenjen za {{ unlockCountdownNumber }} sekund.<br>Nepravilne podatke ste vnesli trikrat.</h1>
     <hr>
     <br>
     <form class="uk-form-width-large uk-margin-auto" name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
-      <fieldset class="uk-fieldset">
+      <fieldset [disabled]="!unlocked" class="uk-fieldset">
 
 
         <div class="uk-margin">
