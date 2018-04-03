@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../shared/services/authentication.service';
 
+
 @Component({
   selector: 'app-login',
   moduleId: module.id,
@@ -14,7 +15,10 @@ export class LoginComponent implements OnInit {
     loading = false;
     error = null;
     unlocked = true;
-    max_login_attempts = 3;
+    maxLoginAttempts = 3;
+    lockTime = 30 * 1000; // 30 seconds
+    unlockCountdownNumber = null;
+    unlockCountdownTimer = null;
  
     constructor(
         private router: Router,
@@ -25,13 +29,24 @@ export class LoginComponent implements OnInit {
         this.authenticationService.logout();
 
  		// check if the user was previously blocked
- 		let login_attempts = localStorage.getItem('login_attempts');
- 		if (login_attempts == undefined) {
-        	localStorage.setItem('login_attempts', String(1));
+ 		let loginAttempts = localStorage.getItem('loginAttempts');
+ 		if (loginAttempts == undefined) {
+        	localStorage.setItem('loginAttempts', String(1));
         }
         else {
-        	if (parseInt(login_attempts) >= this.max_login_attempts) {
-        		this.unlocked = false;
+        	if (parseInt(loginAttempts) >= this.maxLoginAttempts) {
+        		// if lockTime still hasn't passed
+        		let remainingLockTime = parseInt(localStorage.getItem('blockedUntil')) - Date.now();
+        		if (remainingLockTime > 0) {
+        			this.unlockCountdownNumber = Math.round(remainingLockTime / 1000);
+        			this.unlocked = false;
+        			this.runUnlockTimeout(remainingLockTime);
+        			this.runCountdownTimer();
+        		}
+        		else {
+        			localStorage.setItem('loginAttempts', String(1));
+        		}
+
         	}
         }
     }
@@ -39,29 +54,48 @@ export class LoginComponent implements OnInit {
     login() {
         this.loading = true;
         this.authenticationService.login(this.model.email, this.model.password)
-            	.subscribe(data => {
-                    //this.authenticationService.token = token;
- 
+                .subscribe(data => {
                     // store email and jwt token in local storage to keep user logged in between page refreshes
-                    localStorage.setItem('user_email', this.model.email);
-					localStorage.setItem('auth_token', data.token);
-					localStorage.removeItem('login_attempts');
+                    localStorage.setItem('userEmail', this.model.email);
+					localStorage.setItem('authToken', data.token);
+					localStorage.removeItem('loginAttempts');
 					this.router.navigate(['/projects']);
             	},
             	error => {
-            		let login_attempts = localStorage.getItem('login_attempts');
+            		let loginAttempts = localStorage.getItem('loginAttempts');
 
-			    	if (parseInt(login_attempts) >= this.max_login_attempts) {
+			    	if (parseInt(loginAttempts) >= this.maxLoginAttempts) {
+			    		localStorage.setItem('blockedUntil', String(Date.now() + this.lockTime));
+			    		this.unlockCountdownNumber = this.lockTime / 1000;
+			    		this.runUnlockTimeout(this.lockTime);
 			    		this.unlocked = false;
-			    		return;
+			    		this.runCountdownTimer();
 			    	}
 			    	else {
-			    		localStorage.setItem('login_attempts', String(parseInt(login_attempts) + 1));
+			    		localStorage.setItem('loginAttempts', String(parseInt(loginAttempts) + 1));
 			    	}
             		this.error = 'E-naslov ali geslo je napačno.';
                     this.loading = false;
                 }
             );
+    }
+
+    runCountdownTimer() {
+    	this.unlockCountdownTimer = setInterval(() => {
+											this.unlockCountdownNumber -= 1;
+										}, 1000);
+    }
+
+    stopCountdownTimer() {
+    	clearInterval(this.unlockCountdownTimer);
+    }
+
+    runUnlockTimeout(lockTime) {
+    	setTimeout(() => {
+					localStorage.setItem('loginAttempts', String(1));
+					this.unlocked = true;
+					this.stopCountdownTimer();
+				}, lockTime);
     }
 
 }
