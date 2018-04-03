@@ -1,8 +1,78 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
-  <div class="placeholder">
-    <h1>This is landing page after login with all user Projects!</h1>
-    <hr>
-    <p>Well it's still needs to be implemented... ¯\_(ツ)_/¯</p>
+  <!-- New project modal toggle button -->
+  <div>
+      <button class="uk-button uk-button-primary newProjectButton" (click)="loadModal()" uk-toggle="target: #new-project-modal">Nov projekt</button>
+  </div>
+
+  <!-- Projects modal -->
+  
+<!-- Projects modal -->
+<div id="new-project-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+      <button class="uk-modal-close-default" type="button" (click)="cancelProject()" uk-close></button>
+      <h2 class="uk-modal-title">{{projectsModalTitle}}</h2>
+      <!-- Projects form -->
+      <form (ngSubmit)="saveProject()" [formGroup]="projectsForm">
+        <fieldset class="uk-fieldset">
+          <!-- Project code name -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-code-name">Šifra projekta</label>
+            <div class="uk-form-controls">
+              <input class="uk-input" id="edit-code-name" type="text" placeholder="Šifra projekta" formControlName="code-name">
+            </div>
+          </div>
+          <!-- Project name -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-name">Naziv projekta</label>
+            <div class="uk-form-controls">
+              <input class="uk-input" id="edit-name" type="text" placeholder="Naziv projekta" formControlName="name">
+            </div>
+          </div>
+  
+          <!-- Buyers name -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-buyer">Ime naročnika</label>
+            <div class="uk-form-controls">
+              <input class="uk-input" id="edit-buyer" type="text" placeholder="Ime naročnika" formControlName="buyer">
+            </div>
+          </div>
+  
+          <!-- Start date -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="start-date">Čas začetka</label>
+            <div class="uk-form-controls">
+              <input type="text" data-uk-datepicker="{format:'DD.MM.YYYY'}" formControlName="start-date">
+            </div>
+          </div>
+
+          <!-- End date -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="end-date">Predviden čas zaključka</label>
+            <div class="uk-form-controls">
+              <input type="text" data-uk-datepicker="{format:'DD.MM.YYYY'}" formControlName="end-date">
+            </div>
+          </div>
+<!--   
+          <span class="uk-alert-danger"
+                *ngIf="!editUserForm.get('passwordMatch').valid && editUserForm.get('passwordMatch').touched && editUserForm.get('passwordMatch').dirty">
+            Gesli se ne ujemata</span> -->
+    
+          <!-- <div *ngIf="error != null">
+            <div class="uk-alert-danger" uk-alert>
+              <p>{{ error }}</p>
+            </div>
+          </div>
+
+
+          [disabled]="!editUserForm.valid"
+   -->
+          <div class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
+            <button class="uk-button uk-button-primary" type="submit" >Shrani</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
   </div>
 </div>

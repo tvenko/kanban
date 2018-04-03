@@ -6,14 +6,14 @@
             <a routerLink="/projects" class="uk-navbar-item uk-logo">Logo</a>
             <ul class="uk-navbar-nav">
               <li [ngClass]="{'uk-active': isActiveRoute('/projects')}">
-                <a routerLink="/projects">Moje table</a>
+                <a routerLink="/projects">Projekti</a>
               </li>
               <li [ngClass]="{'uk-active': isActiveRoute('/groups')}">
                 <a routerLink="/groups">Skupine</a>
               </li>
-              <li [ngClass]="{'uk-active': isActiveRoute('#')}">
+              <!-- <li [ngClass]="{'uk-active': isActiveRoute('#')}">
                 <a routerLink="#">Projekti</a>
-              </li>
+              </li> -->
               <li [ngClass]="{'uk-active': isActiveRoute('/groups')}">
                 <a routerLink="/board">Tabla &nbsp; <i>dev</i></a>
               </li>
