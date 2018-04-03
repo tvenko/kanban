@@ -24,6 +24,7 @@ export class GroupsComponent implements OnInit {
   selectedGroup: Group;
   groupName: string;
   groupNameInput: FormControl;
+  userSelectDropdown: FormControl;
   groupModalTitle: string;
   roleNames = ["", "Razvijalec", "Product owner", "Kanban master"];
 
@@ -38,6 +39,7 @@ export class GroupsComponent implements OnInit {
   ngOnInit() {
     this.loadGroups();
     this.groupNameInput = new FormControl(null, Validators.required);
+    this.userSelectDropdown = new FormControl(null);
   }
 
   loadGroups() {
@@ -66,16 +68,21 @@ export class GroupsComponent implements OnInit {
   }
 
   editGroup(group: Group) {
+    this.selectedUser = null;
+    this.users = [];
+    this.resetRoles();
     this.loadUsers();
     this.groupModalTitle = "Uredi skupino";
     this.selectedGroup = group;
     this.groupNameInput.setValue(group.title);
     this.members = group.users;
+    document.getElementById("userSelectDropdown").nodeValue = "null";
   }
 
   //******** NEW GROUP MODAL *********//
 
   loadModal() {
+    document.getElementById("userSelectDropdown").nodeValue = "null";
     this.groupNameInput.setValue('');
     this.groupModalTitle = "Nova skupina";
     this.selectedGroup = null;
