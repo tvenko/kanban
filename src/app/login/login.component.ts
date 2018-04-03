@@ -75,7 +75,7 @@ export class LoginComponent implements OnInit {
             		let loginAttempts = localStorage.getItem('login_attempts');
 
 			    	if (parseInt(loginAttempts) >= this.maxLoginAttempts) {
-			    		localStorage.setItem('blockedUntil', String(Date.now() + this.lockTime));
+			    		localStorage.setItem('blocked_until', String(Date.now() + this.lockTime));
 			    		this.unlockCountdownNumber = this.lockTime / 1000;
 			    		this.runUnlockTimeout(this.lockTime);
 			    		this.unlocked = false;
