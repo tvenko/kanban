@@ -33,4 +33,13 @@ export class ProjectsComponent implements OnInit {
 
   }
 
+  closeModal(){
+
+  }
+
+  saveProject(){
+
+    
+  }
+
 }
