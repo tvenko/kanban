@@ -126,6 +126,7 @@ export class GroupsComponent implements OnInit {
         selectedRoles.push(parseInt(role));
       }
     }
+    console.log(selectedRoles);
 
     if (selectedRoles.length == 0) {
       alert('Izberi vsaj eno vlogo.');
@@ -136,9 +137,25 @@ export class GroupsComponent implements OnInit {
     } else if (this.roles[2] && this.members.filter(obj => obj.allowed_group_roles.includes(2) && obj.group_active && obj.id != this.selectedUser.id).length != 0) {
       alert('Vloga Product owner je že zasedena!');
     } else {
-      if(!(this.members.filter(obj => obj.id == this.selectedUser.id).length != 0 && !this.roles[3] && this.selectedUser.roles.includes("kanban master"))){
-        
-        this.members = this.members.filter(obj => obj.id != this.selectedUser.id)
+      if(this.members.filter(obj => obj.id == this.selectedUser.id).length != 0){
+        if (!this.roles[3] && (this.members.filter(obj => obj.id == this.selectedUser.id))[0].allowed_group_roles.includes(3)){
+          alert("Izbrani uporabnik mora imeti vlogo Kanban master");
+        }else{
+          
+          this.members = this.members.filter(obj => obj.id != this.selectedUser.id)
+          const groupMember: GroupMember = {
+            group_active: true,
+            allowed_group_roles:selectedRoles,
+            id:this.selectedUser.id,
+            email:this.selectedUser.email,
+            is_active:this.selectedUser.is_active,
+            name:this.selectedUser.name,
+            surname:this.selectedUser.surname,
+            password:this.selectedUser.password};
+    
+          this.members.push(groupMember);     
+        }
+      }else{
         const groupMember: GroupMember = {
           group_active: true,
           allowed_group_roles:selectedRoles,
@@ -149,9 +166,7 @@ export class GroupsComponent implements OnInit {
           surname:this.selectedUser.surname,
           password:this.selectedUser.password};
   
-        this.members.push(groupMember);
-      }else{
-        alert("Izbrani uporabnik mora imeti vlogo Kanban master");
+        this.members.push(groupMember);           
       }
     }
     //Reset roles
