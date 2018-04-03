@@ -58,23 +58,38 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="edit-name">Ime</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="edit-name" type="text" placeholder="Ime" formControlName="name">
+            <input class="uk-input" id="edit-name" type="text" placeholder="Ime" formControlName="name"
+                   [ngClass]="{'danger-input' : !editUserForm.get('name').valid && editUserForm.get('name').touched && editUserForm.get('name').dirty}">
           </div>
         </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!editUserForm.get('name').valid && editUserForm.get('name').touched && editUserForm.get('name').dirty">
+          Ime uporabnika je obvezno polje.</span>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="edit-surname">Priimek</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="edit-surname" type="text" placeholder="Priimek" formControlName="surname">
+            <input class="uk-input" id="edit-surname" type="text" placeholder="Priimek" formControlName="surname"
+                   [ngClass]="{'danger-input' : !editUserForm.get('surname').valid && editUserForm.get('surname').touched && editUserForm.get('surname').dirty}">
           </div>
         </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!editUserForm.get('surname').valid && editUserForm.get('surname').touched && editUserForm.get('surname').dirty">
+          Priimek uporabnika je obvezno polje.</span>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="edit-email">Elektronski naslov</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="edit-email" type="email" placeholder="Email" formControlName="email">
+            <input class="uk-input" id="edit-email" type="email" placeholder="Email" formControlName="email"
+                   [ngClass]="{'danger-input' : !editUserForm.get('email').valid && editUserForm.get('email').touched && editUserForm.get('email').dirty}">
           </div>
         </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!editUserForm.get('email').valid && editUserForm.get('email').touched && editUserForm.get('email').dirty">
+          Elektronski naslov ni ustreznega formata oz. je neizpolnjen.</span>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="edit-password">Geslo</label>
@@ -138,23 +153,38 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="new-name">Ime</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="new-name" type="text" placeholder="Ime" formControlName="name">
+            <input class="uk-input" id="new-name" type="text" placeholder="Ime" formControlName="name"
+                   [ngClass]="{'danger-input' : !newUserForm.get('name').valid && newUserForm.get('name').touched}">
           </div>
         </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('name').valid && newUserForm.get('name').touched">
+          Ime uporabnika je obvezno polje</span>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="new-surname">Priimek</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="new-surname" type="text" placeholder="Priimek" formControlName="surname">
+            <input class="uk-input" id="new-surname" type="text" placeholder="Priimek" formControlName="surname"
+                   [ngClass]="{'danger-input' : !newUserForm.get('surname').valid && newUserForm.get('surname').touched}">
           </div>
         </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('surname').valid && newUserForm.get('surname').touched">
+          Priimek uporabnika je obvezno polje</span>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="new-email">Elektronski naslov</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="new-email" type="email" placeholder="Email" formControlName="email">
+            <input class="uk-input" id="new-email" type="email" placeholder="Email" formControlName="email"
+                   [ngClass]="{'danger-input' : !newUserForm.get('email').valid && newUserForm.get('email').touched}">
           </div>
         </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('email').valid && newUserForm.get('email').touched">
+          Elektronski naslov ni ustreznega formata oz. je neizpolnjen.</span>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="new-password">Geslo</label>
@@ -169,6 +199,10 @@
             <input class="uk-input" id="new-password-match" type="password" placeholder="Password" formControlName="passwordMatch">
           </div>
         </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('password').valid && newUserForm.get('password').touched">
+          Geslo je obvezno polje</span>
 
         <span class="uk-alert-danger"
               *ngIf="!newUserForm.get('passwordMatch').valid && newUserForm.get('passwordMatch').touched && newUserForm.get('passwordMatch').dirty">
