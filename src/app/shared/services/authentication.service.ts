@@ -14,13 +14,21 @@ export class AuthenticationService {
 		return this.http.post(Config.API + '/api-token-auth/', { email: email, password: password });
     }
 
+	verifyToken(token) {
+		return this.http.post(Config.API + '/api-token-verify/', { token: token });
+	}
+
+	// refreshToken(token) {
+	// 	return this.http.post(Config.API + '/api-token-refresh/', { token: token });
+	// }
+
 	// handleError(error: Response) {
 	// 	return Observable.throw(false);
 	// }
  
     logout(): void {
         // clear token remove user from local storage to log user out
-        localStorage.removeItem('userEmail');
-		localStorage.removeItem('authToken');
+        localStorage.removeItem('user_email');
+		localStorage.removeItem('auth_token');
     }
 }
