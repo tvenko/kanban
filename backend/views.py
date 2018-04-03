@@ -1,5 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser
 from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole
 from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer
@@ -39,6 +40,30 @@ class InvalidateToken(views.APIView):
         user.jwt_secret = uuid.uuid4()
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class SingleUser(views.APIView):
+    """
+    Retrieve all information (or most of it) about a single user. Search by email.
+    """
+
+    def get(self, request, **kwargs):
+        roles = Role.objects.all()
+        allowed_roles = AllowedRole.objects.all()
+        #user = User.objects.all().filter(email=kwargs["email"]).values_list('email', 'name', 'id')
+        user = get_object_or_404(User, email=kwargs["email"])
+
+        roles_list = []
+        allowed_roles_query = allowed_roles.filter(user_id=user.id)
+        for query in allowed_roles_query:
+            roles_query = roles.filter(id=query.role_id.id)
+            roles_list.append(roles_query[0].title)
+        user_allowed_roles = UserSerializer(user).data
+        user_allowed_roles["roles"] = roles_list
+        for key in ["password", "last_login", "first_name", "last_name", "is_staff",
+                        "date_joined", "jwt_secret", "groups", "user_permissions", "username"]:
+            del user_allowed_roles[key]
+
+        return Response(user_allowed_roles, status=status.HTTP_202_ACCEPTED)
 
 
 class UserList(generics.ListCreateAPIView):
