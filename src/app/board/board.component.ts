@@ -102,6 +102,10 @@ export class BoardComponent implements OnInit {
     });
   }
 
+  deleteColumn() {
+    UIkit.modal('#delete-column-modal').hide();
+  }
+
   closeModal() {
     this.newColumnForm.reset();
   }

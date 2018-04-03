@@ -4,13 +4,58 @@
     <div class="coulmn-container" *ngFor="let column of columns; let i = index">
       <div  uk-icon="icon: plus-circle; ratio: 1.9" class="add-column" uk-toggle="target: #new-column-modal"></div>
       <ol class="coulmn" [ngStyle]="{'border-top-color': colors[i]}">
-        <h3>{{ column.title }}</h3>
+        <h3>
+          {{ column.title }}
+          <span uk-icon="icon: trash" class="edit-column" uk-toggle="target: #delete-column-modal">
+          </span> <span class="uk-badge wip">3/10</span>
+        </h3>
         <hr>
         <div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)">
           <li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngFor="let card of column.cards">
             <h3>{{ card.title }}</h3>
             <div>{{ card.content }}</div>
           </li>
+        </div>
+      </ol>
+    </div>
+    <div class="coulmn-container">
+      <div  uk-icon="icon: plus-circle; ratio: 1.9" class="add-column" uk-toggle="target: #new-column-modal"></div>
+      <ol class="coulmn" [ngStyle]="{'border-top-color': colors[0]}">
+        <h4 class="subcolumn-title">
+          Test
+          <span uk-icon="icon: trash" class="edit-column" uk-toggle="target: #delete-column-modal"></span>
+          <span class="uk-badge wip-subcolumn">6/10</span>
+        </h4>
+        <div class="subcolumn-container">
+          <div class="subcolumn">
+            <h6 class="subcolumn-title">
+              Podstolpec1
+              <span uk-icon="icon: trash" class="edit-column" uk-toggle="target: #delete-column-modal"></span>
+              <span class="uk-badge wip-subcolumn">2/10</span>
+            </h6>
+            <hr class="subcolumn-hr">
+            <div class="cards-container">
+              <li draggable="true" class="board-item">
+                <h3> naslov </h3>
+                <div> to je vsebina </div>
+              </li>
+            </div>
+          </div>
+          <span class="vertical-line"></span>
+          <div class="subcolumn">
+            <h6 class="subcolumn-title">
+              Podstolpec2
+              <span uk-icon="icon: trash" class="edit-column" uk-toggle="target: #delete-column-modal"></span>
+              <span class="uk-badge wip-subcolumn">4/10</span>
+            </h6>
+            <hr class="subcolumn-hr">
+            <div class="cards-container">
+              <li draggable="true" class="board-item">
+                <h3> naslov </h3>
+                <div> to je vsebina </div>
+              </li>
+            </div>
+          </div>
         </div>
       </ol>
     </div>
@@ -71,5 +116,15 @@
         </div>
       </fieldset>
     </form>
+  </div>
+</div>
+
+<div id="delete-column-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <h3>Ste prepričani, da želite izbirsati stolpec?</h3>
+    <p class="uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close" type="button">prekliči</button>
+      <button class="uk-button uk-button-danger" type="button" (click)="deleteColumn()">Izbriši</button>
+    </p>
   </div>
 </div>

@@ -62,6 +62,31 @@
   margin: 2px;
 }
 
+.subcolumn-container {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-flow: row;
+}
+
+.subcolumn {
+  min-width: 150px;
+}
+
+.subcolumn-title {
+  margin-bottom: 3px;
+}
+
+.subcolumn-hr {
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+.vertical-line {
+  border-left: 1px solid lightgray;
+  height: 78vh;
+  margin: 30px 10px;
+}
+
 .cards-container {
   height: 700px;
   overflow-y: scroll;
@@ -92,4 +117,23 @@
 .add-column-last:hover {
   cursor: pointer;
   opacity: 1;
+}
+
+.wip {
+  float: right;
+  margin-top: 7px;
+}
+
+.wip-subcolumn {
+  float: right;
+}
+
+.edit-column {
+  opacity: 0;
+  color: red;
+}
+
+.edit-column:hover {
+  opacity: 1;
+  cursor: pointer;
 }
