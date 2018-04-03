@@ -12,6 +12,10 @@ export class UsersService {
     return this.http.get(Config.API + '/user/');
   }
 
+  getSingleUser(email) {
+    return this.http.get(Config.API + '/user/' + email + '/');
+  }
+
   postUser(user: User) {
     return this.http.post(Config.API + '/user/', user);
   }

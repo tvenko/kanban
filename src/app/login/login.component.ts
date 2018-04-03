@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthenticationService } from '../shared/services/authentication.service';
+import { UsersService } from '../shared/services/users.service';
 
 
 @Component({
@@ -22,7 +23,8 @@ export class LoginComponent implements OnInit {
  
     constructor(
         private router: Router,
-        private authenticationService: AuthenticationService) { }
+        private authenticationService: AuthenticationService,
+        private usersService: UsersService) { }
  
     ngOnInit() {
         // reset login status
@@ -56,10 +58,18 @@ export class LoginComponent implements OnInit {
         this.authenticationService.login(this.model.email, this.model.password)
                 .subscribe(data => {
                     // store email and jwt token in local storage to keep user logged in between page refreshes
-                    localStorage.setItem('user_email', this.model.email);
 					localStorage.setItem('auth_token', data.token);
-					localStorage.removeItem('login_attempts');
-					this.router.navigate(['/projects']);
+					this.usersService.getSingleUser(this.model.email)
+		                .subscribe(data => {
+							localStorage.setItem('user', JSON.stringify(data));
+							localStorage.removeItem('login_attempts');
+							this.router.navigate(['/projects']);
+		            	},
+		            	error => {
+		            		this.error = 'Pridobivanje podatkov o uporabniku neuspešno.';
+		                }
+		            );
+					
             	},
             	error => {
             		let loginAttempts = localStorage.getItem('login_attempts');
