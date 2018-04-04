@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {UsersService} from '../shared/services/users.service';
 import {User} from '../shared/models/user.interface';
+import {Router} from '@angular/router';
 
 declare var UIkit: any;
 
@@ -20,7 +21,8 @@ export class UsersComponent implements OnInit {
   editUserForm: FormGroup;
   newUserForm: FormGroup;
 
-  constructor(private usersService: UsersService) { }
+  constructor(private usersService: UsersService,
+              private router: Router) { }
 
   ngOnInit() {
     this.editUserForm = new FormGroup({
@@ -100,15 +102,24 @@ export class UsersComponent implements OnInit {
       };
       console.log(user.id, this.editedUser.id);
       this.usersService.updateUser(user, user.id).subscribe(res => {
-        UIkit.modal('#edit-user-modal').hide();
-        UIkit.notification(
-          'Uporabnik ' + user.name + ' ' + user.surname + ' je uspešno posodobljen',
-          {status: 'success', timeout: 2000}
-        );
-        this.getUsers();
-        this.editedUser = null;
-        this.error = null;
-        this.editUserForm.reset();
+        // if the user updates his info, update the user cookie and refresh the page
+        let sessionUser = JSON.parse(localStorage.getItem('user'));
+        if (sessionUser["id"] == user.id) {
+          sessionUser["roles"] = this.usersService.reverseRolesMapper(roles);
+          localStorage.setItem('user', JSON.stringify(sessionUser));
+          window.location.reload();
+        }
+        else {
+          UIkit.modal('#edit-user-modal').hide();
+          UIkit.notification(
+            'Uporabnik ' + user.name + ' ' + user.surname + ' je uspešno posodobljen',
+            {status: 'success', timeout: 2000}
+          );
+          this.getUsers();
+          this.editedUser = null;
+          this.error = null;
+          this.editUserForm.reset();
+        }
       }, err => {
         this.error = 'Uporabnika ' + user.name + ' ' + user.surname +
           ' ni bilo mogoče posodobiti. Nekaj se je zalomilo na strežniku, prosimo poskusite kasneje.';
@@ -168,7 +179,13 @@ export class UsersComponent implements OnInit {
       is_active: false
     };
     this.usersService.updateUser(lockedUser, lockedUser.id).subscribe(
-      res => user.is_active = false,
+      res => { user.is_active = false;
+              // if the user locks himself: logout
+              let sessionUser = JSON.parse(localStorage.getItem('user'));
+              if (sessionUser["id"] == user.id) {
+                this.router.navigate(['/login']);
+              }
+       },
       err => console.log('ERROR locking user')
       );
   }

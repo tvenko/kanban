@@ -5,7 +5,6 @@ import {Group, GroupMember} from '../shared/models/group.interface';
 import { forEach } from '@angular/router/src/utils/collection';
 import {User} from '../shared/models/user.interface';
 import { UsersService } from '../shared/services/users.service';
-import 'rxjs/add/operator/filter';
 declare var UIkit: any;
 
 @Component({

@@ -50,4 +50,31 @@ export class UsersService {
     }
     return mappedRoles;
   }
+
+  reverseRolesMapper(roles) {
+    const mappedRoles = [];
+    console.log(roles[0]);
+    for (const role of roles) {
+      console.log(role);
+      switch (role) {
+        case 1: {
+          mappedRoles.push('developer');
+          break;
+        }
+        case 2: {
+          mappedRoles.push('product owner');
+          break;
+        }
+        case 3: {
+          mappedRoles.push('kanban master');
+          break;
+        }
+        case 4: {
+          mappedRoles.push('admin');
+          break;
+        }
+      }
+    }
+    return mappedRoles;
+  }
 }
