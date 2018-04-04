@@ -4,6 +4,7 @@ import {GroupsService} from '../shared/services/groups.service';
 import {Group, GroupMember} from '../shared/models/group.interface';
 import { Project } from '../shared/models/project.interface';
 import { ProjectsService } from '../shared/services/projects.service';
+import { DISABLED } from '@angular/forms/src/model';
 declare var UIkit: any;
 
 @Component({
@@ -29,7 +30,8 @@ export class ProjectsComponent implements OnInit {
       'code-name': new FormControl(null, Validators.required),
       'name': new FormControl(null, Validators.required),
       'buyer': new FormControl(null, Validators.required),
-      'project-dates': new FormControl(null, Validators.required),
+      'project-start-date': new FormControl(null, Validators.required),
+      'project-end-date': new FormControl(null, Validators.required),
       "project-group": new FormControl(null, Validators.required)
     });
 
@@ -54,6 +56,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   loadGroups() {
+    this.groups = [];
     this.groupsService.getGroups().subscribe(groups => {
       this.groups = <Group[]> groups;
       this.groups.sort(function (a, b) {
@@ -62,6 +65,10 @@ export class ProjectsComponent implements OnInit {
     }, err => {
       console.log('error geting groups from backend');
     });                                          
+  }
+
+  resetEndDate(){
+    this.projectsForm.get("project-end-date").setValue(null);
   }
 
   cancelProject(){
@@ -81,14 +88,14 @@ export class ProjectsComponent implements OnInit {
       title:this.projectsForm.get("name").value,
       developer_group_id:(<Group>this.projectsForm.get("project-group").value).id.toString(),
       board_id:null,
-      started_at:(<Date>this.projectsForm.get("project-dates").value[0]).getFullYear()+"-"+(<Date>this.projectsForm.get("project-dates").value[0]).getMonth() + "-"+(<Date>this.projectsForm.get("project-dates").value[0]).getDate(),
-      ended_at:(<Date>this.projectsForm.get("project-dates").value[1]).getFullYear()+"-"+(<Date>this.projectsForm.get("project-dates").value[1]).getMonth() + "-"+(<Date>this.projectsForm.get("project-dates").value[1]).getDate(),
+      started_at:(<Date>this.projectsForm.get("project-start-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-start-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-start-date").value).getDate(),
+      ended_at:(<Date>this.projectsForm.get("project-end-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-end-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-end-date").value).getDate(),
       group_data:this.projectsForm.get("project-group").value
     };
     //Send request
     this.projectsService.postProject(project).subscribe(res => {        
       UIkit.modal('#new-project-modal').hide();
-      UIkit.notification('Projekt dodana.', {status: 'success', timeout: 2000});
+      UIkit.notification('Projekt dodan.', {status: 'success', timeout: 2000});
       UIkit.modal('#new-project-modal').hide();
       this.loadGroups();
     }, err => {

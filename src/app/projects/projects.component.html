@@ -81,17 +81,30 @@
             Vnesi naročnika
           </span>
 
-          <!-- Start/end date -->
+          <!-- Start date -->
           <div class="uk-margin">
-            <label class="uk-form-label" for="edit-project-dates">Trajanje projekta</label>
+            <label class="uk-form-label" for="edit-project-start-dates">Datum začetka</label>
             <div class="uk-form-controls">
-              <p-calendar id="edit-project-dates" [locale]="sl" [minDate]="today" selectionMode="range"  formControlName="project-dates" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-dates').valid && projectsForm.get('project-dates').touched}"></p-calendar>
+              <p-calendar (onSelect)="resetEndDate($event)" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
             </div>
           </div>
           <span class="uk-alert-danger"
-          *ngIf="!projectsForm.get('project-dates').valid && projectsForm.get('project-dates').touched">
-            Izberi trajanje projekta
+          *ngIf="!projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched &&  projectsForm.get('project-start-date').dirty">
+            Izberi datum začetka
           </span>
+
+          <!-- End date -->
+          <div class="uk-margin">
+              <label class="uk-form-label" for="edit-project-end-dates">Predviden datum zaključka</label>
+              <div class="uk-form-controls">
+                <p-calendar id="edit-project-end-date" [locale]="sl" [minDate]="this.projectsForm.get('project-start-date').value" formControlName="project-end-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched}"></p-calendar>
+              </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched &&  projectsForm.get('project-end-date').dirty">
+            Izberi predviden datum zaključka
+          </span>
+          
           <!-- Show all groups -->
           <div class="uk-form-controls  uk-margin">
             <label class="uk-form-label" for="edit-project-group">Razvojna skupina</label>
