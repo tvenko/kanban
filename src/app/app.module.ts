@@ -25,6 +25,8 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { HttpModule } from '@angular/http';
 import {BoardsService} from './shared/services/boards.service';
 
+import {CalendarModule} from 'primeng/calendar';
+
 export function tokenGetterFunc() {
   return localStorage.getItem('auth_token');
 }
@@ -51,6 +53,7 @@ export function tokenGetterFunc() {
     FormsModule,
     ReactiveFormsModule,
     HttpModule,
+    CalendarModule,
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetterFunc,

@@ -5,8 +5,38 @@
       <button class="uk-button uk-button-primary newProjectButton" (click)="loadModal()" uk-toggle="target: #new-project-modal">Nov projekt</button>
   </div>
 
-  <!-- Projects modal -->
-  
+  <!-- Projects display -->
+  <!-- <div uk-height-match="target: > div > .uk-card" class="uk-grid-small" uk-grid >
+      <div class="uk-card uk-card-default uk-card-body uk-card-hover groupCard" *ngFor="let project of projects">
+          <div class="uk-card-badge">
+              <button class="uk-icon-link uk-dark" uk-icon="pencil"  (click)="editProject(project)" uk-toggle="target: #new-project-modal"></button>
+              <button class="uk-icon-link uk-dark" uk-icon="trash"  (click)="deleteProject(project)"></button>
+          </div>
+          <h3 class="uk-text-center uk-card-title" >{{project.naziv}}</h3>
+          <span *ngFor="let member of group.users" >
+              Inactive members 
+              <ng-container *ngIf="!member.group_active" >
+                      <span class="uk-text-muted">{{member.name + " " + member.surname}} (neaktiven):</span>             
+                      <span *ngFor="let role of member.allowed_group_roles">
+                          <span class="uk-label uk-label-success" *ngIf="role == 2"> Product owner</span>
+                          <span class="uk-label uk-label-warning" *ngIf="role == 3"> Kanban master</span>
+                          <span class="uk-label" *ngIf="role == 1"> Razvijalec</span>
+                      </span>   
+              </ng-container>
+               Active member
+              <ng-container *ngIf="member.group_active" class="uk-text-muted"> 
+                  <span class="uk-text-primary">{{member.name + " " + member.surname}}</span>
+                  <span *ngFor="let role of member.allowed_group_roles">
+                      <span class="uk-label uk-label-success" *ngIf="role == 2"> Product owner</span>
+                      <span class="uk-label uk-label-warning" *ngIf="role == 3"> Kanban master</span>
+                      <span class="uk-label" *ngIf="role == 1"> Razvijalec</span>
+                  </span> 
+              </ng-container> 
+              <br> 
+          </span>
+      </div>
+  </div>
+   -->
 <!-- Projects modal -->
 <div id="new-project-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
@@ -19,42 +49,65 @@
           <div class="uk-margin">
             <label class="uk-form-label" for="edit-code-name">Šifra projekta</label>
             <div class="uk-form-controls">
-              <input class="uk-input" id="edit-code-name" type="text" placeholder="Šifra projekta" formControlName="code-name">
+              <input class="uk-input" id="edit-code-name" type="text" placeholder="Šifra projekta" formControlName="code-name" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('code-name').valid && projectsForm.get('code-name').touched}">
             </div>
           </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('code-name').valid && projectsForm.get('code-name').touched">
+            Vnesi šifro projekta
+          </span>
+
           <!-- Project name -->
           <div class="uk-margin">
-            <label class="uk-form-label" for="edit-name">Naziv projekta</label>
+            <label class="uk-form-label" for="edit-project-name">Naziv projekta</label>
             <div class="uk-form-controls">
-              <input class="uk-input" id="edit-name" type="text" placeholder="Naziv projekta" formControlName="name">
+              <input class="uk-input" id="edit-project-name" type="text" placeholder="Naziv projekta" formControlName="name"  [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('name').valid && projectsForm.get('name').touched}">
             </div>
           </div>
-  
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('name').valid && projectsForm.get('name').touched">
+            Vnesi naziv projekta
+          </span>
+
           <!-- Buyers name -->
           <div class="uk-margin">
             <label class="uk-form-label" for="edit-buyer">Ime naročnika</label>
             <div class="uk-form-controls">
-              <input class="uk-input" id="edit-buyer" type="text" placeholder="Ime naročnika" formControlName="buyer">
+              <input class="uk-input" id="edit-buyer" type="text" placeholder="Ime naročnika" formControlName="buyer" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('buyer').valid && projectsForm.get('buyer').touched}">
             </div>
           </div>
-  
-          <!-- Start date -->
-          <div class="uk-margin">
-            <label class="uk-form-label" for="start-date">Čas začetka</label>
-            <div class="uk-form-controls">
-              <input type="text" data-uk-datepicker="{format:'DD.MM.YYYY'}" formControlName="start-date">
-            </div>
-          </div>
-
-          <!-- End date -->
-          <div class="uk-margin">
-            <label class="uk-form-label" for="end-date">Predviden čas zaključka</label>
-            <div class="uk-form-controls">
-              <input type="text" data-uk-datepicker="{format:'DD.MM.YYYY'}" formControlName="end-date">
-            </div>
-          </div>
-<!--   
           <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('buyer').valid && projectsForm.get('buyer').touched">
+            Vnesi naročnika
+          </span>
+
+          <!-- Start/end date -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-project-dates">Trajanje projekta</label>
+            <div class="uk-form-controls">
+              <p-calendar id="edit-project-dates" [locale]="sl" [minDate]="today" selectionMode="range"  formControlName="project-dates" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-dates').valid && projectsForm.get('project-dates').touched}"></p-calendar>
+            </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('project-dates').valid && projectsForm.get('project-dates').touched">
+            Izberi trajanje projekta
+          </span>
+          <!-- Show all groups -->
+          <div class="uk-form-controls  uk-margin">
+            <label class="uk-form-label" for="edit-project-group">Razvojna skupina</label>
+            <select class="uk-select" id="edit-project-group" formControlName="project-group">
+                <ng-container *ngFor="let group of groups">
+                    <option >{{group.title}}</option>
+                </ng-container>    
+            </select>
+          </div>
+          <span class="uk-alert-danger"
+                *ngIf="!projectsForm.get('project-group').valid && projectsForm.get('project-group').touched">
+            Izberi skupino
+          </span>
+
+<!--   
+            <span class="uk-alert-danger"
                 *ngIf="!editUserForm.get('passwordMatch').valid && editUserForm.get('passwordMatch').touched && editUserForm.get('passwordMatch').dirty">
             Gesli se ne ujemata</span> -->
     
@@ -65,11 +118,10 @@
           </div>
 
 
-          [disabled]="!editUserForm.valid"
    -->
           <div class="uk-text-right">
             <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
-            <button class="uk-button uk-button-primary" type="submit" >Shrani</button>
+            <button class="uk-button uk-button-primary" type="submit" [disabled]="!projectsForm.valid">Shrani</button>
           </div>
         </fieldset>
       </form>
