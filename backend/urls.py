@@ -18,9 +18,17 @@ groups_urls = [
     url(r'^groups/$', views.DeveloperGroupList.as_view()),
 ]
 
+
+projects_urls = [
+    url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectList.as_view()),
+    url(r'^projects/$', views.ProjectList.as_view()),
+]
+
+
 urlpatterns = [
     url(r'^', include(users_urls)),
     url(r'^', include(roles_urls)),
     url(r'^', include(groups_urls)),
+    url(r'^', include(projects_urls)),
     url(r'^docs/', views.schema_view)
 ]

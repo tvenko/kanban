@@ -2,8 +2,8 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser
-from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole
-from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer
+from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project
+from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -331,3 +331,39 @@ class RoleList(generics.ListAPIView):
 
         return JsonResponse(all_roles, safe=False, status=status.HTTP_202_ACCEPTED)
 
+
+class ProjectList(generics.ListCreateAPIView):
+    """
+    List all groups.
+    """
+
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+
+
+    def get(self, request, **kwargs):
+        projects = Project.objects.all()
+        group_memberships = DeveloperGroupMembership.objects.all()
+        users = User.objects.all()
+
+        projects_data = []
+        for project in projects:
+            allowed_roles_query = group_memberships.filter(
+                developer_group_id=project.developer_group_id.id)
+            group_data = DeveloperGroupSerializer(
+                project.developer_group_id).data
+            project_data = ProjectSerializer(project).data
+            project_data["group_data"] = group_data
+
+            user_roles_dict = []
+            for z in allowed_roles_query:
+                user_roles = get_user_group_roles(z.id)
+                user_details = users.filter(id=z.user_id.id)[0]
+                user_data = UserSerializer(user_details).data
+                user_data["allowed_group_roles"] = user_roles
+                user_data["group_active"] = z.active
+                user_roles_dict.append(user_data)
+            group_data["users"] = user_roles_dict
+            projects_data.append(project_data)
+
+        return Response(projects_data, status=status.HTTP_202_ACCEPTED)

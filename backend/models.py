@@ -2,26 +2,28 @@ from django.db.models import *
 from django.contrib.auth.models import AbstractUser
 import uuid
 
+
 class User(AbstractUser):
-    #id = AutoField(primary_key=True)
-    name = CharField(max_length=100) # Could be removed. Kept for compatibility reasons.
-    surname = CharField(max_length=100) # Could be removed. Same reason.
+    # id = AutoField(primary_key=True)
+    name = CharField(
+        max_length=100)  # Could be removed. Kept for compatibility reasons.
+    surname = CharField(max_length=100)  # Could be removed. Same reason.
     email = CharField(max_length=100, unique=True)
     jwt_secret = UUIDField(default=uuid.uuid4)
 
     # These fields are inherited from AbstractUser.
-    #password = CharField(max_length=100)
-    #is_active = BooleanField(default=False)
-    #first_name, last_name.
+    # password = CharField(max_length=100)
+    # is_active = BooleanField(default=False)
+    # first_name, last_name.
 
     # Workaround for jwt authentication and superuser tool.
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
     username = CharField(max_length=100, null=True)
-    
-    #def get_username(self):
+
+    # def get_username(self):
     #    return str(self.id)
-    #def natural_key(self):
+    # def natural_key(self):
     #    return self.get_username()
 
 
@@ -41,7 +43,8 @@ class WipViolation(Model):
     card_id = ForeignKey('Card', on_delete=CASCADE)
     column_id = ForeignKey('Column', on_delete=CASCADE)
     user_id = ForeignKey('User', on_delete=CASCADE)
-    wip_violation_reason_id = ForeignKey('WipViolationReason', on_delete=CASCADE)
+    wip_violation_reason_id = ForeignKey('WipViolationReason',
+                                         on_delete=CASCADE)
     date = DateTimeField()
 
 
@@ -72,8 +75,10 @@ class Card(Model):
 
 class CardLog(Model):
     card_id = ForeignKey('Card', on_delete=CASCADE)
-    from_column_id = ForeignKey('Column', related_name='card_log_from_column', on_delete=CASCADE)
-    to_column_id = ForeignKey('Column', related_name='card_log_to_column', on_delete=CASCADE)
+    from_column_id = ForeignKey('Column', related_name='card_log_from_column',
+                                on_delete=CASCADE)
+    to_column_id = ForeignKey('Column', related_name='card_log_to_column',
+                              on_delete=CASCADE)
     date = DateTimeField()
 
 
@@ -111,16 +116,29 @@ class AllowedRole(Model):
 
 
 class GroupRole(Model):
-    developer_group_membership_id = ForeignKey('DeveloperGroupMembership', on_delete=CASCADE)
+    developer_group_membership_id = ForeignKey('DeveloperGroupMembership',
+                                               on_delete=CASCADE)
     role_id = ForeignKey('Role', on_delete=CASCADE)
 
 
 class Board(Model):
     title = CharField(max_length=100)
-    type_priority_column_id = ForeignKey('Column', related_name='type_priority_column', on_delete=CASCADE)
-    type_acceptance_testing_column_id = ForeignKey('Column', related_name='type_acceptance_testing_column', on_delete=CASCADE)
-    type_left_border_column_id = ForeignKey('Column', related_name='type_left_border_column', on_delete=CASCADE)
-    type_right_border_column_id = ForeignKey('Column', related_name='type_right_border_column', on_delete=CASCADE)
+    type_priority_column_id = ForeignKey('Column',
+                                         related_name='type_priority_column',
+                                         on_delete=CASCADE, null=True,
+                                         blank=True)
+    type_acceptance_testing_column_id = ForeignKey('Column',
+                                                   related_name='type_acceptance_testing_column',
+                                                   on_delete=CASCADE, null=True,
+                                                   blank=True)
+    type_left_border_column_id = ForeignKey('Column',
+                                            related_name='type_left_border_column',
+                                            on_delete=CASCADE, null=True,
+                                            blank=True)
+    type_right_border_column_id = ForeignKey('Column',
+                                             related_name='type_right_border_column',
+                                             on_delete=CASCADE, null=True,
+                                             blank=True)
     notify_overdue_n_days = IntegerField()
     display_priority = BooleanField(default=False)
     display_size = BooleanField(default=False)
@@ -136,8 +154,12 @@ class Column(Model):
 
 
 class ColumnPermissions(Model):
-    from_column_id = ForeignKey('Column', related_name='column_permissions_from_column', on_delete=CASCADE)
-    to_column_id = ForeignKey('Column', related_name='column_permission_to_column', on_delete=CASCADE)
+    from_column_id = ForeignKey('Column',
+                                related_name='column_permissions_from_column',
+                                on_delete=CASCADE)
+    to_column_id = ForeignKey('Column',
+                              related_name='column_permission_to_column',
+                              on_delete=CASCADE)
     role_id = ForeignKey('Role', on_delete=CASCADE)
     allow = BooleanField(default=False)
 
@@ -145,12 +167,11 @@ class ColumnPermissions(Model):
 class Project(Model):
     id_project = CharField(max_length=500, primary_key=True)
     developer_group_id = ForeignKey('DeveloperGroup', on_delete=CASCADE)
-    board_id = ForeignKey('Board', on_delete=CASCADE)
+    board_id = ForeignKey('Board', on_delete=CASCADE, null=True, blank=True)
     title = CharField(max_length=300)
     started_at = DateField()
     ended_at = DateField()
     active = BooleanField(default=False)
-
 
 
 
