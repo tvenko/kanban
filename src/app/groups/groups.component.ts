@@ -5,6 +5,7 @@ import {Group, GroupMember} from '../shared/models/group.interface';
 import { forEach } from '@angular/router/src/utils/collection';
 import {User} from '../shared/models/user.interface';
 import { UsersService } from '../shared/services/users.service';
+import 'rxjs/add/operator/filter';
 declare var UIkit: any;
 
 @Component({
@@ -27,6 +28,8 @@ export class GroupsComponent implements OnInit {
   userSelectDropdown: FormControl;
   groupModalTitle: string;
   roleNames = ["", "Razvijalec", "Product owner", "Kanban master"];
+  isCurrentUserAdmin = false;
+  currentUserId = null;
 
   constructor(private groupsService: GroupsService, private usersService: UsersService) {
     this.users = [];
@@ -37,6 +40,9 @@ export class GroupsComponent implements OnInit {
   }
 
   ngOnInit() {
+    let user = JSON.parse(localStorage.getItem('user'));
+    this.isCurrentUserAdmin = user.roles.includes("admin");
+    this.currentUserId = user["id"];
     this.loadGroups();
     this.groupNameInput = new FormControl(null, Validators.required);
     this.userSelectDropdown = new FormControl(null);
@@ -44,6 +50,18 @@ export class GroupsComponent implements OnInit {
 
   loadGroups() {
     this.groupsService.getGroups().subscribe(groups => {
+      if (!this.isCurrentUserAdmin) {
+        groups = Object.values(groups).filter((group, index, array) => {
+          let isMember = false;
+          group.users.forEach( (user) => {
+            if (user["id"] == this.currentUserId) {
+              isMember = true;
+            }
+          });
+          return isMember;
+        });
+      }
+
       this.groups = <Group[]> groups;
       this.groups.sort(function (a, b) {
         return a.id - b.id;
