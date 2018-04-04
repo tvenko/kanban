@@ -25,6 +25,10 @@ export class UsersComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
+    let user = JSON.parse(localStorage.getItem('user'));
+    if (!user.roles.includes("admin")) {
+      this.router.navigate(['/projects']);
+    }
     this.editUserForm = new FormGroup({
       'name': new FormControl(null, Validators.required),
       'surname': new FormControl(null, Validators.required),

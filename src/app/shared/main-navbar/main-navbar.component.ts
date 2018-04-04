@@ -24,8 +24,8 @@ export class MainNavbarComponent implements OnInit {
   }
 
   isAdmin() {
-    // TODO: implementiraj metodo, ki bo preverjala ali je uporabnik administrator.
-    return true;
+    let user = JSON.parse(localStorage.getItem('user'));
+    return user.roles.includes("admin");
   }
 
 }
