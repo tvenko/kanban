@@ -26,6 +26,7 @@ import { HttpModule } from '@angular/http';
 import {BoardsService} from './shared/services/boards.service';
 
 import {CalendarModule} from 'primeng/calendar';
+import { ProjectsService } from './shared/services/projects.service';
 
 export function tokenGetterFunc() {
   return localStorage.getItem('auth_token');
@@ -61,7 +62,7 @@ export function tokenGetterFunc() {
       }
     }),
   ],
-  providers: [UsersService, GroupsService, AuthGuard, AuthenticationService, BoardsService],
+  providers: [UsersService, GroupsService, AuthGuard, AuthenticationService, BoardsService, ProjectsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
