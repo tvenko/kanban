@@ -116,6 +116,15 @@ export class ProjectsComponent implements OnInit {
 
   }
 
+  deleteProject(){
+
+  }
+
+  editProject(){
+    
+  }
+
+
   saveProject(){
     //New project
     //Create object
