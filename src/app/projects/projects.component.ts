@@ -21,6 +21,7 @@ export class ProjectsComponent implements OnInit {
   projects:Project[];
   isCurrentUserAdmin = false;
   currentUserId = null;
+  selectedProject:Project;
 
   constructor(private groupsService: GroupsService, private projectsService: ProjectsService) { }
 
@@ -57,6 +58,7 @@ export class ProjectsComponent implements OnInit {
   loadModal(){
     this.projectsModalTitle = "Nov projekt";
     this.projectsForm.reset();
+    this.selectedProject = null;
     this.loadGroups();
 
   }
@@ -109,47 +111,83 @@ export class ProjectsComponent implements OnInit {
   }
 
   cancelProject(){
-
+    this.loadProjects();
   }
 
   closeModal(){
 
   }
 
-  deleteProject(){
+  deleteProject(project:Project){
 
   }
 
-  editProject(){
-    
+  editProject(project:Project){
+    this.selectedProject=project;
+    this.loadGroups();
+    this.projectsModalTitle = "Uredi projekt"
+    this.projectsForm.get("code-name").setValue(project.id_project);
+    this.projectsForm.get("name").setValue(project.title);
+    this.projectsForm.get("buyer").setValue("naročnik");
+    this.projectsForm.get("project-group").setValue(project.group_data);
+    this.projectsForm.get("project-start-date").setValue(new Date(project.started_at));
+    this.projectsForm.get("project-end-date").setValue(new Date(project.ended_at));
   }
 
 
   saveProject(){
-    //New project
+    if(this.selectedProject == null){
+      //New project
+      //Create object
+      const project: Project = {
+        id_project:this.projectsForm.get("code-name").value,
+        active:true,
+        title:this.projectsForm.get("name").value,
+        developer_group_id:(<Group>this.projectsForm.get("project-group").value).id.toString(),
+        board_id:null,
+        started_at:(<Date>this.projectsForm.get("project-start-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-start-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-start-date").value).getDate(),
+        ended_at:(<Date>this.projectsForm.get("project-end-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-end-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-end-date").value).getDate(),
+        group_data:this.projectsForm.get("project-group").value
+      };
+      //Send request
+      this.projectsService.postProject(project).subscribe(res => {        
+        UIkit.modal('#new-project-modal').hide();
+        UIkit.notification('Projekt dodan.', {status: 'success', timeout: 2000});
+        UIkit.modal('#new-project-modal').hide();
+        this.loadProjects();
+      }, err => {
+        UIkit.notification('Napaka pri dodajanju novega projekta.', {status: 'danger', timeout: 2000});
+        console.log(err);
+      });  
+
+      UIkit.modal('#new-project-modal').hide();
+    }else{
+    //Update project
     //Create object
     const project: Project = {
-      id_project:this.projectsForm.get("code-name").value,
-      active:true,
+      id_project:this.selectedProject.id_project,
+      active:this.selectedProject.active,
       title:this.projectsForm.get("name").value,
       developer_group_id:(<Group>this.projectsForm.get("project-group").value).id.toString(),
-      board_id:null,
+      board_id:this.selectedProject.board_id,
       started_at:(<Date>this.projectsForm.get("project-start-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-start-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-start-date").value).getDate(),
       ended_at:(<Date>this.projectsForm.get("project-end-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-end-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-end-date").value).getDate(),
       group_data:this.projectsForm.get("project-group").value
     };
     //Send request
-    this.projectsService.postProject(project).subscribe(res => {        
-      UIkit.modal('#new-project-modal').hide();
-      UIkit.notification('Projekt dodan.', {status: 'success', timeout: 2000});
-      UIkit.modal('#new-project-modal').hide();
+    this.projectsService.updateProject(project).subscribe(res => {        
+      UIkit.modal('#edit-project-modal').hide();
+      UIkit.notification('Projekt urejen.', {status: 'success', timeout: 2000});
+      UIkit.modal('#edit-project-modal').hide();
       this.loadProjects();
     }, err => {
-      UIkit.notification('Napaka pri dodajanju novega projekta.', {status: 'danger', timeout: 2000});
+      UIkit.notification('Napaka pri urejanju projekta.', {status: 'danger', timeout: 2000});
       console.log(err);
     });  
 
-    UIkit.modal('#new-project-modal').hide();
+    UIkit.modal('#edit-project-modal').hide();
+    }
+
   }
 
 }
