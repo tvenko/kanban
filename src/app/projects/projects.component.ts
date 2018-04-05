@@ -134,7 +134,7 @@ export class ProjectsComponent implements OnInit {
       UIkit.modal('#new-project-modal').hide();
       UIkit.notification('Projekt dodan.', {status: 'success', timeout: 2000});
       UIkit.modal('#new-project-modal').hide();
-      this.loadGroups();
+      this.loadProjects();
     }, err => {
       UIkit.notification('Napaka pri dodajanju novega projekta.', {status: 'danger', timeout: 2000});
       console.log(err);

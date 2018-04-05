@@ -10,7 +10,7 @@
      <div *ngFor="let project of projects" class="cards">
       <div class="uk-card uk-card-default uk-card-body uk-card-hover projectCard uk-padding-remove-bottom" >
           <div class="uk-card-badge">
-              <button class="uk-icon-link uk-dark" uk-icon="pencil"  (click)="editProject(project)" uk-toggle="target: #new-project-modal"></button>
+              <button class="uk-icon-link uk-dark" uk-icon="pencil"  (click)="editProject(project)" uk-toggle="target: #edit-project-modal"></button>
               <button class="uk-icon-link uk-dark" uk-icon="trash"  (click)="deleteProject(project)"></button>
           </div>
           <h3 class="uk-card-title uk-margin-remove-bottom" >{{project.title}}</h3>
