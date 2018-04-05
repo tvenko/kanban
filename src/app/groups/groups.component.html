@@ -1,14 +1,14 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
     <!-- New group modal toggle button -->
-    <div *ngIf="isCurrentUserAdmin">
+    <div *ngIf="isCurrentUserKanbanMaster">
         <button class="uk-button uk-button-primary newGroupButton" (click)="loadModal()" uk-toggle="target: #new-group-modal">Nova skupina</button>
     </div>
     <br>
     <!-- Groups display -->
     <div uk-height-match="target: > div > .uk-card" class="uk-grid-small" uk-grid >
         <div class="uk-card uk-card-default uk-card-body uk-card-hover groupCard" *ngFor="let group of groups">
-            <div *ngIf="isCurrentUserAdmin" class="uk-card-badge">
+            <div *ngIf="isCurrentUserKanbanMaster" class="uk-card-badge">
                 <button class="uk-icon-link uk-dark" uk-icon="pencil"  (click)="editGroup(group)" uk-toggle="target: #new-group-modal"></button>
                 <button class="uk-icon-link uk-dark" uk-icon="trash"  (click)="deleteGroup(group)"></button>
             </div>

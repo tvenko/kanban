@@ -27,7 +27,7 @@ export class GroupsComponent implements OnInit {
   userSelectDropdown: FormControl;
   groupModalTitle: string;
   roleNames = ["", "Razvijalec", "Product owner", "Kanban master"];
-  isCurrentUserAdmin = false;
+  isCurrentUserKanbanMaster = false;
   currentUserId = null;
 
   constructor(private groupsService: GroupsService, private usersService: UsersService) {
@@ -40,7 +40,7 @@ export class GroupsComponent implements OnInit {
 
   ngOnInit() {
     let user = JSON.parse(localStorage.getItem('user'));
-    this.isCurrentUserAdmin = user.roles.includes("admin");
+    this.isCurrentUserKanbanMaster = user.roles.includes("kanban master");
     this.currentUserId = user["id"];
     this.loadGroups();
     this.groupNameInput = new FormControl(null, Validators.required);
@@ -49,7 +49,7 @@ export class GroupsComponent implements OnInit {
 
   loadGroups() {
     this.groupsService.getGroups().subscribe(groups => {
-      if (!this.isCurrentUserAdmin) {
+      if (!this.isCurrentUserKanbanMaster) {
         groups = Object.values(groups).filter((group, index, array) => {
           let isMember = false;
           group.users.forEach( (user) => {
