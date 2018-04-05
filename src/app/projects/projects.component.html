@@ -6,14 +6,26 @@
   </div>
 
   <!-- Projects display -->
-  <!-- <div uk-height-match="target: > div > .uk-card" class="uk-grid-small" uk-grid >
-      <div class="uk-card uk-card-default uk-card-body uk-card-hover groupCard" *ngFor="let project of projects">
+  <div class="uk-child-width-1-3@s uk-grid-match" uk-grid>
+     <div *ngFor="let project of projects" class="cards">
+      <div class="uk-card uk-card-default uk-card-body uk-card-hover projectCard uk-padding-remove-bottom" >
           <div class="uk-card-badge">
               <button class="uk-icon-link uk-dark" uk-icon="pencil"  (click)="editProject(project)" uk-toggle="target: #new-project-modal"></button>
               <button class="uk-icon-link uk-dark" uk-icon="trash"  (click)="deleteProject(project)"></button>
           </div>
-          <h3 class="uk-text-center uk-card-title" >{{project.naziv}}</h3>
-          <span *ngFor="let member of group.users" >
+          <h3 class="uk-card-title uk-margin-remove-bottom" >{{project.title}}</h3>
+          <p class="uk-text-meta uk-margin-remove-top">{{project.id_project}}</p>
+          <div class="uk-margin uk-margin-remove-bottom">Skupina: <span class="uk-label" >{{project.group_data.title}} </span></div>
+          <div class="uk-margin uk-margin-remove-top">Status: 
+            <span class="uk-label uk-label-success" *ngIf="project.active">V teku</span>
+            <span class="uk-label uk-label-warning" *ngIf="!project.active">Neaktiven</span>
+            <span class="uk-label uk-label-danger" *ngIf="project.active && dateDifference(project) < 5">Pozen</span>
+          </div> 
+          
+          <div class="uk-card-footer">
+              <p class="uk-text-meta uk-margin-remove-top" >{{project.started_at |  date:'dd.MM.yyyy'}} - {{project.ended_at |  date:'dd.MM.yyyy'}}</p>
+          </div>
+          <!-- <span *ngFor="let member of group.users" >
               Inactive members 
               <ng-container *ngIf="!member.group_active" >
                       <span class="uk-text-muted">{{member.name + " " + member.surname}} (neaktiven):</span>             
@@ -33,10 +45,11 @@
                   </span> 
               </ng-container> 
               <br> 
-          </span>
+          </span> -->
       </div>
+    </div>
   </div>
-   -->
+
 <!-- Projects modal -->
 <div id="new-project-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
@@ -85,7 +98,7 @@
           <div class="uk-margin">
             <label class="uk-form-label" for="edit-project-start-dates">Datum začetka</label>
             <div class="uk-form-controls">
-              <p-calendar (onSelect)="resetEndDate($event)" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
+              <p-calendar (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
             </div>
           </div>
           <span class="uk-alert-danger"

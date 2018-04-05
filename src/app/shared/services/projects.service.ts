@@ -8,11 +8,11 @@ export class ProjectsService {
 
   constructor(private http: HttpClient) { }
 
-/*  getGroups() {
-    return this.http.get(Config.API + '/groups/');
+  getProjects() {
+    return this.http.get(Config.API + '/projects/');
   }
 
-  deleteGroup(id:number){
+/*  deleteGroup(id:number){
     return this.http.delete(Config.API + '/groups/' + id + '/');
   }
 */

@@ -4,7 +4,6 @@ import {GroupsService} from '../shared/services/groups.service';
 import {Group, GroupMember} from '../shared/models/group.interface';
 import { Project } from '../shared/models/project.interface';
 import { ProjectsService } from '../shared/services/projects.service';
-import { DISABLED } from '@angular/forms/src/model';
 declare var UIkit: any;
 
 @Component({
@@ -19,11 +18,16 @@ export class ProjectsComponent implements OnInit {
   sl:any;
   today:Date;
   groups:Group[];
+  projects:Project[];
+  isCurrentUserAdmin = false;
+  currentUserId = null;
 
   constructor(private groupsService: GroupsService, private projectsService: ProjectsService) { }
 
   ngOnInit() {
-
+    let user = JSON.parse(localStorage.getItem('user'));
+    this.isCurrentUserAdmin = user.roles.includes("admin");
+    this.currentUserId = user["id"];
     this.today = new Date();
 
     this.projectsForm = new FormGroup({
@@ -46,6 +50,8 @@ export class ProjectsComponent implements OnInit {
       today: 'Danes',
       clear: 'Počisti'
     };
+
+    this.loadProjects();
   }
 
   loadModal(){
@@ -54,6 +60,33 @@ export class ProjectsComponent implements OnInit {
     this.loadGroups();
 
   }
+
+  loadProjects() {
+    this.projectsService.getProjects().subscribe(projects => {
+      
+      if (!this.isCurrentUserAdmin) {
+        projects = Object.values(projects).filter((project, index, array) => {
+          let isMember = false;
+          <Project>project.group_data.users.forEach( (user) => {
+            if (user["id"] == this.currentUserId) {
+              isMember = true;
+            }
+          });
+          return isMember;
+        });
+      }
+
+      this.projects = <Project[]> projects;
+      this.projects.sort(function (a, b) {
+        return a.id_project.charAt[0] - b.id_project.charAt[0];
+        
+      });
+    }, err => {
+      console.log('error geting projects from backend');
+    });                         
+                    
+  }
+
 
   loadGroups() {
     this.groups = [];
@@ -69,6 +102,10 @@ export class ProjectsComponent implements OnInit {
 
   resetEndDate(){
     this.projectsForm.get("project-end-date").setValue(null);
+  }
+
+  dateDifference(project:Project){
+    return ((new Date(project.ended_at)).valueOf() - (new Date(project.started_at)).valueOf())/1000/60/60/24;
   }
 
   cancelProject(){
