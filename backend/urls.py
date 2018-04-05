@@ -20,7 +20,7 @@ groups_urls = [
 
 
 projects_urls = [
-    url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectList.as_view()),
+    url(r'^projects/(?P<id_project>[0-9]+)/$', views.ProjectDetail.as_view()),
     url(r'^projects/$', views.ProjectList.as_view()),
 ]
 

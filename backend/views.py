@@ -367,3 +367,13 @@ class ProjectList(generics.ListCreateAPIView):
             projects_data.append(project_data)
 
         return Response(projects_data, status=status.HTTP_202_ACCEPTED)
+
+
+class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List all groups.
+    """
+
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+
