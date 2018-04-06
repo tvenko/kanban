@@ -27,6 +27,7 @@ export class GroupsComponent implements OnInit {
   userSelectDropdown: FormControl;
   groupModalTitle: string;
   roleNames = ["", "Razvijalec", "Product owner", "Kanban master"];
+  isCurrentUserKanbanMaster = false;
   isCurrentUserAdmin = false;
   currentUserId = null;
 
@@ -40,6 +41,7 @@ export class GroupsComponent implements OnInit {
 
   ngOnInit() {
     let user = JSON.parse(localStorage.getItem('user'));
+    this.isCurrentUserKanbanMaster = user.roles.includes("kanban master");
     this.isCurrentUserAdmin = user.roles.includes("admin");
     this.currentUserId = user["id"];
     this.loadGroups();

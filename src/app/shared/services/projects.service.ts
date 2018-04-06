@@ -8,21 +8,21 @@ export class ProjectsService {
 
   constructor(private http: HttpClient) { }
 
-/*  getGroups() {
-    return this.http.get(Config.API + '/groups/');
+  getProjects() {
+    return this.http.get(Config.API + '/projects/');
   }
 
-  deleteGroup(id:number){
-    return this.http.delete(Config.API + '/groups/' + id + '/');
+  deleteProject(id:number){
+    return this.http.delete(Config.API + '/projects/' + id + '/');
   }
-*/
+
   postProject(project: Project) {
     return this.http.post(Config.API + '/projects/', project);
   }
 
-/*  updateGroup(group:Group){
-    return this.http.put(Config.API + '/groups/' + group.id + "/", group);
-  }*/
+  updateProject(project:Project){
+    return this.http.put(Config.API + '/projects/' + project.id_project + "/", project);
+  }
 
 
 }
