@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {UsersService} from '../shared/services/users.service';
 import {User} from '../shared/models/user.interface';
@@ -25,8 +25,8 @@ export class UsersComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    let user = JSON.parse(localStorage.getItem('user'));
-    if (!user.roles.includes("admin")) {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user.roles.includes('admin')) {
       this.router.navigate(['/projects']);
     }
     this.editUserForm = new FormGroup({
@@ -107,13 +107,12 @@ export class UsersComponent implements OnInit {
       console.log(user.id, this.editedUser.id);
       this.usersService.updateUser(user, user.id).subscribe(res => {
         // if the user updates his info, update the user cookie and refresh the page
-        let sessionUser = JSON.parse(localStorage.getItem('user'));
-        if (sessionUser["id"] == user.id) {
-          sessionUser["roles"] = this.usersService.reverseRolesMapper(roles);
+        const sessionUser = JSON.parse(localStorage.getItem('user'));
+        if (sessionUser['id'] === user.id) {
+          sessionUser['roles'] = this.usersService.reverseRolesMapper(roles);
           localStorage.setItem('user', JSON.stringify(sessionUser));
           window.location.reload();
-        }
-        else {
+        } else {
           UIkit.modal('#edit-user-modal').hide();
           UIkit.notification(
             'Uporabnik ' + user.name + ' ' + user.surname + ' je uspešno posodobljen',
@@ -185,8 +184,8 @@ export class UsersComponent implements OnInit {
     this.usersService.updateUser(lockedUser, lockedUser.id).subscribe(
       res => { user.is_active = false;
               // if the user locks himself: logout
-              let sessionUser = JSON.parse(localStorage.getItem('user'));
-              if (sessionUser["id"] == user.id) {
+              const sessionUser = JSON.parse(localStorage.getItem('user'));
+              if (sessionUser['id'] === user.id) {
                 this.router.navigate(['/login']);
               }
        },

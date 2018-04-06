@@ -4,11 +4,12 @@
     <div class="coulmn-container" *ngFor="let column of columns; let i = index">
       <div  uk-icon="icon: plus-circle; ratio: 1.9" class="add-column" uk-toggle="target: #new-column-modal"></div>
       <ol class="coulmn" [ngStyle]="{'border-top-color': colors[i]}">
-        <h3>
+        <h4 class="title">
           {{ column.title }}
-          <span uk-icon="icon: trash" class="edit-column" uk-toggle="target: #delete-column-modal">
-          </span> <span class="uk-badge wip">3/10</span>
-        </h3>
+          <span uk-icon="icon: plus-circle" class="edit-column" uk-toggle="target: #new-column-modal"></span>
+          <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal"></span>
+          <span class="uk-badge wip">3/10</span>
+        </h4>
         <hr>
         <div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)">
           <li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngFor="let card of column.cards">
@@ -23,14 +24,15 @@
       <ol class="coulmn" [ngStyle]="{'border-top-color': colors[0]}">
         <h4 class="subcolumn-title">
           Test
-          <span uk-icon="icon: trash" class="edit-column" uk-toggle="target: #delete-column-modal"></span>
+          <span uk-icon="icon: plus-circle" class="edit-column" uk-toggle="target: #new-column-modal"></span>
+          <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal"></span>
           <span class="uk-badge wip-subcolumn">6/10</span>
         </h4>
         <div class="subcolumn-container">
           <div class="subcolumn">
             <h6 class="subcolumn-title">
               Podstolpec1
-              <span uk-icon="icon: trash" class="edit-column" uk-toggle="target: #delete-column-modal"></span>
+              <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal"></span>
               <span class="uk-badge wip-subcolumn">2/10</span>
             </h6>
             <hr class="subcolumn-hr">
@@ -45,7 +47,7 @@
           <div class="subcolumn">
             <h6 class="subcolumn-title">
               Podstolpec2
-              <span uk-icon="icon: trash" class="edit-column" uk-toggle="target: #delete-column-modal"></span>
+              <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal"></span>
               <span class="uk-badge wip-subcolumn">4/10</span>
             </h6>
             <hr class="subcolumn-hr">
@@ -77,16 +79,26 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="new-name">Ime stolpca</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="new-name" type="text" placeholder="Ime stolpca" formControlName="name">
+            <input class="uk-input" id="new-name" type="text" placeholder="Ime stolpca" formControlName="name"
+                   [ngClass]="{'danger-input uk-animation-shake' : !newColumnForm.get('name').valid && newColumnForm.get('name').touched}">
           </div>
         </div>
+
+        <span class="uk-alert-danger"
+        *ngIf="!newColumnForm.get('name').valid && newColumnForm.get('name').touched">
+        Ime stolpca je obezno polje.</span>
 
         <div class="uk-margin">
           <label class="uk-form-label" for="new-surname">WIP omejitev</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="new-surname" type="number" placeholder="wip omejitev" formControlName="wip">
+            <input class="uk-input" id="new-surname" type="number" placeholder="wip omejitev" formControlName="wip"
+                   [ngClass]="{'danger-input uk-animation-shake' : !newColumnForm.get('wip').valid && newColumnForm.get('wip').touched}">
           </div>
         </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newColumnForm.get('wip').valid && newColumnForm.get('wip').touched">
+        Wip omejitev stolpca je obvezno polje.</span>
 
         <div>
           <p><label class="uk-form-label">Vloge stolpca</label></p>

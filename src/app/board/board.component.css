@@ -54,12 +54,17 @@
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .12);
   height: 85vh;
   padding: 10px;
+  padding-top: 5px;
   border-radius: 2px;
   overflow: hidden;
   width: 100%;
-  min-width: 150px;
+  min-width: 170px;
   border-top: 5px solid;
   margin: 2px;
+}
+
+.title {
+  margin-bottom: 27px;
 }
 
 .subcolumn-container {
@@ -69,7 +74,7 @@
 }
 
 .subcolumn {
-  min-width: 150px;
+  min-width: 170px;
 }
 
 .subcolumn-title {
@@ -128,12 +133,22 @@
   float: right;
 }
 
-.edit-column {
-  opacity: 0;
+.delete-column {
+  opacity: 0.1;
   color: red;
 }
 
-.edit-column:hover {
+.edit-column {
+  opacity: 0.1;
+  color: black;
+}
+
+.edit-column:hover, .delete-column:hover {
   opacity: 1;
   cursor: pointer;
+}
+
+.danger-input {
+  border: 1.5px solid  red;
+  border-radius: 5px;
 }
