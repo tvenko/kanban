@@ -21,7 +21,7 @@ export class ProjectsService {
   }
 
   updateProject(project:Project){
-    return this.http.put(Config.API + '/projects/' + project.id_project + "/", project);
+    return this.http.put(Config.API + '/projects/' + project.id + "/", project);
   }
 
 

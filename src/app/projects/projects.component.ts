@@ -80,7 +80,7 @@ export class ProjectsComponent implements OnInit {
 
       this.projects = <Project[]> projects;
       this.projects.sort(function (a, b) {
-        return a.id_project.charAt[0] - b.id_project.charAt[0];
+        return a.project_id.charAt[0] - b.project_id.charAt[0];
         
       });
     }, err => {
@@ -97,6 +97,7 @@ export class ProjectsComponent implements OnInit {
       this.groups.sort(function (a, b) {
         return a.id - b.id;
       });
+
     }, err => {
       console.log('error geting groups from backend');
     });                                          
@@ -119,35 +120,47 @@ export class ProjectsComponent implements OnInit {
   }
 
   deleteProject(project:Project){
-
+    let confirmDelete = confirm('Zbrišem projekt?');
+    if (confirmDelete) {
+      this.projectsService.deleteProject(project.id).subscribe(msg => {
+        this.loadProjects();
+        UIkit.notification('Projekt izbrisan.', {status: 'warning', timeout: 2000});
+      }, err => {
+        console.log('error deleting project from backend');
+      });
+    }
   }
 
   editProject(project:Project){
-    this.selectedProject=project;
     this.loadGroups();
+    this.selectedProject=project;
     this.projectsModalTitle = "Uredi projekt"
-    this.projectsForm.get("code-name").setValue(project.id_project);
+    this.projectsForm.get("code-name").setValue(project.project_id);
     this.projectsForm.get("name").setValue(project.title);
+    //TODO SPREMENI
     this.projectsForm.get("buyer").setValue("naročnik");
-    this.projectsForm.get("project-group").setValue(project.group_data);
+    this.projectsForm.get("project-group").setValue(project.group_data.id);
     this.projectsForm.get("project-start-date").setValue(new Date(project.started_at));
     this.projectsForm.get("project-end-date").setValue(new Date(project.ended_at));
   }
 
 
   saveProject(){
+    //TODO: DOADJ NAROČNIKA
     if(this.selectedProject == null){
       //New project
       //Create object
       const project: Project = {
-        id_project:this.projectsForm.get("code-name").value,
+        id:null,
+        project_id:this.projectsForm.get("code-name").value,
         active:true,
         title:this.projectsForm.get("name").value,
         developer_group_id:(<Group>this.projectsForm.get("project-group").value).id.toString(),
         board_id:null,
-        started_at:(<Date>this.projectsForm.get("project-start-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-start-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-start-date").value).getDate(),
-        ended_at:(<Date>this.projectsForm.get("project-end-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-end-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-end-date").value).getDate(),
+        started_at:(<Date>this.projectsForm.get("project-start-date").value).getFullYear()+"-"+((<Date>this.projectsForm.get("project-start-date").value).getMonth()+1) + "-"+(<Date>this.projectsForm.get("project-start-date").value).getDate(),
+        ended_at:(<Date>this.projectsForm.get("project-end-date").value).getFullYear()+"-"+((<Date>this.projectsForm.get("project-end-date").value).getMonth()+1) + "-"+(<Date>this.projectsForm.get("project-end-date").value).getDate(),
         group_data:this.projectsForm.get("project-group").value
+        // group_data:this.groups.filter(group => group.id == this.projectsForm.get("project-group").value)[0]
       };
       //Send request
       this.projectsService.postProject(project).subscribe(res => {        
@@ -162,17 +175,21 @@ export class ProjectsComponent implements OnInit {
 
       UIkit.modal('#new-project-modal').hide();
     }else{
+
     //Update project
     //Create object
     const project: Project = {
-      id_project:this.selectedProject.id_project,
+      id:this.selectedProject.id,
+      project_id:this.selectedProject.project_id,
       active:this.selectedProject.active,
       title:this.projectsForm.get("name").value,
       developer_group_id:(<Group>this.projectsForm.get("project-group").value).id.toString(),
       board_id:this.selectedProject.board_id,
-      started_at:(<Date>this.projectsForm.get("project-start-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-start-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-start-date").value).getDate(),
-      ended_at:(<Date>this.projectsForm.get("project-end-date").value).getFullYear()+"-"+(<Date>this.projectsForm.get("project-end-date").value).getMonth() + "-"+(<Date>this.projectsForm.get("project-end-date").value).getDate(),
+      //SKOPIRAJ IZ DODAJANJA NOVE. tam edla
+      started_at:(<Date>this.projectsForm.get("project-start-date").value).getFullYear()+"-"+((<Date>this.projectsForm.get("project-start-date").value).getMonth()+1) + "-"+(<Date>this.projectsForm.get("project-start-date").value).getDate(),
+      ended_at:(<Date>this.projectsForm.get("project-end-date").value).getFullYear()+"-"+((<Date>this.projectsForm.get("project-end-date").value).getMonth()+1) + "-"+(<Date>this.projectsForm.get("project-end-date").value).getDate(),
       group_data:this.projectsForm.get("project-group").value
+      
     };
     //Send request
     this.projectsService.updateProject(project).subscribe(res => {        

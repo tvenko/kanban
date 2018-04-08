@@ -190,7 +190,7 @@
             <label class="uk-form-label" for="edit-project-group">Razvojna skupina</label>
             <select class="uk-select" id="edit-project-group" formControlName="project-group">
                 <ng-container *ngFor="let group of groups">
-                    <option [ngValue]="group" [selected]="group.id === selectedProject.group_data.id">{{group.title}}</option>
+                    <option  [ngValue]="group" >{{group.title}}</option>
                 </ng-container>    
             </select>
           </div>

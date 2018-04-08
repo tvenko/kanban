@@ -1,7 +1,8 @@
-import { Group } from "../../groups/extraClasses";
+import { Group } from "./group.interface";
 
 export interface Project{
-    id_project:string;
+    id:number;
+    project_id:string;
     title:string;
     started_at:string;
     ended_at:string;
@@ -9,4 +10,5 @@ export interface Project{
     developer_group_id:string;
     board_id:string;
     group_data:Group;
+    //TODO: DODAJ NAROČNIKA
 }
