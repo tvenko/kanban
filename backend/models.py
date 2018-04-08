@@ -146,7 +146,8 @@ class Board(Model):
 
 
 class Column(Model):
-    parent_column_id = ForeignKey('self', on_delete=CASCADE)
+    parent_column_id = ForeignKey('self', on_delete=CASCADE, null=True,
+                                            blank=True)
     board_id = ForeignKey(Board, on_delete=CASCADE)
     wip_restriction = FloatField()
     display_offset = IntegerField()
@@ -165,7 +166,7 @@ class ColumnPermissions(Model):
 
 
 class Project(Model):
-    id_project = CharField(max_length=500, primary_key=True)
+    project_id = CharField(max_length=500)
     developer_group_id = ForeignKey('DeveloperGroup', on_delete=CASCADE)
     board_id = ForeignKey('Board', on_delete=CASCADE, null=True, blank=True)
     title = CharField(max_length=300)

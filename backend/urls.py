@@ -20,9 +20,20 @@ groups_urls = [
 
 
 projects_urls = [
-    url(r'^projects/(?P<id_project>[0-9]+)/$', views.ProjectDetail.as_view()),
+    url(r'^projects/(?P<pk>[0-9]+)/$', views.ProjectDetail.as_view()),
     url(r'^projects/$', views.ProjectList.as_view()),
 ]
+
+columns_urls = [
+    url(r'^columns/(?P<pk>[0-9]+)/$', views.ColumnDetail.as_view()),
+    url(r'^columns/$', views.ColumnList.as_view()),
+]
+
+board_urls = [
+    url(r'^boards/(?P<pk>[0-9]+)/$', views.BoardDetail.as_view()),
+    #url(r'^boards/$', views.BoardList.as_view()),
+]
+
 
 
 urlpatterns = [
@@ -30,5 +41,7 @@ urlpatterns = [
     url(r'^', include(roles_urls)),
     url(r'^', include(groups_urls)),
     url(r'^', include(projects_urls)),
+    url(r'^', include(columns_urls)),
+    url(r'^', include(board_urls)),
     url(r'^docs/', views.schema_view)
 ]

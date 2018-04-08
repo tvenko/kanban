@@ -2,8 +2,8 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser
-from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project
-from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer
+from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board
+from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer, ColumnSerializer, BoardSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -365,7 +365,6 @@ class ProjectList(generics.ListCreateAPIView):
                 user_roles_dict.append(user_data)
             group_data["users"] = user_roles_dict
             projects_data.append(project_data)
-
         return Response(projects_data, status=status.HTTP_202_ACCEPTED)
 
 
@@ -376,4 +375,61 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+
+
+class ColumnList(generics.ListCreateAPIView):
+    """
+    List all groups.
+    """
+
+    queryset = Column.objects.all()
+    serializer_class = ColumnSerializer
+
+
+class ColumnDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List all groups.
+    """
+
+    queryset = Column.objects.all()
+    serializer_class = ColumnSerializer
+
+
+
+class BoardDetail(generics.ListCreateAPIView):
+    """
+    List all groups.
+    """
+
+    queryset = Board.objects.all()
+    serializer_class = BoardSerializer
+
+
+    def get(self, request, **kwargs):
+        board = Board.objects.get(pk=kwargs["pk"])
+        columns = Column.objects.all()
+
+        board_data = []
+        board_serializer = BoardSerializer(board).data
+        board_columns = columns.filter(
+            board_id=board.id).filter(parent_column_id=None)
+        board_column_data = []
+
+        for i in board_columns:
+            column_serializer = ColumnSerializer(i).data
+            column_subcolumns = columns.filter(
+                parent_column_id=i.id)
+            subcolumns_data = []
+            for x in column_subcolumns:
+                subcolumn_serializer = ColumnSerializer(x).data
+                subcolumns_data.append(subcolumn_serializer)
+            column_serializer["subcolumns"] = subcolumns_data
+            board_column_data.append(column_serializer)
+        board_serializer["columns"] = board_column_data
+
+        board_data.append(board_serializer)
+
+        return Response(board_data, status=status.HTTP_202_ACCEPTED)
+
+
 
