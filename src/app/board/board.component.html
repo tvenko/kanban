@@ -1,68 +1,80 @@
 <app-main-navbar></app-main-navbar>
 <div class="my-container">
   <div class="board">
-    <div class="coulmn-container" *ngFor="let column of columns; let i = index">
-      <div  uk-icon="icon: plus-circle; ratio: 1.9" class="add-column" uk-toggle="target: #new-column-modal"></div>
-      <ol class="coulmn" [ngStyle]="{'border-top-color': colors[i]}">
+    <div class="coulmn-container" *ngFor="let column of board?.columns; let i = index">
+      <div
+        uk-icon="icon: plus-circle; ratio: 1.9"
+        class="add-column" uk-toggle="target: #new-column-modal"
+        (click)="addColumn(column.subcolumns.length, null)">
+      </div>
+      <ol class="coulmn" [ngStyle]="{'border-top-color': colors[i]}" *ngIf="column?.subcolumns.length == 0">
         <h4 class="title">
-          {{ column.title }}
-          <span uk-icon="icon: plus-circle" class="edit-column" uk-toggle="target: #new-column-modal"></span>
-          <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal"></span>
-          <span class="uk-badge wip">3/10</span>
+          {{ column?.title }}
+          <span
+            uk-icon="icon: plus-circle"
+            class="edit-column"
+            uk-toggle="target: #new-column-modal"
+            (click)="addColumn(column.subcolumns.length, column.id)">
+          </span>
+          <span
+            uk-icon="icon: trash" class="delete-column"
+            uk-toggle="target: #delete-column-modal"
+            (click)="setDeleteColumn(column)"
+            *ngIf="column.subcolumns.length == 0"></span>
+          <span class="uk-badge wip" *ngIf="column?.wip_restriction > 0"> {{ column?.wip_restriction }} </span>
         </h4>
         <hr>
-        <div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)">
-          <li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngFor="let card of column.cards">
-            <h3>{{ card.title }}</h3>
-            <div>{{ card.content }}</div>
-          </li>
-        </div>
+        <!--<div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)">-->
+          <!--<li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngFor="let card of column.cards">-->
+            <!--<h3>{{ card.title }}</h3>-->
+            <!--<div>{{ card.content }}</div>-->
+          <!--</li>-->
+        <!--</div>-->
       </ol>
-    </div>
-    <div class="coulmn-container">
-      <div  uk-icon="icon: plus-circle; ratio: 1.9" class="add-column" uk-toggle="target: #new-column-modal"></div>
-      <ol class="coulmn" [ngStyle]="{'border-top-color': colors[0]}">
+      <ol class="coulmn" [ngStyle]="{'border-top-color': colors[i]}" *ngIf="column?.subcolumns.length > 0">
         <h4 class="subcolumn-title">
-          Test
-          <span uk-icon="icon: plus-circle" class="edit-column" uk-toggle="target: #new-column-modal"></span>
-          <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal"></span>
-          <span class="uk-badge wip-subcolumn">6/10</span>
+          {{ column?.title }}
+          <span
+            uk-icon="icon: plus-circle"
+            class="edit-column"
+            uk-toggle="target: #new-column-modal"
+            (click)="addColumn(column.subcolumns.length, column.id)">
+          </span>
+          <span uk-icon="icon: trash" class="delete-column"
+                uk-toggle="target: #delete-column-modal"
+                (click)="setDeleteColumn(column)"
+                *ngIf="column.subcolumns.length == 0">
+          </span>
+          <span class="uk-badge wip-subcolumn" *ngIf="column?.wip_restriction > 0"> {{ column?.wip_restriction }} </span>
         </h4>
         <div class="subcolumn-container">
-          <div class="subcolumn">
-            <h6 class="subcolumn-title">
-              Podstolpec1
-              <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal"></span>
-              <span class="uk-badge wip-subcolumn">2/10</span>
-            </h6>
-            <hr class="subcolumn-hr">
-            <div class="cards-container">
-              <li draggable="true" class="board-item">
-                <h3> naslov </h3>
-                <div> to je vsebina </div>
-              </li>
+          <div class="test" *ngFor="let subcolumn of column.subcolumns; let j = index">
+            <div class="subcolumn">
+              <h6 class="subcolumn-title">
+                {{ subcolumn?.title }}
+                <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal" (click)="setDeleteColumn(column)"></span>
+                <span class="uk-badge wip-subcolumn" *ngIf="subcolumn?.wip_restriction > 0">{{ subcolumn?.wip_restriction }}</span>
+              </h6>
+              <hr class="subcolumn-hr">
+              <div class="cards-container">
+                <!--<li draggable="true" class="board-item">-->
+                  <!--&lt;!&ndash;<h3> naslov </h3>&ndash;&gt;-->
+                  <!--&lt;!&ndash;<div> to je vsebina </div>&ndash;&gt;-->
+                <!--</li>-->
+              </div>
             </div>
-          </div>
-          <span class="vertical-line"></span>
-          <div class="subcolumn">
-            <h6 class="subcolumn-title">
-              Podstolpec2
-              <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal"></span>
-              <span class="uk-badge wip-subcolumn">4/10</span>
-            </h6>
-            <hr class="subcolumn-hr">
-            <div class="cards-container">
-              <li draggable="true" class="board-item">
-                <h3> naslov </h3>
-                <div> to je vsebina </div>
-              </li>
-            </div>
+            <span class="vertical-line" *ngIf="j < column?.subcolumns.length-1"></span>
           </div>
         </div>
       </ol>
+      <!--<div  uk-icon="icon: plus-circle; ratio: 1.9" class="add-column" uk-toggle="target: #new-column-modal" (click)="addColumn(i, null)"></div>-->
     </div>
     <div >
-      <div  uk-icon="icon: plus-circle; ratio: 1.9" class="add-column-last" uk-toggle="target: #new-column-modal"></div>
+      <div  uk-icon="icon: plus-circle; ratio: 1.9"
+            class="add-column-last"
+            uk-toggle="target: #new-column-modal"
+            (click)="addColumn(board?.columns.length, null)">
+      </div>
     </div>
   </div>
 </div>

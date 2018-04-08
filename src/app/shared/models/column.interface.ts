@@ -2,12 +2,10 @@
 
 export interface Column {
   id: number;
-  name: string;
-  wip: number;
-  leftColumn: boolean;
-  rightColumn: boolean;
-  highPriority: boolean;
-  testColumn: boolean;
-  parent: Column;
-  offset: number;
+  title: string;
+  wip_restriction: number;
+  display_offset: number;
+  parent_column_id: number;
+  board_id: number;
+  subcolumns: Column[];
 }

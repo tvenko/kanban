@@ -74,6 +74,7 @@
 }
 
 .subcolumn {
+  width: 100%;
   min-width: 170px;
 }
 
@@ -84,6 +85,13 @@
 .subcolumn-hr {
   margin: 0;
   margin-bottom: 20px;
+}
+
+.test {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
 .vertical-line {
