@@ -1,23 +1,26 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
   <!-- New project modal toggle button -->
-  <div>
+  <div *ngIf="isCurrentUserKanbanMaster">
       <button class="uk-button uk-button-primary newProjectButton" (click)="loadModal()" uk-toggle="target: #new-project-modal">Nov projekt</button>
   </div>
 
   <!-- Projects display -->
-  <div class="uk-child-width-1-3@s uk-grid-match" uk-grid>
+  <div class="uk-child-width-1-3@s uk-grid-match uk-margin-top" uk-grid>
      <div *ngFor="let project of projects" class="cards">
       <div class="uk-card uk-card-default uk-card-body uk-card-hover projectCard uk-padding-remove-bottom" >
-          <div class="uk-card-badge">
-              <button class="uk-icon-link uk-dark" uk-icon="pencil"  (click)="editProject(project)" uk-toggle="target: #edit-project-modal"></button>
-              <button class="uk-icon-link uk-dark" uk-icon="trash"  (click)="deleteProject(project)"></button>
+          <div class="uk-card-badge" *ngIf="isCurrentUserKanbanMaster">
+              <button class="uk-icon-link uk-dark" uk-icon="pencil" (click)="editProject(project)" uk-toggle="target: #edit-project-modal"></button>
+              <button class="uk-icon-link uk-dark" uk-icon="unlock" *ngIf="!project.active" (click)="unlockProject(project)"></button>
+              <button class="uk-icon-link uk-dark" uk-icon="trash"  *ngIf="project.active" (click)="deleteProject(project)"></button>
           </div>
           <h3 class="uk-card-title uk-margin-remove-bottom" >{{project.title}}</h3>
           <p class="uk-text-meta uk-margin-remove-top">{{project.id_project}}</p>
-          <div class="uk-margin uk-margin-remove-bottom">Skupina: <span class="uk-label" >{{project.group_data.title}} </span></div>
+          <div class="uk-margin uk-margin-remove-bottom">Skupina: <span  >{{project.group_data.title}} </span></div>
+          <div class="uk-margin uk-margin-remove-bottom uk-margin-remove-top">Naročnik: <span  >{{project.subscriber_name}} </span></div>
           <div class="uk-margin uk-margin-remove-top">Status: 
-            <span class="uk-label uk-label-success" *ngIf="project.active">V teku</span>
+            <span class="uk-label uk-label-success" *ngIf="project.card_active && project.active">V teku</span>
+            <span class="uk-label" *ngIf="!project.card_active && project.active">Pred začekom</span>
             <span class="uk-label uk-label-warning" *ngIf="!project.active">Neaktiven</span>
             <span class="uk-label uk-label-danger" *ngIf="project.active && dateDifference(project) < 5">Pozen</span>
           </div> 
@@ -164,7 +167,12 @@
           <!-- Start date -->
           <div class="uk-margin">
             <label class="uk-form-label" for="edit-project-start-dates">Datum začetka</label>
-            <div class="uk-form-controls">
+            <!-- Project already started (disable start date change)-->
+            <div class="uk-form-controls" *ngIf="selectedProject?.card_active">
+              <p-calendar  disabled="true" (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
+            </div>
+            <!-- Project hasnt started (enable start date change)-->
+            <div class="uk-form-controls" *ngIf="!selectedProject?.card_active">
               <p-calendar (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
             </div>
           </div>

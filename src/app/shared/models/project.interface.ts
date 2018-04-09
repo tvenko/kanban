@@ -10,5 +10,6 @@ export interface Project{
     developer_group_id:string;
     board_id:string;
     group_data:Group;
-    //TODO: DODAJ NAROČNIKA
+    subscriber_name:string;
+    card_active:boolean;
 }
