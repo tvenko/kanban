@@ -24,9 +24,9 @@ export class BoardComponent implements OnInit {
   newSubcolumnParent: number = null;
   delColumn: Column = null;
 
-  displayAddLeftColumn = false;
-  displayAddRightColumn = false;
-  displayAddTestColumn = false;
+  displayAddLeftColumn = true;
+  displayAddRightColumn = true;
+  displayAddTestColumn = true;
 
   currentUserId = null;
   projects: Project[];
@@ -57,7 +57,7 @@ export class BoardComponent implements OnInit {
   }
 
   getBoard() {
-    this.boardsService.getBoard(2).subscribe(board => {
+    this.boardsService.getBoard(3).subscribe(board => {
       console.log(board[0]);
       this.board = <Board>board[0];
     }, err => {
@@ -142,13 +142,13 @@ export class BoardComponent implements OnInit {
     const leftId = this.board.type_left_border_column_id;
     const testId = this.board.type_acceptance_testing_column_id;
 
-    this.displayAddLeftColumn = rightId == null ||
-                                this.getColumnById(rightId).display_offset > offset;
-    this.displayAddRightColumn = leftId == null ||
-                                this.getColumnById(leftId).display_offset < offset;
-    this.displayAddTestColumn = leftId == null && rightId == null ||
-                                rightId == null && this.getColumnById(leftId).display_offset < offset ||
-                                rightId != null && this.getColumnById(rightId).display_offset < offset;
+    // this.displayAddLeftColumn = rightId == null ||
+    //                             this.getColumnById(rightId).display_offset >= offset;
+    // this.displayAddRightColumn = leftId == null ||
+    //                             this.getColumnById(leftId).display_offset <= offset;
+    // this.displayAddTestColumn = leftId == null && rightId == null ||
+    //                             rightId == null && this.getColumnById(leftId).display_offset < offset ||
+    //                             rightId != null && this.getColumnById(rightId).display_offset < offset;
   }
 
   getColumnById(columnId: number) {
