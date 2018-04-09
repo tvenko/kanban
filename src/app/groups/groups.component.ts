@@ -145,7 +145,6 @@ export class GroupsComponent implements OnInit {
         selectedRoles.push(parseInt(role));
       }
     }
-    console.log(selectedRoles);
 
     if (selectedRoles.length == 0) {
       alert('Izberi vsaj eno vlogo.');
