@@ -175,13 +175,14 @@ export class ProjectsComponent implements OnInit {
   }
 
   editProject(project:Project){
+    this.groups = [];
     this.loadGroups();
     this.selectedProject=project;
     this.projectsModalTitle = "Uredi projekt"
     this.projectsForm.get("code-name").setValue(project.project_id);
     this.projectsForm.get("name").setValue(project.title);
     this.projectsForm.get("buyer").setValue(project.subscriber_name);
-    //this.projectsForm.get("project-group").setValue(project.group_data);
+    this.projectsForm.get("project-group").setValue(project.group_data.id);
     this.projectsForm.get("project-start-date").setValue(new Date(project.started_at));
     this.projectsForm.get("project-end-date").setValue(new Date(project.ended_at));
   }
@@ -226,11 +227,11 @@ export class ProjectsComponent implements OnInit {
       project_id:this.selectedProject.project_id,
       active:this.selectedProject.active,
       title:this.projectsForm.get("name").value,
-      developer_group_id:(<Group>this.projectsForm.get("project-group").value).id.toString(),
+      developer_group_id:this.projectsForm.get("project-group").value.toString(),
       board_id:this.selectedProject.board_id,
       started_at:(<Date>this.projectsForm.get("project-start-date").value).getFullYear()+"-"+((<Date>this.projectsForm.get("project-start-date").value).getMonth()+1) + "-"+(<Date>this.projectsForm.get("project-start-date").value).getDate(),
       ended_at:(<Date>this.projectsForm.get("project-end-date").value).getFullYear()+"-"+((<Date>this.projectsForm.get("project-end-date").value).getMonth()+1) + "-"+(<Date>this.projectsForm.get("project-end-date").value).getDate(),
-      group_data:this.projectsForm.get("project-group").value,
+      group_data:this.groups.filter(group => this.projectsForm.get("project-group").value == group.id)[0],
       subscriber_name:this.projectsForm.get("buyer").value,
       card_active:this.selectedProject.card_active
       

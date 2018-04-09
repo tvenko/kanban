@@ -20,7 +20,7 @@
           <div class="uk-margin uk-margin-remove-bottom uk-margin-remove-top">Naročnik: <span  >{{project.subscriber_name}} </span></div>
           <div class="uk-margin uk-margin-remove-top">Status: 
             <span class="uk-label uk-label-success" *ngIf="project.card_active && project.active">V teku</span>
-            <span class="uk-label" *ngIf="!project.card_active && project.active">Pred začekom</span>
+            <span class="uk-label" *ngIf="!project.card_active && project.active">Brez kartic</span>
             <span class="uk-label uk-label-warning" *ngIf="!project.active">Neaktiven</span>
             <span class="uk-label uk-label-danger" *ngIf="project.active && dateDifference(project) < 5">Pozen</span>
           </div> 
@@ -80,7 +80,7 @@
           <div class="uk-margin">
             <label class="uk-form-label" for="edit-project-start-dates">Datum začetka</label>
             <div class="uk-form-controls">
-              <p-calendar (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
+              <p-calendar (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true"  [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"  readonlyInput="true"></p-calendar>
             </div>
           </div>
           <span class="uk-alert-danger"
@@ -92,7 +92,7 @@
           <div class="uk-margin">
               <label class="uk-form-label" for="edit-project-end-dates">Predviden datum zaključka</label>
               <div class="uk-form-controls">
-                <p-calendar id="edit-project-end-date" [locale]="sl" [minDate]="this.projectsForm.get('project-start-date').value" formControlName="project-end-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched}"></p-calendar>
+                <p-calendar readonlyInput="true"  id="edit-project-end-date" [locale]="sl" [minDate]="this.projectsForm.get('project-start-date').value" formControlName="project-end-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched}"></p-calendar>
               </div>
           </div>
           <span class="uk-alert-danger"
@@ -169,11 +169,11 @@
             <label class="uk-form-label" for="edit-project-start-dates">Datum začetka</label>
             <!-- Project already started (disable start date change)-->
             <div class="uk-form-controls" *ngIf="selectedProject?.card_active">
-              <p-calendar  disabled="true" (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
+              <p-calendar readonlyInput="true"disabled="true" (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
             </div>
             <!-- Project hasnt started (enable start date change)-->
             <div class="uk-form-controls" *ngIf="!selectedProject?.card_active">
-              <p-calendar (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
+              <p-calendar readonlyInput="true" (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
             </div>
           </div>
           <span class="uk-alert-danger"
@@ -185,7 +185,7 @@
           <div class="uk-margin">
               <label class="uk-form-label" for="edit-project-end-dates">Predviden datum zaključka</label>
               <div class="uk-form-controls">
-                <p-calendar id="edit-project-end-date" [locale]="sl" [minDate]="this.projectsForm.get('project-start-date').value" formControlName="project-end-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched}"></p-calendar>
+                <p-calendar readonlyInput="true" id="edit-project-end-date" [locale]="sl" [minDate]="this.projectsForm.get('project-start-date').value" formControlName="project-end-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched}"></p-calendar>
               </div>
           </div>
           <span class="uk-alert-danger"
@@ -198,7 +198,7 @@
             <label class="uk-form-label" for="edit-project-group">Razvojna skupina</label>
             <select class="uk-select" id="edit-project-group" formControlName="project-group">
                 <ng-container *ngFor="let group of groups">
-                    <option  [ngValue]="group" >{{group.title}}</option>
+                    <option  [ngValue]="group.id" >{{group.title}}</option>
                 </ng-container>    
             </select>
           </div>
