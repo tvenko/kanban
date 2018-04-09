@@ -395,7 +395,7 @@ class ColumnList(generics.ListCreateAPIView):
     def post(self, request, **kwargs):
         columns = Column.objects.all()
         serializer = ColumnSerializer(data=request.data)
-        parent = request.data["parent_column_id"]
+
         board_id = request.data["board_id"]
         display_offset = request.data["display_offset"]
         filtered_columns = columns.filter(board_id=board_id).filter(parent_column_id=None)
@@ -420,6 +420,24 @@ class ColumnDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Column.objects.all()
     serializer_class = ColumnSerializer
 
+    def delete(self, request, *args, **kwargs):
+        columns = Column.objects.all()
+        column = Column.objects.get(pk=kwargs["pk"])
+
+        board_id = column.board_id
+        display_offset = column.display_offset
+        filtered_columns = columns.filter(board_id=board_id).filter(
+            parent_column_id=None)
+
+        for i in filtered_columns:
+            offset = i.display_offset
+            if offset >= display_offset:
+                i.display_offset -= 1
+                i.save()
+
+        column.delete()
+
+        return Response(None, status=status.HTTP_200_OK)
 
 
 class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
