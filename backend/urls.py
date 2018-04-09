@@ -9,6 +9,9 @@ users_urls = [
     url(r'^user/invalidateToken/$', views.InvalidateToken.as_view(), name='invalidate-token'),
 ]
 
+user_projects_urls = [
+    url(r'^user_projects/(?P<pk>[0-9]+)/$', views.UserProjects.as_view()),
+]
 roles_urls = [
     url(r'^all_roles/$', views.RoleList.as_view()),
 ]
@@ -39,6 +42,7 @@ board_urls = [
 
 urlpatterns = [
     url(r'^', include(users_urls)),
+    url(r'^', include(user_projects_urls)),
     url(r'^', include(roles_urls)),
     url(r'^', include(groups_urls)),
     url(r'^', include(projects_urls)),

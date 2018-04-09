@@ -489,4 +489,49 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(board_data, status=status.HTTP_202_ACCEPTED)
 
 
+class UserProjects(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List all groups.
+    """
 
+    queryset = Board.objects.all()
+    serializer_class = BoardSerializer
+
+
+    def get(self, request, *args, **kwargs):
+        boards = Board.objects.all()
+        user_id = kwargs["pk"]
+        allowed_roles = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=4)
+        if allowed_roles:
+            board_list = []
+
+            for board in boards:
+                board_data = []
+                board_data.append(board.title)
+                projects = Project.objects.all().filter(board_id=board.id)
+                project_data = dict()
+                project_data["projects"] = []
+
+                for project in projects:
+                    project_data["projects"].append(project.project_id)
+                board_data.append(project_data)
+                board_list.append(board_data)
+        else:
+            board_list = []
+
+            for board in boards:
+                board_data = []
+                board_data.append(board.title)
+                projects = Project.objects.all().filter(board_id=board.id)
+                project_data = dict()
+                project_data["projects"] = []
+
+                for project in projects:
+                    developer_groups = DeveloperGroupMembership.objects.all().filter(developer_group_id=project.developer_group_id)
+                    for developer_group in developer_groups:
+                        if developer_group.id == int(user_id) and developer_group.active:
+                            project_data["projects"].append(project.project_id)
+                    board_data.append(project_data)
+                board_list.append(board_data)
+
+        return Response(board_list, status=status.HTTP_202_ACCEPTED)
