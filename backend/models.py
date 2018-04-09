@@ -146,7 +146,7 @@ class Board(Model):
 
 
 class Column(Model):
-    parent_column_id = ForeignKey('self', on_delete=SET_NULL, null=True,
+    parent_column_id = ForeignKey('self', on_delete=CASCADE, null=True,
                                             blank=True)
     board_id = ForeignKey(Board, on_delete=CASCADE)
     wip_restriction = FloatField()

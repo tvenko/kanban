@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9de438be-29f9-476c-befc-e7e2d3799060" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/backend/migrations/0001_initial.py" afterPath="" />
       <change beforePath="$PROJECT_DIR$/backend/models.py" afterPath="$PROJECT_DIR$/backend/models.py" />
-      <change beforePath="$PROJECT_DIR$/backend/views.py" afterPath="$PROJECT_DIR$/backend/views.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -98,8 +96,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="152" column="18" lean-forward="false" selection-start-line="152" selection-start-column="4" selection-end-line="152" selection-end-column="18" />
+            <state relative-caret-position="239">
+              <caret line="148" column="59" lean-forward="false" selection-start-line="148" selection-start-column="59" selection-end-line="148" selection-end-column="59" />
               <folding />
             </state>
           </provider>
@@ -108,7 +106,7 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/backend/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3611">
+            <state relative-caret-position="13532">
               <caret line="416" column="63" lean-forward="false" selection-start-line="416" selection-start-column="63" selection-end-line="416" selection-end-column="63" />
               <folding>
                 <element signature="e#0#50#0" expanded="true" />
@@ -155,8 +153,8 @@
         <option value="$PROJECT_DIR$/backend/migrations/0001_initial.py" />
         <option value="$PROJECT_DIR$/backend/serializers.py" />
         <option value="$PROJECT_DIR$/backend/urls.py" />
-        <option value="$PROJECT_DIR$/backend/models.py" />
         <option value="$PROJECT_DIR$/backend/views.py" />
+        <option value="$PROJECT_DIR$/backend/models.py" />
       </list>
     </option>
   </component>
@@ -183,6 +181,7 @@
     </navigator>
     <panes>
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -205,7 +204,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -655,7 +653,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3611">
+        <state relative-caret-position="13532">
           <caret line="416" column="63" lean-forward="false" selection-start-line="416" selection-start-column="63" selection-end-line="416" selection-end-column="63" />
           <folding>
             <element signature="e#0#50#0" expanded="true" />
@@ -665,8 +663,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="152" column="18" lean-forward="false" selection-start-line="152" selection-start-column="4" selection-end-line="152" selection-end-column="18" />
+        <state relative-caret-position="239">
+          <caret line="148" column="59" lean-forward="false" selection-start-line="148" selection-start-column="59" selection-end-line="148" selection-end-column="59" />
           <folding />
         </state>
       </provider>
