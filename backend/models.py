@@ -146,7 +146,7 @@ class Board(Model):
 
 
 class Column(Model):
-    parent_column_id = ForeignKey('self', on_delete=CASCADE, null=True,
+    parent_column_id = ForeignKey('self', on_delete=SET_NULL, null=True,
                                             blank=True)
     board_id = ForeignKey(Board, on_delete=CASCADE)
     wip_restriction = FloatField()
@@ -169,10 +169,12 @@ class Project(Model):
     project_id = CharField(max_length=500)
     developer_group_id = ForeignKey('DeveloperGroup', on_delete=CASCADE)
     board_id = ForeignKey('Board', on_delete=CASCADE, null=True, blank=True)
+    subscriber_name = CharField(max_length=300)
     title = CharField(max_length=300)
     started_at = DateField()
     ended_at = DateField()
     active = BooleanField(default=False)
+    card_active = BooleanField(default=False)
 
 
 

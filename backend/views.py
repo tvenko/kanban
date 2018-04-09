@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser
-from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board
+from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board, Card
 from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer, ColumnSerializer, BoardSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -345,6 +345,7 @@ class ProjectList(generics.ListCreateAPIView):
         projects = Project.objects.all()
         group_memberships = DeveloperGroupMembership.objects.all()
         users = User.objects.all()
+        cards = Card.objects.all()
 
         projects_data = []
         for project in projects:
@@ -353,6 +354,12 @@ class ProjectList(generics.ListCreateAPIView):
             group_data = DeveloperGroupSerializer(
                 project.developer_group_id).data
             project_data = ProjectSerializer(project).data
+            project_cards = cards.filter(project_id=project.id)
+            print(project_data)
+            if not project_cards:
+                project_data["card_active"] = False
+            else:
+                project_data["card_active"] = True
             project_data["group_data"] = group_data
 
             user_roles_dict = []
@@ -407,7 +414,7 @@ class BoardDetail(generics.ListCreateAPIView):
 
     def get(self, request, **kwargs):
         board = Board.objects.get(pk=kwargs["pk"])
-        columns = Column.objects.all()
+        columns = Column.objects.all().order_by("display_offset")
 
         board_data = []
         board_serializer = BoardSerializer(board).data
