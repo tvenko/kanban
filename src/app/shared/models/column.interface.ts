@@ -1,3 +1,4 @@
+import {Card} from './card.interface';
 
 
 export interface Column {
@@ -8,4 +9,5 @@ export interface Column {
   parent_column_id: number;
   board_id: number;
   subcolumns: Column[];
+  column_cards: Card[];
 }

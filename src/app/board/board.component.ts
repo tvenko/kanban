@@ -52,7 +52,7 @@ export class BoardComponent implements OnInit {
   addColumn(i: number, parentId: number) {
     this.newColumnOffset = i;
     this.newSubcolumnParent = parentId;
-    this.specialColumnsValidation();
+    this.specialColumnsValidation(this.newColumnOffset);
   }
 
   postColumn() {
@@ -63,7 +63,8 @@ export class BoardComponent implements OnInit {
       parent_column_id: this.newSubcolumnParent,
       display_offset: this.newColumnOffset,
       board_id: this.board.id,
-      subcolumns: null
+      subcolumns: null,
+      column_cards: null
     };
     this.boardsService.postColumn(newColumn).subscribe(column => {
       UIkit.notification(
@@ -82,20 +83,18 @@ export class BoardComponent implements OnInit {
     this.delColumn = column;
   }
 
-  specialColumnsValidation() {
+  specialColumnsValidation(offset: number) {
     const rightId = this.board.type_right_border_column_id;
     const leftId = this.board.type_left_border_column_id;
     const testId = this.board.type_acceptance_testing_column_id;
 
     this.displayAddLeftColumn = rightId == null ||
-                                this.getColumnById(rightId).display_offset > this.newColumnOffset ||
-                                (testId != null && this.getColumnById(testId).display_offset > this.newColumnOffset);
+                                this.getColumnById(rightId).display_offset > offset;
     this.displayAddRightColumn = leftId == null ||
-                                this.getColumnById(leftId).display_offset < this.newColumnOffset ||
-                                (testId != null && this.getColumnById(testId).display_offset > this.newColumnOffset);
+                                this.getColumnById(leftId).display_offset < offset;
     this.displayAddTestColumn = leftId == null && rightId == null ||
-                                rightId == null && this.getColumnById(leftId).display_offset < this.newColumnOffset ||
-                                rightId != null && this.getColumnById(rightId).display_offset < this.newColumnOffset;
+                                rightId == null && this.getColumnById(leftId).display_offset < offset ||
+                                rightId != null && this.getColumnById(rightId).display_offset < offset;
   }
 
   getColumnById(columnId: number) {
@@ -138,7 +137,7 @@ export class BoardComponent implements OnInit {
       display += 'desni mejni stolpec, ';
     }
     if (this.board.type_priority_column_id === columnId) {
-      display += 'stolpec z najvišjo prioriteto, ';
+      display += 'stolpec z prioriteto, ';
     }
     if (this.board.type_acceptance_testing_column_id === columnId) {
       display += 'testni stolpec, ';
@@ -149,10 +148,30 @@ export class BoardComponent implements OnInit {
     return null;
   }
 
+  setLeftColumn(columnId: number) {
+    this.board.type_left_border_column_id = columnId;
+    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
+  }
+
+  setRightColumn(columnId: number) {
+    this.board.type_right_border_column_id = columnId;
+    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
+  }
+
+  setTestColumn(columnId: number) {
+    this.board.type_acceptance_testing_column_id = columnId;
+    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
+  }
+
+  setPriorityColumn(columnId: number) {
+    this.board.type_priority_column_id = columnId;
+    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
+  }
+
   deleteColumn() {
     if (this.delColumn !== null) {
       const specialText = this.showSpecialColumn(this.delColumn.id);
-      if (specialText === '') {
+      if (specialText === null) {
         this.boardsService.deleteColumn(this.delColumn.id).subscribe(res => {
           UIkit.notification(
             'Stolpec ' + this.delColumn.title + ' je izbrisan.',
