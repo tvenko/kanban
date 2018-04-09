@@ -1,5 +1,10 @@
 <app-main-navbar></app-main-navbar>
-<div class="my-container">
+<!-- New project modal toggle button -->
+<div class="uk-margin uk-margin-left">
+  <button class="uk-button uk-button-primary" (click)="addProjectModal()" uk-toggle="target: #add-project-modal">Dodaj projekt na tablo</button>
+</div>
+
+<div class="my-container" *ngFor="let project of projectsOnBoard">
   <!-- gumb za dodajanje stolpca ce je tabla prazna -->
   <div *ngIf="board?.columns.length == 0">
     <button class="uk-button uk-button-primary empty-board uk-position-center" uk-toggle="target: #new-column-modal" (click)="addColumn(0, null)">dodaj stolpec</button>
@@ -7,15 +12,12 @@
 
   <div class="board">
     <div class="coulmn-container" *ngFor="let column of board?.columns; let i = index">
-
       <div
         uk-icon="icon: plus-circle; ratio: 1.9"
         class="add-column" uk-toggle="target: #new-column-modal"
         (click)="addColumn(i, null)">
       </div>
-
       <ol class="coulmn" [ngStyle]="{'border-top-color': colors[(i % 6)]}" *ngIf="column?.subcolumns.length == 0">
-
         <h4 class="title">
           {{ column?.title }}
           <span
@@ -24,39 +26,22 @@
             uk-toggle="target: #new-column-modal"
             (click)="addColumn(column.subcolumns.length, column.id)">
           </span>
-
-          <span class="edit-column" uk-icon="more-vertical" type="button" (click)="specialColumnsValidation(column.display_offset)"></span>
-          <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
-            <ul class="uk-nav uk-dropdown-nav">
-              <li *ngIf="displayAddLeftColumn && board.type_left_border_column_id != column.id" class="change-type" (click)="setLeftColumn(column.id)">levi mejni stolpec</li>
-              <li *ngIf="displayAddRightColumn && board.type_right_border_column_id != column.id" class="change-type" (click)="setRightColumn(column.id)">desni mejni stolpec</li>
-              <li *ngIf="displayAddTestColumn && board.type_acceptance_testing_column_id != column.id" class="change-type" (click)="setTestColumn(column.id)">testni stolpec</li>
-              <li class="change-type" (click)="setPriorityColumn(column.id)">stolpec z najvišjo prioriteto</li>
-            </ul>
-          </div>
-
           <span
             uk-icon="icon: trash" class="delete-column"
             uk-toggle="target: #delete-column-modal"
             (click)="setDeleteColumn(column)"
-            *ngIf="column.subcolumns.length == 0 && column?.column_cards.length == 0">
-          </span>
-
-          <span class="uk-badge wip" *ngIf="column?.wip_restriction > 0"> {{ column?.column_cards.length }} / {{ column?.wip_restriction }} </span>
+            *ngIf="column.subcolumns.length == 0"></span>
+          <span class="uk-badge wip" *ngIf="column?.wip_restriction > 0"> 0/{{ column?.wip_restriction }} </span>
           <br>
         </h4>
-
         <div class="special-column-text">{{ showSpecialColumn(column.id) }}</div>
-
         <hr>
-
-        <div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)">
-          <li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngFor="let card of column.column_cards">
-            <h3>ID: {{ card }}</h3>
-            <div>Vsebina kartice</div>
-          </li>
-        </div>
-
+        <!--<div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)">-->
+          <!--<li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngFor="let card of column.cards">-->
+            <!--<h3>{{ card.title }}</h3>-->
+            <!--<div>{{ card.content }}</div>-->
+          <!--</li>-->
+        <!--</div>-->
       </ol>
       <ol class="coulmn" [ngStyle]="{'border-top-color': colors[(i % 6)]}" *ngIf="column?.subcolumns.length > 0">
         <h4 class="subcolumn-title">
@@ -67,15 +52,6 @@
             uk-toggle="target: #new-column-modal"
             (click)="addColumn(column.subcolumns.length, column.id)">
           </span>
-          <span class="edit-column" uk-icon="more-vertical" type="button" (click)="specialColumnsValidation(column.display_offset)"></span>
-          <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
-            <ul class="uk-nav uk-dropdown-nav">
-              <li *ngIf="displayAddLeftColumn && board.type_left_border_column_id != column.id" class="change-type" (click)="setLeftColumn(column.id)">levi mejni stolpec</li>
-              <li *ngIf="displayAddRightColumn && board.type_right_border_column_id != column.id" class="change-type" (click)="setRightColumn(column.id)">desni mejni stolpec</li>
-              <li *ngIf="displayAddTestColumn && board.type_acceptance_testing_column_id != column.id" class="change-type" (click)="setTestColumn(column.id)">testni stolpec</li>
-              <li class="change-type" (click)="setPriorityColumn(column.id)">stolpec z najvišjo prioriteto</li>
-            </ul>
-          </div>
           <span uk-icon="icon: trash" class="delete-column"
                 uk-toggle="target: #delete-column-modal"
                 (click)="setDeleteColumn(column)"
@@ -89,38 +65,17 @@
             <div class="subcolumn">
               <h6 class="subcolumn-title">
                 {{ subcolumn?.title }}
-
-                <span class="edit-column" uk-icon="more-vertical" type="button" (click)="specialColumnsValidation(column.display_offset)"></span>
-                <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
-                  <ul class="uk-nav uk-dropdown-nav">
-                    <li *ngIf="displayAddLeftColumn && board.type_left_border_column_id != subcolumn.id" class="change-type" (click)="setLeftColumn(subcolumn.id)">levi mejni stolpec</li>
-                    <li *ngIf="displayAddRightColumn && board.type_right_border_column_id != subcolumn.id" class="change-type" (click)="setRightColumn(subcolumn.id)">desni mejni stolpec</li>
-                    <li *ngIf="displayAddTestColumn && board.type_acceptance_testing_column_id != subcolumn.id" class="change-type" (click)="setTestColumn(subcolumn.id)">testni stolpec</li>
-                    <li class="change-type" (click)="setPriorityColumn(subcolumn.id)">stolpec z najvišjo prioriteto</li>
-                  </ul>
-                </div>
-
-                <span
-                  uk-icon="icon: trash"
-                  class="delete-column"
-                  uk-toggle="target: #delete-column-modal"
-                  (click)="setDeleteColumn(subcolumn)"
-                  *ngIf=" subcolumn?.column_cards.length == 0">
-                </span>
-
-                <span class="uk-badge wip-subcolumn" *ngIf="subcolumn?.wip_restriction > 0"> {{ subcolumn?.column_cards.length }} / {{ subcolumn?.wip_restriction }}</span>
-
+                <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal" (click)="setDeleteColumn(subcolumn)"></span>
+                <span class="uk-badge wip-subcolumn" *ngIf="subcolumn?.wip_restriction > 0"> 0/{{ subcolumn?.wip_restriction }}</span>
               </h6>
               <div class="special-column-text">{{ showSpecialColumn(subcolumn.id) }}</div>
               <hr class="subcolumn-hr">
-
-              <div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)">
-                <li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngFor="let card of subcolumn.column_cards">
-                  <h3> naslov </h3>
-                  <div> to je vsebina </div>
-                </li>
+              <div class="cards-container">
+                <!--<li draggable="true" class="board-item">-->
+                  <!--&lt;!&ndash;<h3> naslov </h3>&ndash;&gt;-->
+                  <!--&lt;!&ndash;<div> to je vsebina </div>&ndash;&gt;-->
+                <!--</li>-->
               </div>
-
             </div>
             <span class="vertical-line" *ngIf="j < column?.subcolumns.length-1"></span>
           </div>
@@ -203,7 +158,6 @@
 
 <div id="delete-column-modal" uk-modal>
   <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
-    <button class="uk-modal-close-default" type="button" uk-close (click)="closeDeleteModal()"></button>
     <h3>Ste prepričani, da želite izbirsati stolpec?</h3>
     <p class="uk-text-right">
       <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeDeleteModal()">prekliči</button>
@@ -215,5 +169,32 @@
         <p>{{ error }}</p>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- add project modal -->
+<div id="add-project-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" (click)="cancelAddProject()" uk-close></button>
+    <h2 class="uk-modal-title">Dodaj projekt na tablo</h2>
+    <!-- Projects form -->
+    <form (ngSubmit)="addProject()" [formGroup]="addProjectForm">
+      <fieldset class="uk-fieldset">
+        <!-- Show all projects -->
+        <div class="uk-form-controls  uk-margin">
+          <label class="uk-form-label" for="add-project-group">Izberi projekt</label>
+          <select class="uk-select" id="add-project-group" formControlName="project">
+              <ng-container *ngFor="let project of projects">
+                  <option [ngValue]="project"  >{{project.title}}</option>
+              </ng-container>    
+          </select>
+        </div>
+        <div class="uk-text-right">
+          <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="cancelAddProject()">Prekliči</button>
+          <button class="uk-button uk-button-primary" type="submit" [disabled]="!addProjectForm.valid">Shrani</button>
+        </div>
+      </fieldset>
+    </form>
   </div>
 </div>

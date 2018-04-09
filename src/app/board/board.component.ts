@@ -3,6 +3,8 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Column} from '../shared/models/column.interface';
 import {BoardsService} from '../shared/services/boards.service';
 import {Board} from '../shared/models/board.interface';
+import {Project} from '../shared/models/project.interface';
+import { ProjectsService } from '../shared/services/projects.service';
 
 declare var UIkit: any;
 
@@ -26,9 +28,17 @@ export class BoardComponent implements OnInit {
   displayAddRightColumn = false;
   displayAddTestColumn = false;
 
-  constructor(private boardsService: BoardsService) { }
+  currentUserId = null;
+  projects:Project[];
+  projectsOnBoard:Project[] = [];
+  addProjectForm: FormGroup;
+
+  constructor(private boardsService: BoardsService, private projectsService: ProjectsService) { }
 
   ngOnInit() {
+    let user = JSON.parse(localStorage.getItem('user'));
+    this.currentUserId = user["id"];
+
     this.newColumnForm = new FormGroup({
       name: new FormControl(null, Validators.required),
       wip: new FormControl(null, Validators.required),
@@ -37,6 +47,11 @@ export class BoardComponent implements OnInit {
       highPriority: new FormControl(null),
       testColumn: new FormControl(null)
     });
+
+    this.addProjectForm = new FormGroup({
+      project: new FormControl(null, Validators.required),
+    });
+
     this.getBoard();
   }
 
@@ -53,6 +68,44 @@ export class BoardComponent implements OnInit {
     this.newColumnOffset = i;
     this.newSubcolumnParent = parentId;
     this.specialColumnsValidation(this.newColumnOffset);
+  }
+
+  addProjectModal(){
+    this.loadProjects();
+  }
+
+  loadProjects() {
+    this.projectsService.getProjects().subscribe(projects => {
+      
+     // if (!this.isCurrentUserAdmin) {
+        /*projects = Object.values(projects).filter((project, index, array) => {
+          let isMember = false;
+          <Project>project.group_data.users.forEach( (user) => {
+            if (user["id"] == this.currentUserId) {
+              isMember = true;
+            }
+          });
+          return isMember;
+        });*/
+     // }
+      this.projects = <Project[]> projects;
+      this.projects.sort(function (a, b) {
+        return a.id - b.id;
+        
+      });
+      console.log(this.projects);
+    }, err => {
+      console.log('error geting projects from backend');
+    });                         
+                    
+  }
+
+  cancelAddProject(){
+
+  }
+  addProject(){
+    let project = this.addProjectForm.get("project").value;
+    this.projectsOnBoard.push(project);
   }
 
   postColumn() {
