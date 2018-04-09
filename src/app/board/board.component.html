@@ -1,13 +1,18 @@
 <app-main-navbar></app-main-navbar>
 <div class="my-container">
+  <!-- gumb za dodajanje stolpca ce je tabla prazna -->
+  <div *ngIf="board?.columns.length == 0">
+    <button class="uk-button uk-button-primary empty-board uk-position-center" uk-toggle="target: #new-column-modal" (click)="addColumn(0, null)">dodaj stolpec</button>
+  </div>
+
   <div class="board">
     <div class="coulmn-container" *ngFor="let column of board?.columns; let i = index">
       <div
         uk-icon="icon: plus-circle; ratio: 1.9"
         class="add-column" uk-toggle="target: #new-column-modal"
-        (click)="addColumn(column.subcolumns.length, null)">
+        (click)="addColumn(i, null)">
       </div>
-      <ol class="coulmn" [ngStyle]="{'border-top-color': colors[i]}" *ngIf="column?.subcolumns.length == 0">
+      <ol class="coulmn" [ngStyle]="{'border-top-color': colors[(i % 6)]}" *ngIf="column?.subcolumns.length == 0">
         <h4 class="title">
           {{ column?.title }}
           <span
@@ -21,8 +26,10 @@
             uk-toggle="target: #delete-column-modal"
             (click)="setDeleteColumn(column)"
             *ngIf="column.subcolumns.length == 0"></span>
-          <span class="uk-badge wip" *ngIf="column?.wip_restriction > 0"> {{ column?.wip_restriction }} </span>
+          <span class="uk-badge wip" *ngIf="column?.wip_restriction > 0"> 0/{{ column?.wip_restriction }} </span>
+          <br>
         </h4>
+        <div class="special-column-text">{{ showSpecialColumn(column.id) }}</div>
         <hr>
         <!--<div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)">-->
           <!--<li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngFor="let card of column.cards">-->
@@ -31,7 +38,7 @@
           <!--</li>-->
         <!--</div>-->
       </ol>
-      <ol class="coulmn" [ngStyle]="{'border-top-color': colors[i]}" *ngIf="column?.subcolumns.length > 0">
+      <ol class="coulmn" [ngStyle]="{'border-top-color': colors[(i % 6)]}" *ngIf="column?.subcolumns.length > 0">
         <h4 class="subcolumn-title">
           {{ column?.title }}
           <span
@@ -45,16 +52,18 @@
                 (click)="setDeleteColumn(column)"
                 *ngIf="column.subcolumns.length == 0">
           </span>
-          <span class="uk-badge wip-subcolumn" *ngIf="column?.wip_restriction > 0"> {{ column?.wip_restriction }} </span>
+          <span class="uk-badge wip-subcolumn" *ngIf="column?.wip_restriction > 0"> 0/{{ column?.wip_restriction }} </span>
         </h4>
+        <div class="special-column-text" *ngIf="showSpecialColumn(column.id) != null">{{ showSpecialColumn(column.id) }}</div>
         <div class="subcolumn-container">
           <div class="test" *ngFor="let subcolumn of column.subcolumns; let j = index">
             <div class="subcolumn">
               <h6 class="subcolumn-title">
                 {{ subcolumn?.title }}
-                <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal" (click)="setDeleteColumn(column)"></span>
-                <span class="uk-badge wip-subcolumn" *ngIf="subcolumn?.wip_restriction > 0">{{ subcolumn?.wip_restriction }}</span>
+                <span uk-icon="icon: trash" class="delete-column" uk-toggle="target: #delete-column-modal" (click)="setDeleteColumn(subcolumn)"></span>
+                <span class="uk-badge wip-subcolumn" *ngIf="subcolumn?.wip_restriction > 0"> 0/{{ subcolumn?.wip_restriction }}</span>
               </h6>
+              <div class="special-column-text">{{ showSpecialColumn(subcolumn.id) }}</div>
               <hr class="subcolumn-hr">
               <div class="cards-container">
                 <!--<li draggable="true" class="board-item">-->
@@ -67,7 +76,6 @@
           </div>
         </div>
       </ol>
-      <!--<div  uk-icon="icon: plus-circle; ratio: 1.9" class="add-column" uk-toggle="target: #new-column-modal" (click)="addColumn(i, null)"></div>-->
     </div>
     <div >
       <div  uk-icon="icon: plus-circle; ratio: 1.9"
@@ -114,16 +122,16 @@
 
         <div>
           <p><label class="uk-form-label">Vloge stolpca</label></p>
-          <p class="uk-margin edit-user-checkboxes">
+          <p class="uk-margin edit-user-checkboxes" *ngIf="displayAddLeftColumn">
             <label><input class="uk-checkbox" type="checkbox" formControlName="leftColumn"> Levi mejni stolpec</label>
           </p>
-          <p class="uk-margin edit-user-checkboxes">
+          <p class="uk-margin edit-user-checkboxes" *ngIf="displayAddRightColumn">
             <label><input class="uk-checkbox" type="checkbox" formControlName="rightColumn"> Desni mejni stolpec</label>
           </p>
           <p class="uk-margin edit-user-checkboxes">
             <label><input class="uk-checkbox" type="checkbox" formControlName="highPriority"> Stolpec z najvišjo prioriteto</label>
           </p>
-          <p class="uk-margin edit-user-checkboxes">
+          <p class="uk-margin edit-user-checkboxes" *ngIf="displayAddTestColumn">
             <label><input class="uk-checkbox" type="checkbox" formControlName="testColumn"> Stolpec za testiranje</label>
           </p>
         </div>
@@ -147,8 +155,14 @@
   <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
     <h3>Ste prepričani, da želite izbirsati stolpec?</h3>
     <p class="uk-text-right">
-      <button class="uk-button uk-button-default uk-modal-close" type="button">prekliči</button>
+      <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeDeleteModal()">prekliči</button>
       <button class="uk-button uk-button-danger" type="button" (click)="deleteColumn()">Izbriši</button>
     </p>
+
+    <div *ngIf="error != null">
+      <div class="uk-alert-danger" uk-alert>
+        <p>{{ error }}</p>
+      </div>
+    </div>
   </div>
 </div>

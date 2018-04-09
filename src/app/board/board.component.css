@@ -64,7 +64,14 @@
 }
 
 .title {
-  margin-bottom: 27px;
+  margin-bottom: 0;
+}
+
+.special-column-text {
+  font-style: italic;
+  color: grey;
+  font-size: 12px;
+  height: 15px;
 }
 
 .subcolumn-container {
@@ -79,7 +86,7 @@
 }
 
 .subcolumn-title {
-  margin-bottom: 3px;
+  margin-bottom: 0;
 }
 
 .subcolumn-hr {
@@ -159,4 +166,9 @@
 .danger-input {
   border: 1.5px solid  red;
   border-radius: 5px;
+}
+
+.empty-board {
+  width: 400px;
+  font-size: 20px;
 }

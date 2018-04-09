@@ -13,7 +13,7 @@ declare var UIkit: any;
 })
 export class BoardComponent implements OnInit {
 
-  colors = ['#FFB300', '#FF3D00', '#29B6F6', '#8BC34A', '#ffd633'];
+  colors = ['#FFB300', '#FF3D00', '#29B6F6', '#8BC34A', '#ffd633', '#884EA0'];
   board: Board;
   dataTransfer = new Map();
   newColumnForm: FormGroup;
@@ -21,6 +21,10 @@ export class BoardComponent implements OnInit {
   newColumnOffset: number = null;
   newSubcolumnParent: number = null;
   delColumn: Column = null;
+
+  displayAddLeftColumn = false;
+  displayAddRightColumn = false;
+  displayAddTestColumn = false;
 
   constructor(private boardsService: BoardsService) { }
 
@@ -43,6 +47,147 @@ export class BoardComponent implements OnInit {
     }, err => {
       console.log('Ni bilo mogoce dobiti table ' + err);
     });
+  }
+
+  addColumn(i: number, parentId: number) {
+    this.newColumnOffset = i;
+    this.newSubcolumnParent = parentId;
+    this.specialColumnsValidation();
+  }
+
+  postColumn() {
+    const newColumn: Column = {
+      id: null,
+      title: this.newColumnForm.get('name').value,
+      wip_restriction: this.newColumnForm.get('wip').value,
+      parent_column_id: this.newSubcolumnParent,
+      display_offset: this.newColumnOffset,
+      board_id: this.board.id,
+      subcolumns: null
+    };
+    this.boardsService.postColumn(newColumn).subscribe(column => {
+      UIkit.notification(
+        'Stolpec ' + newColumn.title + ' je dodan na tablo.',
+        {status: 'success', timeout: 2000}
+      );
+      this.setSpecialColumns(<Column>column);
+      this.getBoard();
+    }, err => {
+      this.error = 'ti šment nekaj se je moralo zalomiti, stolpca ni mogoče dodani na tablo.';
+      console.log('stolpca ni bilo mogoce dodati na tablo.');
+    });
+  }
+
+  setDeleteColumn(column: Column) {
+    this.delColumn = column;
+  }
+
+  specialColumnsValidation() {
+    const rightId = this.board.type_right_border_column_id;
+    const leftId = this.board.type_left_border_column_id;
+    const testId = this.board.type_acceptance_testing_column_id;
+
+    this.displayAddLeftColumn = rightId == null ||
+                                this.getColumnById(rightId).display_offset > this.newColumnOffset ||
+                                (testId != null && this.getColumnById(testId).display_offset > this.newColumnOffset);
+    this.displayAddRightColumn = leftId == null ||
+                                this.getColumnById(leftId).display_offset < this.newColumnOffset ||
+                                (testId != null && this.getColumnById(testId).display_offset > this.newColumnOffset);
+    this.displayAddTestColumn = leftId == null && rightId == null ||
+                                rightId == null && this.getColumnById(leftId).display_offset < this.newColumnOffset ||
+                                rightId != null && this.getColumnById(rightId).display_offset < this.newColumnOffset;
+  }
+
+  getColumnById(columnId: number) {
+    for (const el of this.board.columns) {
+      if (el.id === columnId) {
+        return el;
+      }
+    }
+    return null;
+  }
+
+  setSpecialColumns(column: Column) {
+      if (this.newColumnForm.get('leftColumn').value) {
+        this.board.type_left_border_column_id = column.id;
+      }
+      if (this.newColumnForm.get('rightColumn').value) {
+        this.board.type_right_border_column_id = column.id;
+      }
+      if (this.newColumnForm.get('highPriority').value) {
+        this.board.type_priority_column_id = column.id;
+      }
+      if (this.newColumnForm.get('testColumn').value) {
+        this.board.type_acceptance_testing_column_id = column.id;
+      }
+      this.boardsService.updateBoard(this.board).subscribe(res => {
+        console.log('uspesno posodobljeni stolpci');
+        this.closeModal();
+      }, err => {
+        console.log(err);
+        this.closeModal();
+    });
+  }
+
+  showSpecialColumn(columnId: number) {
+    let display = '';
+    if (this.board.type_left_border_column_id === columnId) {
+      display += 'levi mejni stolpec, ';
+    }
+    if (this.board.type_right_border_column_id === columnId) {
+      display += 'desni mejni stolpec, ';
+    }
+    if (this.board.type_priority_column_id === columnId) {
+      display += 'stolpec z najvišjo prioriteto, ';
+    }
+    if (this.board.type_acceptance_testing_column_id === columnId) {
+      display += 'testni stolpec, ';
+    }
+    if (display !== '') {
+      return display.substring(0, display.length - 2);
+    }
+    return null;
+  }
+
+  deleteColumn() {
+    if (this.delColumn !== null) {
+      const specialText = this.showSpecialColumn(this.delColumn.id);
+      if (specialText === '') {
+        this.boardsService.deleteColumn(this.delColumn.id).subscribe(res => {
+          UIkit.notification(
+            'Stolpec ' + this.delColumn.title + ' je izbrisan.',
+            {status: 'success', timeout: 2000}
+          );
+          this.getBoard();
+          this.delColumn = null;
+          this.error = null;
+          UIkit.modal('#delete-column-modal').hide();
+        }, err => {
+          console.log(err);
+          UIkit.notification(
+            'Stolpca ' + this.delColumn.title + ' ni bilo mogoče izbrisati.',
+            {status: 'warn', timeout: 2000}
+          );
+          this.delColumn = null;
+          this.error = null;
+          UIkit.modal('#delete-column-modal').hide();
+        });
+      } else {
+        this.error = 'Stolpec ima vloge: ' + specialText + '. Preden lahko zbrišete stolpec morate te vloge dodeliti drugemu stolpcu.';
+      }
+    }
+  }
+
+  closeModal() {
+    this.newSubcolumnParent = null;
+    this.newColumnOffset = null;
+    this.error = null;
+    UIkit.modal('#new-column-modal').hide();
+    this.newColumnForm.reset();
+  }
+
+  closeDeleteModal() {
+    this.error = null;
   }
 
   onDragStart(event, card, column) {
@@ -69,88 +214,6 @@ export class BoardComponent implements OnInit {
 
   allowDrop(event) {
     event.preventDefault();
-  }
-
-  addColumn(i: number, parentId: number) {
-    console.log('offset: ' + i);
-    this.newColumnOffset = i;
-    this.newSubcolumnParent = parentId;
-  }
-
-  postColumn() {
-    const newColumn: Column = {
-      id: null,
-      title: this.newColumnForm.get('name').value,
-      wip_restriction: this.newColumnForm.get('wip').value,
-      parent_column_id: this.newSubcolumnParent,
-      display_offset: this.newColumnOffset,
-      board_id: this.board.id,
-      subcolumns: null
-    };
-    this.boardsService.postColumn(newColumn).subscribe(column => {
-      UIkit.notification(
-        'Stolpec ' + newColumn.title + ' je dodan na tablo.',
-        {status: 'success', timeout: 2000}
-      );
-      this.setSpecialColumns(<Column>column).then(res => this.closeModal());
-      this.getBoard();
-    }, err => {
-      this.error = 'ti šment nekaj se je moralo zalomiti, stolpca ni mogoče dodani na tablo.';
-      console.log('stolpca ni bilo mogoce dodati na tablo.');
-    });
-  }
-
-  setDeleteColumn(column: Column) {
-    this.delColumn = column;
-  }
-
-  setSpecialColumns(column: Column) {
-    return new Promise((resolve) => {
-      if (this.newColumnForm.get('leftColumn').value) {
-        //  :TODO update board.
-      }
-      if (this.newColumnForm.get('rightColumn').value) {
-        //  :TODO update board.
-      }
-      if (this.newColumnForm.get('highPriority').value) {
-        //  :TODO update board.
-      }
-      if (this.newColumnForm.get('testColumn').value) {
-        //  :TODO update board.
-      }
-      resolve(); // :TODO fix that
-    });
-  }
-
-  deleteColumn() {
-    if (this.delColumn !== null) {
-      console.log('delete ID: ' + this.delColumn.id);
-      this.boardsService.deleteColumn(this.delColumn.id).subscribe(res => {
-        UIkit.notification(
-          'Stolpec ' + this.delColumn.title + ' je izbrisan.',
-          {status: 'success', timeout: 2000}
-        );
-        this.getBoard();
-        this.delColumn = null;
-        UIkit.modal('#delete-column-modal').hide();
-      }, err => {
-        console.log(err);
-        UIkit.notification(
-          'Stolpca ' + this.delColumn.title + ' ni bilo mogoče izbrisati.',
-          {status: 'warn', timeout: 2000}
-        );
-        this.delColumn = null;
-        UIkit.modal('#delete-column-modal').hide();
-      });
-    }
-  }
-
-  closeModal() {
-    this.newSubcolumnParent = null;
-    this.newColumnOffset = null;
-    this.error = null;
-    UIkit.modal('#new-column-modal').hide();
-    this.newColumnForm.reset();
   }
 }
 
