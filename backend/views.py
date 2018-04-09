@@ -396,14 +396,16 @@ class ColumnList(generics.ListCreateAPIView):
         columns = Column.objects.all()
         serializer = ColumnSerializer(data=request.data)
 
-        board_id = request.data["board_id"]
-        display_offset = request.data["display_offset"]
-        filtered_columns = columns.filter(board_id=board_id).filter(parent_column_id=None)
-        for i in filtered_columns:
-            offset = i.display_offset
-            if offset >= display_offset:
-                i.display_offset += 1
-                i.save()
+        if request.data["parent_column_id"] == None:
+            board_id = request.data["board_id"]
+            display_offset = request.data["display_offset"]
+            filtered_columns = columns.filter(board_id=board_id).filter(parent_column_id=None)
+
+            for i in filtered_columns:
+                offset = i.display_offset
+                if offset >= display_offset:
+                    i.display_offset += 1
+                    i.save()
 
         if serializer.is_valid():
             serializer.save()
