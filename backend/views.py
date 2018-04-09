@@ -452,6 +452,7 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
     def get(self, request, **kwargs):
         board = Board.objects.get(pk=kwargs["pk"])
         columns = Column.objects.all().order_by("display_offset")
+        cards = Card.objects.all()
 
         board_data = []
         board_serializer = BoardSerializer(board).data
@@ -463,11 +464,23 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
             column_serializer = ColumnSerializer(i).data
             column_subcolumns = columns.filter(
                 parent_column_id=i.id)
+            column_cards_list = []
+            column_cards = cards.filter(column_id=i.id)
+            for column_card in column_cards:
+                column_cards_list.append(column_card.card_id)
+
             subcolumns_data = []
+            subcolumns_cards_list = []
             for x in column_subcolumns:
                 subcolumn_serializer = ColumnSerializer(x).data
+                subcolumn_cards = cards.filter(column_id=x.id)
+                for subcolumn_card in subcolumn_cards:
+                    subcolumns_cards_list.append(subcolumn_card.id)
+                subcolumn_serializer["subcolmn_cards"] = subcolumns_cards_list
                 subcolumns_data.append(subcolumn_serializer)
+
             column_serializer["subcolumns"] = subcolumns_data
+            column_serializer["column_cards"] = column_cards_list
             board_column_data.append(column_serializer)
         board_serializer["columns"] = board_column_data
 
