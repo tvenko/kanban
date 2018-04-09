@@ -29,15 +29,15 @@ export class BoardComponent implements OnInit {
   displayAddTestColumn = false;
 
   currentUserId = null;
-  projects:Project[];
-  projectsOnBoard:Project[] = [];
+  projects: Project[];
+  projectsOnBoard: Project[] = [];
   addProjectForm: FormGroup;
 
   constructor(private boardsService: BoardsService, private projectsService: ProjectsService) { }
 
   ngOnInit() {
-    let user = JSON.parse(localStorage.getItem('user'));
-    this.currentUserId = user["id"];
+    const user = JSON.parse(localStorage.getItem('user'));
+    this.currentUserId = user['id'];
 
     this.newColumnForm = new FormGroup({
       name: new FormControl(null, Validators.required),
@@ -53,10 +53,11 @@ export class BoardComponent implements OnInit {
     });
 
     this.getBoard();
+    this.loadProjects();
   }
 
   getBoard() {
-    this.boardsService.getBoard(1).subscribe(board => {
+    this.boardsService.getBoard(2).subscribe(board => {
       console.log(board[0]);
       this.board = <Board>board[0];
     }, err => {
@@ -70,13 +71,13 @@ export class BoardComponent implements OnInit {
     this.specialColumnsValidation(this.newColumnOffset);
   }
 
-  addProjectModal(){
+  addProjectModal() {
     this.loadProjects();
   }
 
   loadProjects() {
     this.projectsService.getProjects().subscribe(projects => {
-      
+
      // if (!this.isCurrentUserAdmin) {
         /*projects = Object.values(projects).filter((project, index, array) => {
           let isMember = false;
@@ -91,20 +92,20 @@ export class BoardComponent implements OnInit {
       this.projects = <Project[]> projects;
       this.projects.sort(function (a, b) {
         return a.id - b.id;
-        
+
       });
       console.log(this.projects);
     }, err => {
       console.log('error geting projects from backend');
-    });                         
-                    
-  }
-
-  cancelAddProject(){
+    });
 
   }
-  addProject(){
-    let project = this.addProjectForm.get("project").value;
+
+  cancelAddProject() {
+
+  }
+  addProject() {
+    const project = this.addProjectForm.get('project').value;
     this.projectsOnBoard.push(project);
   }
 
@@ -287,10 +288,4 @@ export class BoardComponent implements OnInit {
   allowDrop(event) {
     event.preventDefault();
   }
-}
-
-interface Card {
-  id: number;
-  title: string;
-  content: string;
 }

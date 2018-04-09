@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Config} from '../config/env.config';
 import {Column} from '../models/column.interface';
-import {Board} from "../models/board.interface";
+import {Board} from '../models/board.interface';
 
 @Injectable()
 export class BoardsService {
