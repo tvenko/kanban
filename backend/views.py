@@ -392,6 +392,25 @@ class ColumnList(generics.ListCreateAPIView):
     queryset = Column.objects.all()
     serializer_class = ColumnSerializer
 
+    def post(self, request, **kwargs):
+        columns = Column.objects.all()
+        serializer = ColumnSerializer(data=request.data)
+        parent = request.data["parent_column_id"]
+        board_id = request.data["board_id"]
+        display_offset = request.data["display_offset"]
+        filtered_columns = columns.filter(board_id=board_id).filter(parent_column_id=None)
+        for i in filtered_columns:
+            offset = i.display_offset
+            if offset >= display_offset:
+                i.display_offset += 1
+                i.save()
+
+        if serializer.is_valid():
+            serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 
 class ColumnDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -403,7 +422,7 @@ class ColumnDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-class BoardDetail(generics.ListCreateAPIView):
+class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     List all groups.
     """

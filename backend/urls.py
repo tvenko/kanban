@@ -25,8 +25,9 @@ projects_urls = [
 ]
 
 columns_urls = [
-    url(r'^columns/(?P<pk>[0-9]+)/$', views.ColumnDetail.as_view()),
     url(r'^columns/$', views.ColumnList.as_view()),
+    url(r'^columns/(?P<pk>[0-9]+)/$', views.ColumnDetail.as_view()),
+
 ]
 
 board_urls = [
