@@ -10,10 +10,13 @@ import { Location } from '@angular/common';
 export class MainNavbarComponent implements OnInit {
 
   route: string;
+  username: string;
 
   constructor(private router: Router, private location: Location) {}
 
   ngOnInit() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    this.username = user.email;
   }
 
   isActiveRoute(route: string) {
