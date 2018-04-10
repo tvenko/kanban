@@ -18,12 +18,14 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {UsersService} from './shared/services/users.service';
 import {HttpClientModule} from '@angular/common/http';
 import { GroupsService } from './shared/services/groups.service';
+import {BoardsListComponent} from './boards-list/boards-list.component';
 
 import { AuthGuard } from './shared/guards/auth.guard';
 import { AuthenticationService } from './shared/services/authentication.service';
 import { JwtModule } from '@auth0/angular-jwt';
 import { HttpModule } from '@angular/http';
 import {BoardsService} from './shared/services/boards.service';
+import {BoardsListService} from './shared/services/boards-list.service';
 
 import {CalendarModule} from 'primeng/calendar';
 import { ProjectsService } from './shared/services/projects.service';
@@ -44,7 +46,8 @@ export function tokenGetterFunc() {
     BoardComponent,
     DocumentationComponent,
     AnalyticsComponent,
-    ProjectsComponent
+    ProjectsComponent,
+    BoardsListComponent
   ],
   imports: [
     BrowserModule,
@@ -62,7 +65,7 @@ export function tokenGetterFunc() {
       }
     }),
   ],
-  providers: [UsersService, GroupsService, AuthGuard, AuthenticationService, BoardsService, ProjectsService],
+  providers: [UsersService, GroupsService, AuthGuard, AuthenticationService, BoardsService, ProjectsService, BoardsListService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -11,6 +11,7 @@ export class MainNavbarComponent implements OnInit {
 
   route: string;
   username: string;
+  id: string;
 
   constructor(private router: Router, private location: Location) {}
 
@@ -21,7 +22,8 @@ export class MainNavbarComponent implements OnInit {
 
   isActiveRoute(route: string) {
     if (this.location.path() !== null) {
-      return route === this.location.path();
+      this.id = this.location.path().split("/")[2];
+      return route === "/" + this.location.path().split("/")[1];
     }
     return false;
   }

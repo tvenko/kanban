@@ -3,8 +3,14 @@
       <div class="uk-container">
         <div class="uk-navbar">
           <div class="uk-navbar-left">
-            <a routerLink="/projects" class="uk-navbar-item uk-logo">Kanbafake</a>
+            <a routerLink="/boards-list" class="uk-navbar-item uk-logo">Kanbafake</a>
             <ul class="uk-navbar-nav">
+              <li [ngClass]="{'uk-active': isActiveRoute('/boards-list')}">
+                <a routerLink="/boards-list">Table</a>
+              </li>
+              <li *ngIf="isActiveRoute('/board')" [ngClass]="{'uk-active': isActiveRoute('/board')}">
+                <a routerLink="/projects">> Tabla {{id}}</a>
+              </li>
               <li [ngClass]="{'uk-active': isActiveRoute('/projects')}">
                 <a routerLink="/projects">Projekti</a>
               </li>
@@ -13,10 +19,10 @@
               </li>
               <!-- <li [ngClass]="{'uk-active': isActiveRoute('#')}">
                 <a routerLink="#">Projekti</a>
-              </li> -->
+              </li> 
               <li [ngClass]="{'uk-active': isActiveRoute('/board')}">
                 <a routerLink="/board">Tabla &nbsp; <i>dev</i></a>
-              </li>
+              </li>-->
               <li [ngClass]="{'uk-active': isActiveRoute('/documentation')}">
                 <a routerLink="/documentation">Dokumentacija</a>
               </li>

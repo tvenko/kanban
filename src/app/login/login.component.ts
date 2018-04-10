@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
 		                .subscribe(data => {
 							localStorage.setItem('user', JSON.stringify(data));
 							localStorage.removeItem('login_attempts');
-							this.router.navigate(['/projects']);
+							this.router.navigate(['/boards-list']);
 		            	},
 		            	error => {
 		            		this.error = 'Pridobivanje podatkov o uporabniku neuspešno.';

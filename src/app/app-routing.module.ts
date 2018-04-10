@@ -3,6 +3,7 @@ import {LoginComponent} from './login/login.component';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {NgModule} from '@angular/core';
 import {BoardComponent} from './board/board.component';
+import {BoardsListComponent} from './boards-list/boards-list.component';
 import {AnalyticsComponent} from './analytics/analytics.component';
 import {DocumentationComponent} from './documentation/documentation.component';
 import {GroupsComponent} from './groups/groups.component';
@@ -15,7 +16,8 @@ const appRoutes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full', canActivate: [AuthGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard] },
-  { path: 'board', component: BoardComponent, canActivate: [AuthGuard] },
+  { path: 'board/:id', component: BoardComponent, canActivate: [AuthGuard] },
+  { path: 'boards-list', component: BoardsListComponent, canActivate: [AuthGuard] },
   { path: 'analytics', component: AnalyticsComponent, canActivate: [AuthGuard] },
   { path: 'documentation', component: DocumentationComponent, canActivate: [AuthGuard] },
   { path: 'groups', component: GroupsComponent, canActivate: [AuthGuard] },

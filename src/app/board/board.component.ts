@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Column} from '../shared/models/column.interface';
 import {BoardsService} from '../shared/services/boards.service';
 import {Board} from '../shared/models/board.interface';
 import {Project} from '../shared/models/project.interface';
 import { ProjectsService } from '../shared/services/projects.service';
+import { ActivatedRoute } from '@angular/router';
 
 declare var UIkit: any;
 
@@ -13,8 +14,9 @@ declare var UIkit: any;
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
-export class BoardComponent implements OnInit {
-
+export class BoardComponent implements OnInit, OnDestroy {
+  id: number;
+  private sub: any;
   colors = ['#FFB300', '#FF3D00', '#29B6F6', '#8BC34A', '#ffd633', '#884EA0'];
   board: Board;
   dataTransfer = new Map();
@@ -33,9 +35,18 @@ export class BoardComponent implements OnInit {
   projectsOnBoard: Project[] = [];
   addProjectForm: FormGroup;
 
-  constructor(private boardsService: BoardsService, private projectsService: ProjectsService) { }
+  constructor(private boardsService: BoardsService, private projectsService: ProjectsService,
+              private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.sub = this.route.params.subscribe(params => {
+       this.id = +params['id']; // (+) converts string 'id' to a number
+
+       // TODO: Check if the user is allowed to see this board.
+
+       this.getBoard();
+       this.loadProjects();
+    });
     const user = JSON.parse(localStorage.getItem('user'));
     this.currentUserId = user['id'];
 
@@ -52,15 +63,14 @@ export class BoardComponent implements OnInit {
       project: new FormControl(null, Validators.required),
     });
 
-    this.getBoard();
-    this.loadProjects();
   }
 
   getBoard() {
-    this.boardsService.getBoard(3).subscribe(board => {
+    this.boardsService.getBoard(this.id).subscribe(board => {
       console.log(board[0]);
       this.board = <Board>board[0];
     }, err => {
+      // Board doesn't exist. Redirect the user?
       console.log('Ni bilo mogoce dobiti table ' + err);
     });
   }
@@ -287,5 +297,9 @@ export class BoardComponent implements OnInit {
 
   allowDrop(event) {
     event.preventDefault();
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 }
