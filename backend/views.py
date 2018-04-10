@@ -520,6 +520,7 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                 board_data.append(project_data)
                 board_list.append(board_data)
         else:
+            allowed_roles = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=3)
             board_list = []
 
             for board in boards:
@@ -539,6 +540,12 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                             user_in_project = True
                 if user_in_project:
                     board_data.append(project_data)
+                    board_data.append(True)
                     board_list.append(board_data)
+                if not user_in_project and allowed_roles:
+                    board_data.append(project_data)
+                    board_data.append(False)
+                    board_list.append(board_data)
+                # If kanban master, return attribute about board membership.
 
         return Response(board_list, status=status.HTTP_202_ACCEPTED)
