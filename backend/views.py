@@ -503,8 +503,9 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
     def get(self, request, *args, **kwargs):
         boards = Board.objects.all()
         user_id = kwargs["pk"]
-        allowed_roles = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=4)
-        if allowed_roles:
+        admin = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=4)
+        kanban_master = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=3)
+        if admin and not kanban_master:
             board_list = []
 
             for board in boards:
