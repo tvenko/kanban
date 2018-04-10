@@ -510,6 +510,7 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
             for board in boards:
                 board_data = []
                 board_data.append(board.title)
+                board_data.append(board.id)
                 projects = Project.objects.all().filter(board_id=board.id)
                 project_data = dict()
                 project_data["projects"] = []
@@ -524,6 +525,7 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
             for board in boards:
                 board_data = []
                 board_data.append(board.title)
+                board_data.append(board.id)
                 projects = Project.objects.all().filter(board_id=board.id)
                 project_data = dict()
                 project_data["projects"] = []
@@ -533,7 +535,7 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                     for developer_group in developer_groups:
                         if developer_group.id == int(user_id) and developer_group.active:
                             project_data["projects"].append(project.project_id)
-                    board_data.append(project_data)
+                board_data.append(project_data)
                 board_list.append(board_data)
 
         return Response(board_list, status=status.HTTP_202_ACCEPTED)
