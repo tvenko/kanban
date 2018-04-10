@@ -521,7 +521,7 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                 board_data.append(project_data)
                 board_list.append(board_data)
         else:
-            allowed_roles = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=3)
+            #allowed_roles = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=3)
             board_list = []
 
             for board in boards:
@@ -534,16 +534,16 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                 user_in_project = False
 
                 for project in projects:
+                    project_data["projects"].append(project.project_id)
                     developer_groups = DeveloperGroupMembership.objects.all().filter(developer_group_id=project.developer_group_id)
                     for developer_group in developer_groups:
                         if developer_group.id == int(user_id) and developer_group.active: # Should probably also check if membership is active?
-                            project_data["projects"].append(project.project_id)
                             user_in_project = True
                 if user_in_project:
                     board_data.append(project_data)
                     board_data.append(True)
                     board_list.append(board_data)
-                if not user_in_project and allowed_roles:
+                if not user_in_project and kanban_master:
                     board_data.append(project_data)
                     board_data.append(False)
                     board_list.append(board_data)
