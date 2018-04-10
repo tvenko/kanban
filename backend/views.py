@@ -529,13 +529,16 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                 projects = Project.objects.all().filter(board_id=board.id)
                 project_data = dict()
                 project_data["projects"] = []
+                user_in_project = False
 
                 for project in projects:
                     developer_groups = DeveloperGroupMembership.objects.all().filter(developer_group_id=project.developer_group_id)
                     for developer_group in developer_groups:
-                        if developer_group.id == int(user_id) and developer_group.active:
+                        if developer_group.id == int(user_id) and developer_group.active: # Should probably also check if membership is active?
                             project_data["projects"].append(project.project_id)
-                board_data.append(project_data)
-                board_list.append(board_data)
+                            user_in_project = True
+                if user_in_project:
+                    board_data.append(project_data)
+                    board_list.append(board_data)
 
         return Response(board_list, status=status.HTTP_202_ACCEPTED)
