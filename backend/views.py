@@ -396,14 +396,16 @@ class ColumnList(generics.ListCreateAPIView):
         columns = Column.objects.all()
         serializer = ColumnSerializer(data=request.data)
 
-        board_id = request.data["board_id"]
-        display_offset = request.data["display_offset"]
-        filtered_columns = columns.filter(board_id=board_id).filter(parent_column_id=None)
-        for i in filtered_columns:
-            offset = i.display_offset
-            if offset >= display_offset:
-                i.display_offset += 1
-                i.save()
+        if request.data["parent_column_id"] == None:
+            board_id = request.data["board_id"]
+            display_offset = request.data["display_offset"]
+            filtered_columns = columns.filter(board_id=board_id).filter(parent_column_id=None)
+
+            for i in filtered_columns:
+                offset = i.display_offset
+                if offset >= display_offset:
+                    i.display_offset += 1
+                    i.save()
 
         if serializer.is_valid():
             serializer.save()
@@ -510,13 +512,15 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
     def get(self, request, *args, **kwargs):
         boards = Board.objects.all()
         user_id = kwargs["pk"]
-        allowed_roles = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=4)
-        if allowed_roles:
+        admin = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=4)
+        kanban_master = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=3)
+        if admin and not kanban_master:
             board_list = []
 
             for board in boards:
                 board_data = []
                 board_data.append(board.title)
+                board_data.append(board.id)
                 projects = Project.objects.all().filter(board_id=board.id)
                 project_data = dict()
                 project_data["projects"] = []
@@ -526,21 +530,32 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                 board_data.append(project_data)
                 board_list.append(board_data)
         else:
+            #allowed_roles = AllowedRole.objects.all().filter(user_id=user_id).filter(role_id=3)
             board_list = []
 
             for board in boards:
                 board_data = []
                 board_data.append(board.title)
+                board_data.append(board.id)
                 projects = Project.objects.all().filter(board_id=board.id)
                 project_data = dict()
                 project_data["projects"] = []
+                user_in_project = False
 
                 for project in projects:
+                    project_data["projects"].append(project.project_id)
                     developer_groups = DeveloperGroupMembership.objects.all().filter(developer_group_id=project.developer_group_id)
                     for developer_group in developer_groups:
-                        if developer_group.id == int(user_id) and developer_group.active:
-                            project_data["projects"].append(project.project_id)
+                        if developer_group.id == int(user_id) and developer_group.active: # Should probably also check if membership is active?
+                            user_in_project = True
+                if user_in_project:
                     board_data.append(project_data)
-                board_list.append(board_data)
+                    board_data.append(True)
+                    board_list.append(board_data)
+                if not user_in_project and kanban_master:
+                    board_data.append(project_data)
+                    board_data.append(False)
+                    board_list.append(board_data)
+                # If kanban master, return attribute about board membership.
 
         return Response(board_list, status=status.HTTP_202_ACCEPTED)
