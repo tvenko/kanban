@@ -12,15 +12,15 @@ export class BoardsListService {
   }
 
   updateBoard(board) {
-    return this.http.put(Config.API + '/board/', board);
+    return this.http.put(Config.API + '/boards/' + board["id"] + '/', board);
   }
 
   postBoard(board) {
-    return this.http.post(Config.API + '/board/', board);
+    return this.http.post(Config.API + '/boards/' + board["id"] + '/', board);
   }
 
   deleteBoard(board_id) {
-    return this.http.delete(Config.API + '/board/' + board_id + '/');
+    return this.http.delete(Config.API + '/boards/' + board_id + '/');
   }
 
 }
