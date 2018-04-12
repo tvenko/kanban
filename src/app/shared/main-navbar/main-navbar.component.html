@@ -9,7 +9,7 @@
                 <a routerLink="/boards-list">Table</a>
               </li>
               <li *ngIf="isActiveRoute('/board')" [ngClass]="{'uk-active': isActiveRoute('/board')}">
-                <a routerLink="/projects">> Tabla {{id}}</a>
+                <a> > Tabla {{id}}</a>
               </li>
               <li [ngClass]="{'uk-active': isActiveRoute('/projects')}">
                 <a routerLink="/projects">Projekti</a>
@@ -19,7 +19,7 @@
               </li>
               <!-- <li [ngClass]="{'uk-active': isActiveRoute('#')}">
                 <a routerLink="#">Projekti</a>
-              </li> 
+              </li>
               <li [ngClass]="{'uk-active': isActiveRoute('/board')}">
                 <a routerLink="/board">Tabla &nbsp; <i>dev</i></a>
               </li>-->
@@ -39,6 +39,21 @@
               <li><p>{{username}}</p></li>
               <li><a routerLink="/login">Odjava</a></li>
             </ul>
+            <div class="settings-button" *ngIf="isActiveRoute('/board')">
+              <span uk-icon="icon: thumbnails; ratio: 2" type="button"></span>
+              <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
+                <ul class="uk-nav uk-dropdown-nav">
+                  <li class="settings-text">
+                    Urejaj tablo
+                    <label class="switch">
+                      <input type="checkbox">
+                      <span class="slider round" (click)="editBoard()"></span>
+                    </label>
+                  </li>
+                  <li class="settings-text" (click)="addProjectToBoard()">Dodaj projekt</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>

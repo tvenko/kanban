@@ -6,6 +6,7 @@ import {Board} from '../shared/models/board.interface';
 import {Project} from '../shared/models/project.interface';
 import { ProjectsService } from '../shared/services/projects.service';
 import { ActivatedRoute } from '@angular/router';
+import {MessageService} from '../shared/services/message.service';
 
 declare var UIkit: any;
 
@@ -25,6 +26,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   newColumnOffset: number = null;
   newSubcolumnParent: number = null;
   delColumn: Column = null;
+  editBoard = false;
 
   displayAddLeftColumn = true;
   displayAddRightColumn = true;
@@ -35,8 +37,20 @@ export class BoardComponent implements OnInit, OnDestroy {
   projectsOnBoard: Project[] = [];
   addProjectForm: FormGroup;
 
-  constructor(private boardsService: BoardsService, private projectsService: ProjectsService,
-              private route: ActivatedRoute) { }
+  constructor(private boardsService: BoardsService,
+              private projectsService: ProjectsService,
+              private route: ActivatedRoute,
+              private messageService: MessageService) {
+    this.messageService.listen().subscribe((msg: any) => {
+      console.log('MESSAGE: ', msg);
+      if (msg === 'editBoard') {
+        this.editBoard = !this.editBoard;
+      }
+      if (msg === 'addProject') {
+        UIkit.modal('#add-project-modal').show();
+      }
+    });
+  }
 
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
