@@ -16,7 +16,9 @@ export class BoardsListService {
   }
 
   postBoard(board) {
-    return this.http.post(Config.API + '/boards/' + board["id"] + '/', board);
+    // This should probably be changed.
+    board["notify_overdue_n_days"] = -1;
+    return this.http.post(Config.API + '/boards/', board);
   }
 
   deleteBoard(board_id) {

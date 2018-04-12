@@ -4,6 +4,7 @@ import { forEach } from '@angular/router/src/utils/collection';
 import {User} from '../shared/models/user.interface';
 import { UsersService } from '../shared/services/users.service';
 import { BoardsListService } from '../shared/services/boards-list.service';
+import { BoardsService } from '../shared/services/boards.service';
 import { Router } from '@angular/router';
 declare var UIkit: any;
 
@@ -27,7 +28,8 @@ export class BoardsListComponent implements OnInit {
   currentUserId = null;
   displayOwnOnly = false;
 
-  constructor(private boardsListService: BoardsListService, private router: Router) {
+  constructor(private boardsListService: BoardsListService, private router: Router,
+              private boardsService: BoardsService) {
     this.boards = [];
     this.selectedBoard = null;
   }
@@ -99,6 +101,7 @@ export class BoardsListComponent implements OnInit {
 
   loadModal() {
     this.boardNameInput.setValue('');
+    this.selectedBoard = null;
     this.boardModalTitle = "Nova tabla";
   }
 
@@ -114,15 +117,23 @@ export class BoardsListComponent implements OnInit {
           title:this.boardName
         };
         //Update board
-        this.boardsListService.updateBoard(board).subscribe(res => {        
-          UIkit.modal('#new-board-modal').hide();
-          UIkit.notification('Tabla urejena.', {status: 'success', timeout: 2000});
-          UIkit.modal('#new-board-modal').hide();
-          this.loadBoards();
+        // Workaround. Get the board, change the title, send it back.
+        this.boardsService.getBoard(board["id"]).subscribe(msg => {
+          msg[0]["title"] = board["title"];
+          this.boardsListService.updateBoard(msg[0]).subscribe(res => {        
+            UIkit.modal('#new-board-modal').hide();
+            UIkit.notification('Tabla urejena.', {status: 'success', timeout: 2000});
+            UIkit.modal('#new-board-modal').hide();
+            this.loadBoards();
+          }, err => {
+            UIkit.notification('Napaka pri urejanju table.', {status: 'danger', timeout: 2000});
+            console.log(err);
+          }); 
+
         }, err => {
           UIkit.notification('Napaka pri urejanju table.', {status: 'danger', timeout: 2000});
           console.log(err);
-        }); 
+        });
 
         UIkit.modal('#new-board-modal').hide();
 
