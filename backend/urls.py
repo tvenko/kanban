@@ -34,8 +34,8 @@ columns_urls = [
 ]
 
 board_urls = [
+    url(r'^boards/$', views.BoardList.as_view()),
     url(r'^boards/(?P<pk>[0-9]+)/$', views.BoardDetail.as_view()),
-    #url(r'^boards/$', views.BoardList.as_view()),
 ]
 
 

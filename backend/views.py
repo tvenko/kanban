@@ -440,6 +440,15 @@ class ColumnDetail(generics.RetrieveUpdateDestroyAPIView):
         return Response(None, status=status.HTTP_200_OK)
 
 
+class BoardList(generics.ListCreateAPIView):
+    """
+        List all boards.
+    """
+
+    queryset = Board.objects.all()
+    serializer_class = BoardSerializer
+
+
 class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     List all groups.
