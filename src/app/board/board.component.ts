@@ -1,12 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Column} from '../shared/models/column.interface';
-import {BoardsService} from '../shared/services/boards.service';
-import {Board} from '../shared/models/board.interface';
-import {Project} from '../shared/models/project.interface';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Column } from '../shared/models/column.interface';
+import { BoardsService } from '../shared/services/boards.service';
+import { Board } from '../shared/models/board.interface';
+import { Project } from '../shared/models/project.interface';
 import { ProjectsService } from '../shared/services/projects.service';
 import { ActivatedRoute } from '@angular/router';
-import {MessageService} from '../shared/services/message.service';
+import { MessageService } from '../shared/services/message.service';
 
 declare var UIkit: any;
 
@@ -27,10 +27,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   newSubcolumnParent: number = null;
   delColumn: Column = null;
   editBoard = false;
-
-  displayAddLeftColumn = true;
-  displayAddRightColumn = true;
-  displayAddTestColumn = true;
 
   currentUserId = null;
   projects: Project[];
@@ -92,7 +88,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   addColumn(i: number, parentId: number) {
     this.newColumnOffset = i;
     this.newSubcolumnParent = parentId;
-    this.specialColumnsValidation(this.newColumnOffset);
   }
 
   addProjectModal() {
@@ -159,20 +154,6 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   setDeleteColumn(column: Column) {
     this.delColumn = column;
-  }
-
-  specialColumnsValidation(offset: number) {
-    const rightId = this.board.type_right_border_column_id;
-    const leftId = this.board.type_left_border_column_id;
-    const testId = this.board.type_acceptance_testing_column_id;
-
-    // this.displayAddLeftColumn = rightId == null ||
-    //                             this.getColumnById(rightId).display_offset >= offset;
-    // this.displayAddRightColumn = leftId == null ||
-    //                             this.getColumnById(leftId).display_offset <= offset;
-    // this.displayAddTestColumn = leftId == null && rightId == null ||
-    //                             rightId == null && this.getColumnById(leftId).display_offset < offset ||
-    //                             rightId != null && this.getColumnById(rightId).display_offset < offset;
   }
 
   getColumnById(columnId: number) {

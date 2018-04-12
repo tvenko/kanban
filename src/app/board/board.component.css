@@ -63,6 +63,22 @@
   margin: 2px;
 }
 
+.project-name-column {
+  vertical-align: top;
+  height: 85vh;
+  margin: 2px;
+  width: 0;
+}
+
+.vertical-text {
+  transform: rotate(-90deg);
+  float: right;
+  margin-top: 30vh;
+  width: 300px;
+  margin-left: 100px;
+  margin-right: -120px;
+}
+
 .title {
   margin-bottom: 0;
 }

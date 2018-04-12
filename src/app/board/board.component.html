@@ -14,6 +14,9 @@
   </div>
 
   <div class="board">
+
+    <ol class="project-name-column"> <span class="vertical-text">PROJECT xxx</span> </ol>
+
     <div class="coulmn-container" *ngFor="let column of board?.columns; let i = index">
 
       <div
@@ -188,16 +191,16 @@
 
         <div>
           <p><label class="uk-form-label">Vloge stolpca</label></p>
-          <p class="uk-margin edit-user-checkboxes" *ngIf="displayAddLeftColumn">
+          <p class="uk-margin edit-user-checkboxes">
             <label><input class="uk-checkbox" type="checkbox" formControlName="leftColumn"> Levi mejni stolpec</label>
           </p>
-          <p class="uk-margin edit-user-checkboxes" *ngIf="displayAddRightColumn">
+          <p class="uk-margin edit-user-checkboxes">
             <label><input class="uk-checkbox" type="checkbox" formControlName="rightColumn"> Desni mejni stolpec</label>
           </p>
           <p class="uk-margin edit-user-checkboxes">
             <label><input class="uk-checkbox" type="checkbox" formControlName="highPriority"> Stolpec z najvišjo prioriteto</label>
           </p>
-          <p class="uk-margin edit-user-checkboxes" *ngIf="displayAddTestColumn">
+          <p class="uk-margin edit-user-checkboxes">
             <label><input class="uk-checkbox" type="checkbox" formControlName="testColumn"> Stolpec za testiranje</label>
           </p>
         </div>
