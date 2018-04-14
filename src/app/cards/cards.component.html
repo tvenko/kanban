@@ -1,0 +1,83 @@
+<div class="uk-container">
+  <!-- New card modal toggle button -->
+  <div *ngIf="isCurrentUserKanbanMaster || isCurrentUserProductOwner">
+      <button class="uk-button uk-button-primary newCardButton" (click)="loadModal()" uk-toggle="target: #new-card-modal">Nova kartica</button>
+  </div>
+
+
+  <!-- new card modal -->
+<div id="new-card-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" (click)="cancelCard()" uk-close></button>
+    <h2 class="uk-modal-title">{{cardsModalTitle}}</h2>
+    <!-- Cards form -->
+    <form (ngSubmit)="saveCard()" [formGroup]="newCardForm">
+      <fieldset class="uk-fieldset">
+        <!-- Card title -->
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-code-name">Naziv kartice</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="edit-title" type="text" placeholder="Naziv kartice" formControlName="title" [ngClass]="{'danger-input uk-animation-shake' : !newCardForm.get('title').valid && newCardForm.get('title').touched}">
+          </div>
+        </div>
+        <span class="uk-alert-danger"
+        *ngIf="!newCardForm.get('title').valid && newCardForm.get('title').touched">
+          Vnesi naziv kartice
+        </span>
+
+        <!-- Card description -->
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-description">Opis kartice</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="edit-description" type="text" placeholder="Opis kartice" formControlName="description"  [ngClass]="{'danger-input uk-animation-shake' : !newCardForm.get('description').valid && newCardForm.get('description').touched}">
+          </div>
+        </div>
+        <span class="uk-alert-danger"
+        *ngIf="!newCardForm.get('description').valid && newCardForm.get('description').touched">
+          Vnesi opis kartice
+        </span>
+
+        <!-- Card prority -->
+        <div class="uk-form-controls  uk-margin">
+          <label class="uk-form-label" for="edit-priority">Prioriteta</label>
+          <select class="uk-select" id="edit-priority" formControlName="priority">
+              <!-- <ng-container *ngFor="let project of projects">
+                  <option [ngValue]="project"  >{{project.title}}</option>
+              </ng-container>     -->
+          </select>
+        </div>
+        <span class="uk-alert-danger"
+              *ngIf="!newCardForm.get('priority').valid && newCardForm.get('priority').touched">
+          Izberi prioriteto
+        </span>
+
+        <!-- Show all projects -->
+        <div class="uk-form-controls  uk-margin">
+          <label class="uk-form-label" for="edit-project">Projekt</label>
+          <select class="uk-select" id="edit-project" formControlName="project">
+              <ng-container *ngFor="let project of projects">
+                  <option [ngValue]="project"  >{{project.title}}</option>
+              </ng-container>    
+          </select>
+        </div>
+        <span class="uk-alert-danger"
+              *ngIf="!newCardForm.get('project').valid && newCardForm.get('project').touched">
+          Izberi projekt
+        </span>
+
+        <!-- Card type -->
+        <div class="uk-form-controls  uk-margin"  *ngIf="isCurrentUserKanbanMaster">
+          <label><input class="uk-checkbox" type="checkbox" [checked]="isCurrentUserKanbanMaster" formControlName="typeSilver"> Nujna zahteva</label>
+        </div>
+
+        <div class="uk-text-right">
+          <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
+          <button class="uk-button uk-button-primary" type="submit" [disabled]="!newCardForm.valid">Shrani</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+</div>
+
