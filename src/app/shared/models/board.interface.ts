@@ -1,4 +1,5 @@
 import {Column} from './column.interface';
+import { Project } from './project.interface';
 
 export interface Board {
   id: number;
@@ -12,4 +13,5 @@ export interface Board {
   type_left_border_column_id: number;
   type_right_border_column_id: number;
   columns: Column[];
+  projects: Project[];
 }

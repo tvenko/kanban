@@ -1,6 +1,7 @@
 <div class="uk-container">
-  <!-- New card modal toggle button -->
-  <div *ngIf="isCurrentUserKanbanMaster || isCurrentUserProductOwner">
+  <!-- New card modal toggle button.
+       Only product owner or kanban master can add new cards -->
+  <div *ngIf="isUserProductOwner_inGroup || isUserKanbanMaster_inGroup">
       <button class="uk-button uk-button-primary newCardButton" (click)="loadModal()" uk-toggle="target: #new-card-modal">Nova kartica</button>
   </div>
 
@@ -13,6 +14,13 @@
     <!-- Cards form -->
     <form (ngSubmit)="saveCard()" [formGroup]="newCardForm">
       <fieldset class="uk-fieldset">
+        <!-- Card id -->
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-id">Številka kartice</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="edit-id" type="text" formControlName="id" >
+          </div>
+        </div>
         <!-- Card title -->
         <div class="uk-margin">
           <label class="uk-form-label" for="edit-code-name">Naziv kartice</label>
@@ -29,12 +37,38 @@
         <div class="uk-margin">
           <label class="uk-form-label" for="edit-description">Opis kartice</label>
           <div class="uk-form-controls">
-            <input class="uk-input" id="edit-description" type="text" placeholder="Opis kartice" formControlName="description"  [ngClass]="{'danger-input uk-animation-shake' : !newCardForm.get('description').valid && newCardForm.get('description').touched}">
+            <textarea class="uk-textarea" rows="5" id="edit-description" type="text" placeholder="Opis kartice" formControlName="description"  [ngClass]="{'danger-input uk-animation-shake' : !newCardForm.get('description').valid && newCardForm.get('description').touched}"></textarea>
           </div>
         </div>
         <span class="uk-alert-danger"
         *ngIf="!newCardForm.get('description').valid && newCardForm.get('description').touched">
           Vnesi opis kartice
+        </span>
+
+        <!-- Card assignee -->
+        <div class="uk-form-controls  uk-margin">
+          <label class="uk-form-label" for="edit-assignee">Zadolženi</label>
+          <select class="uk-select" id="edit-assignee" formControlName="assignee">
+              <!-- <ng-container *ngFor="let project of projects">
+                  <option [ngValue]="project"  >{{project.title}}</option>
+              </ng-container>     -->
+          </select>
+        </div>
+        <span class="uk-alert-danger"
+              *ngIf="!newCardForm.get('assignee').valid && newCardForm.get('assignee').touched">
+          Izberi zadolženega
+        </span>
+
+        <!-- Deadline -->
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-deadline">Rok</label>
+          <div class="uk-form-controls">
+            <p-calendar id="edit-deadline" [locale]="sl" [minDate]="today" formControlName="deadline" dateFormat="dd.mm.yy" showButtonBar="true"  [ngClass]="{'danger-input uk-animation-shake' : !newCardForm.get('deadline').valid && newCardForm.get('deadline').touched}"  readonlyInput="true"></p-calendar>
+          </div>
+        </div>
+        <span class="uk-alert-danger"
+        *ngIf="!newCardForm.get('deadline').valid && newCardForm.get('deadline').touched &&  newCardForm.get('deadline').dirty">
+          Izberi rok
         </span>
 
         <!-- Card prority -->
@@ -51,6 +85,12 @@
           Izberi prioriteto
         </span>
 
+        <!-- Card size -->
+        <div class="uk-form-controls  uk-margin">
+            <label class="uk-form-label" for="edit-size">Ocena zahtevnosti</label>
+            <input class="uk-input" id="edit-size" type="number" formControlName="size">
+        </div>
+
         <!-- Show all projects -->
         <div class="uk-form-controls  uk-margin">
           <label class="uk-form-label" for="edit-project">Projekt</label>
@@ -66,8 +106,8 @@
         </span>
 
         <!-- Card type -->
-        <div class="uk-form-controls  uk-margin"  *ngIf="isCurrentUserKanbanMaster">
-          <label><input class="uk-checkbox" type="checkbox" [checked]="isCurrentUserKanbanMaster" formControlName="typeSilver"> Nujna zahteva</label>
+        <div class="uk-form-controls  uk-margin"  *ngIf="isUserKanbanMaster_inGroup">
+          <label><input class="uk-checkbox" type="checkbox" [checked]="isUserKanbanMaster_inGroup" formControlName="typeSilver"> Nujna zahteva</label>
         </div>
 
         <div class="uk-text-right">
