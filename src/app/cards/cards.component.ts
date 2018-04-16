@@ -7,7 +7,8 @@ import { BoardsService } from '../shared/services/boards.service';
 import { Board } from '../shared/models/board.interface';
 import { User } from '../shared/models/user.interface';
 import { GroupMember } from '../shared/models/group.interface';
-
+import { Card } from '../shared/models/card.interface';
+declare var UIkit: any;
 
 
 @Component({
@@ -57,14 +58,13 @@ export class CardsComponent implements OnInit {
       'description': new FormControl(null, Validators.required),
       'assignee': new FormControl(null, Validators.required),
       'deadline': new FormControl(null, Validators.required),
-      'priority': new FormControl(null, Validators.required),
+      'priority': new FormControl(),
       'size': new FormControl(),
-      'project': new FormControl(null, Validators.required),
-      'typeSilver': new FormControl()
-      
+      'project': new FormControl(null, Validators.required),      
 
     });
-    this.newCardForm.get('typeSilver').disable();
+    //this.newCardForm.get('typeSilver').disable();
+
     this.newCardForm.get('id').disable();
 
     this.sl = {
@@ -80,10 +80,10 @@ export class CardsComponent implements OnInit {
     };
   }
 
-
   getBoard() {
     this.boardsService.getBoard(this.currectBoardId).subscribe(board => {      
       this.board = <Board>board[0];
+      this.projects = this.board.projects;
       this.getBoardUserData();
     }, err => {
       // Board doesn't exist. Redirect the user?
@@ -95,10 +95,10 @@ export class CardsComponent implements OnInit {
     let projects:Project[] = this.board.projects;
     projects.forEach(project => {
       let groupMember:GroupMember = project.group_data.users.find(user=>user.id == this.currentUserId);
-      if(groupMember.allowed_group_roles.includes(2)){
+      if(groupMember.allowed_group_roles.includes(2) && groupMember.group_active){
         this.isUserProductOwner_inGroup = true;
       }
-      if(groupMember.allowed_group_roles.includes(3)){
+      if(groupMember.allowed_group_roles.includes(3) && groupMember.group_active){
         this.isUserKanbanMaster_inGroup = true;
       }
     });
@@ -110,19 +110,43 @@ export class CardsComponent implements OnInit {
     }else{
       this.cardsModalTitle = "Nova kartica";
     }
-    this.newCardForm.reset();
+   // this.newCardForm.reset();
   }
 
   closeModal(){
-    this.newCardForm.reset();
   }
 
   cancelCard(){
-    this.newCardForm.reset();
+    //this.newCardForm.reset(); reset ni ok
   }
 
   saveCard(){
+    //New card
+    //Create object
+    const card: Card = {
+      id:this.newCardForm.get('id').value,
+      title:this.newCardForm.get('title').value,
+      assigneeId:(<GroupMember>this.newCardForm.get('assignee').value).id,
+      priorityId:0, //TODO
+      description:this.newCardForm.get('description').value,
+      deadline:(<Date>this.newCardForm.get("deadline").value).getFullYear()+"-"+((<Date>this.newCardForm.get("deadline").value).getMonth()+1) + "-"+(<Date>this.newCardForm.get("deadline").value).getDate(),
+      projectId:(<Project>this.newCardForm.get('project').value).id,
+      size:this.newCardForm.get('size').value,
+      typeSilver:this.isUserKanbanMaster_inGroup // Če doda kartico kanban master je to avtomatsko nujna zahteva
+    };
+    //Send request
+    /*this.groupsService.postGroup(group).subscribe(res => {        
+      UIkit.modal('#new-group-modal').hide();
+      UIkit.notification('Skupina dodana.', {status: 'success', timeout: 2000});
+      UIkit.modal('#new-group-modal').hide();
+      this.loadGroups();
+    }, err => {
+      UIkit.notification('Napaka pri dodajanju nove skupine.', {status: 'danger', timeout: 2000});
+      console.log(err);
+    });  */
 
+   // UIkit.modal('#new-group-modal').hide();
+        
   }
 
 }

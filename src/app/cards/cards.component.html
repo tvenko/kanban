@@ -49,9 +49,12 @@
         <div class="uk-form-controls  uk-margin">
           <label class="uk-form-label" for="edit-assignee">Zadolženi</label>
           <select class="uk-select" id="edit-assignee" formControlName="assignee">
-              <!-- <ng-container *ngFor="let project of projects">
-                  <option [ngValue]="project"  >{{project.title}}</option>
-              </ng-container>     -->
+            <ng-container *ngFor="let project of board?.projects">
+              <ng-container *ngFor="let groupMember of project.group_data.users">
+                <option disabled *ngIf="!groupMember.group_active" [ngValue]="groupMember">{{groupMember.name + " " +  groupMember.surname}} (neaktiven v skupini)</option>
+                <option  *ngIf="groupMember.group_active" [ngValue]="groupMember">{{groupMember.name + " " +  groupMember.surname}}</option>
+              </ng-container>  
+            </ng-container>  
           </select>
         </div>
         <span class="uk-alert-danger"
@@ -105,10 +108,10 @@
           Izberi projekt
         </span>
 
-        <!-- Card type -->
+        <!-- Card type 
         <div class="uk-form-controls  uk-margin"  *ngIf="isUserKanbanMaster_inGroup">
           <label><input class="uk-checkbox" type="checkbox" [checked]="isUserKanbanMaster_inGroup" formControlName="typeSilver"> Nujna zahteva</label>
-        </div>
+        </div>-->
 
         <div class="uk-text-right">
           <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
