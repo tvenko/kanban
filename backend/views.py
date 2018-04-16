@@ -495,13 +495,39 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
             board_column_data.append(column_serializer)
         board_serializer["columns"] = board_column_data
 
-        board_projects_data = []
+
         board_projects = Project.objects.all().filter(board_id=kwargs["pk"])
+
+        group_memberships = DeveloperGroupMembership.objects.all()
+        users = User.objects.all()
+        cards = Card.objects.all()
+
+        projects_data = []
         for board_project in board_projects:
-            board_projects_data.append(ProjectSerializer(board_project).data)
-        board_serializer["projects"] = board_projects_data
+            allowed_roles_query = group_memberships.filter(
+                developer_group_id=board_project.developer_group_id.id)
+            group_data = DeveloperGroupSerializer(
+                board_project.developer_group_id).data
+            project_data = ProjectSerializer(board_project).data
+            project_cards = cards.filter(project_id=board_project.id)
+            if not project_cards:
+                project_data["card_active"] = False
+            else:
+                project_data["card_active"] = True
+            project_data["group_data"] = group_data
 
+            user_roles_dict = []
+            for z in allowed_roles_query:
+                user_roles = get_user_group_roles(z.id)
+                user_details = users.filter(id=z.user_id.id)[0]
+                user_data = UserSerializer(user_details).data
+                user_data["allowed_group_roles"] = user_roles
+                user_data["group_active"] = z.active
+                user_roles_dict.append(user_data)
+            group_data["users"] = user_roles_dict
+            projects_data.append(project_data)
 
+        board_serializer["projects"] = projects_data
 
         board_data.append(board_serializer)
 
