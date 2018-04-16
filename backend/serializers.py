@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, Project, Column, Board, Card
+from . models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, Project, Column, Board, Card, CardPriority
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -75,8 +75,16 @@ class BoardSerializer(serializers.ModelSerializer):
         model = Board
         fields = '__all__'
 
+
 class CardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Card
+        fields = '__all__'
+
+
+class CardPrioritySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CardPriority
         fields = '__all__'

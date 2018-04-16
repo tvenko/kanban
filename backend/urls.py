@@ -12,6 +12,7 @@ users_urls = [
 user_projects_urls = [
     url(r'^user_projects/(?P<pk>[0-9]+)/$', views.UserProjects.as_view()),
 ]
+
 roles_urls = [
     url(r'^all_roles/$', views.RoleList.as_view()),
 ]
@@ -38,6 +39,10 @@ board_urls = [
     url(r'^boards/(?P<pk>[0-9]+)/$', views.BoardDetail.as_view()),
 ]
 
+card_urls = [
+    url(r'^cards/$', views.CardList.as_view()),
+    url(r'^card_priority/$', views.CardPriorityList.as_view()),
+]
 
 
 urlpatterns = [
@@ -48,5 +53,6 @@ urlpatterns = [
     url(r'^', include(projects_urls)),
     url(r'^', include(columns_urls)),
     url(r'^', include(board_urls)),
+    url(r'^', include(card_urls)),
     url(r'^docs/', views.schema_view)
 ]

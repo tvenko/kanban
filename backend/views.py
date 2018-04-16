@@ -2,8 +2,8 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser
-from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board, Card
-from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer, ColumnSerializer, BoardSerializer, CardSerializer
+from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board, Card, CardPriority
+from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer, ColumnSerializer, BoardSerializer, CardSerializer, CardPrioritySerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -593,3 +593,21 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                 # If kanban master, return attribute about board membership.
 
         return Response(board_list, status=status.HTTP_202_ACCEPTED)
+
+
+class CardList(generics.ListCreateAPIView):
+    """
+    List all cards.
+    """
+
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
+
+
+class CardPriorityList(generics.ListCreateAPIView):
+    """
+    List all cards priority.
+    """
+
+    queryset = CardPriority.objects.all()
+    serializer_class = CardPrioritySerializer
