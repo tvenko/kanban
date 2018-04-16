@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser
 from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board, Card
-from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer, ColumnSerializer, BoardSerializer
+from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer, ColumnSerializer, BoardSerializer, CardSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -478,8 +478,8 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
             column_cards_list = []
             column_cards = cards.filter(column_id=i.id)
             for column_card in column_cards:
-                column_cards_list.append(column_card.card_id)
-
+                column_card_data = CardSerializer(column_card).data
+                column_cards_list.append(column_card_data)
             subcolumns_data = []
             subcolumns_cards_list = []
             for x in column_subcolumns:
@@ -494,6 +494,14 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
             column_serializer["column_cards"] = column_cards_list
             board_column_data.append(column_serializer)
         board_serializer["columns"] = board_column_data
+
+        board_projects_data = []
+        board_projects = Project.objects.all().filter(board_id=kwargs["pk"])
+        for board_project in board_projects:
+            board_projects_data.append(ProjectSerializer(board_project).data)
+        board_serializer["projects"] = board_projects_data
+
+
 
         board_data.append(board_serializer)
 
