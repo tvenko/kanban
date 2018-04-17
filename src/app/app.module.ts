@@ -30,6 +30,8 @@ import {BoardsListService} from './shared/services/boards-list.service';
 import {CalendarModule} from 'primeng/calendar';
 import { ProjectsService } from './shared/services/projects.service';
 import {MessageService} from './shared/services/message.service';
+import { CardsComponent } from './cards/cards.component';
+import { PriorityService } from './shared/services/priority.service'
 
 export function tokenGetterFunc() {
   return localStorage.getItem('auth_token');
@@ -48,7 +50,8 @@ export function tokenGetterFunc() {
     DocumentationComponent,
     AnalyticsComponent,
     ProjectsComponent,
-    BoardsListComponent
+    BoardsListComponent,
+    CardsComponent
   ],
   imports: [
     BrowserModule,
@@ -74,7 +77,8 @@ export function tokenGetterFunc() {
     BoardsService,
     ProjectsService,
     BoardsListService,
-    MessageService
+    MessageService,
+    PriorityService
   ],
   bootstrap: [AppComponent]
 })
