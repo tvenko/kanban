@@ -73,7 +73,7 @@ export class BoardsListComponent implements OnInit {
       });
     }, err => {
       console.log('error geting boards from backend');
-    });                                       
+    });
   }
 
   deleteBoard(board, event) {

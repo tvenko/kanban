@@ -7,6 +7,8 @@ import { Project } from '../shared/models/project.interface';
 import { ProjectsService } from '../shared/services/projects.service';
 import { ActivatedRoute } from '@angular/router';
 import { MessageService } from '../shared/services/message.service';
+import { BoardsListService } from '../shared/services/boards-list.service';
+import {Router} from '@angular/router';
 
 declare var UIkit: any;
 
@@ -33,6 +35,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   addProjectForm: FormGroup;
 
   constructor(private boardsService: BoardsService,
+              private boardsListService: BoardsListService,
+              private router: Router,
               private projectsService: ProjectsService,
               private route: ActivatedRoute,
               private messageService: MessageService) {
@@ -47,16 +51,33 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    this.currentUserId = user['id'];
     this.sub = this.route.params.subscribe(params => {
        this.id = +params['id'];
 
-       // TODO: Check if the user is allowed to see this board.
+       // Check if the user is allowed to see this board.
+       this.boardsListService.getBoards(this.currentUserId).subscribe(boards => {
+          let isAllowed = false;
+          Object.values(boards).forEach((x) => {
+            if (x[1] == this.id) { //x[1] is board id
+              isAllowed = true;
+            }
+          });
+          if (!isAllowed) {
+            this.router.navigate(['/boards-list']);
+            return;
+          }
 
-       this.getBoard();
-       this.loadProjects();
+          this.getBoard();
+          this.loadProjects();
+
+        }, err => {
+          console.log('error geting boards from backend');
+        }); 
+
+       
     });
-    const user = JSON.parse(localStorage.getItem('user'));
-    this.currentUserId = user['id'];
 
     this.newColumnForm = new FormGroup({
       name: new FormControl(null, Validators.required),
