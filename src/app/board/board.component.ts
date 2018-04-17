@@ -29,8 +29,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   editBoard = false;
 
   currentUserId = null;
-  projects: Project[];
-  projectsOnBoard: Project[] = [];
+  projects: Project[] = [];
   addProjectForm: FormGroup;
 
   constructor(private boardsService: BoardsService,
@@ -38,7 +37,6 @@ export class BoardComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private messageService: MessageService) {
     this.messageService.listen().subscribe((msg: any) => {
-      console.log('MESSAGE: ', msg);
       if (msg === 'editBoard') {
         this.editBoard = !this.editBoard;
       }
@@ -50,7 +48,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
-       this.id = +params['id']; // (+) converts string 'id' to a number
+       this.id = +params['id'];
 
        // TODO: Check if the user is allowed to see this board.
 
@@ -86,33 +84,19 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   addColumn(i: number, parentId: number) {
+    console.log('CHECK');
     this.newColumnOffset = i;
     this.newSubcolumnParent = parentId;
   }
 
-  addProjectModal() {
-    this.loadProjects();
-  }
-
   loadProjects() {
     this.projectsService.getProjects().subscribe(projects => {
-
-     // if (!this.isCurrentUserAdmin) {
-        /*projects = Object.values(projects).filter((project, index, array) => {
-          let isMember = false;
-          <Project>project.group_data.users.forEach( (user) => {
-            if (user["id"] == this.currentUserId) {
-              isMember = true;
-            }
-          });
-          return isMember;
-        });*/
-     // }
-      this.projects = <Project[]> projects;
-      this.projects.sort(function (a, b) {
-        return a.id - b.id;
-
-      });
+      this.projects = [];
+      for (const project of <Project[]>projects) {
+        if (project.board_id === null) {
+          this.projects.push(project);
+        }
+      }
       console.log(this.projects);
     }, err => {
       console.log('error geting projects from backend');
@@ -120,12 +104,22 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   }
 
-  cancelAddProject() {
-
-  }
   addProject() {
-    const project = this.addProjectForm.get('project').value;
-    this.projectsOnBoard.push(project);
+    const project: Project = this.addProjectForm.get('project').value;
+    project.board_id = this.board.id;
+    console.log(project);
+    this.projectsService.updateProject(project).subscribe(
+      res => {
+        this.getBoard();
+        this.loadProjects();
+      },
+        err => console.log('napaka pri dodajanju projekta na tablo'));
+    this.closeProjectModal();
+  }
+
+  closeProjectModal() {
+    this.addProjectForm.reset();
+    UIkit.modal('#add-project-modal').hide();
   }
 
   postColumn() {

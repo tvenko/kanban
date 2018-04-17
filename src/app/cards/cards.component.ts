@@ -20,23 +20,23 @@ export class CardsComponent implements OnInit {
 
   private sub: any;
 
-  cardsModalTitle:String;
-  newCardForm:FormGroup;
-  projects:Project[] =[];
-  board:Board;
+  cardsModalTitle: String;
+  newCardForm: FormGroup;
+  projects: Project[] = [];
+  board: Board;
 
-  isCurrentUserAdmin:boolean;
-  isCurrentUserKanbanMaster:boolean;
-  isCurrentUserProductOwner:boolean;
-  currentUserId:number;
-  currectBoardId:number;
-  today:Date;
-  sl:any;
+  isCurrentUserAdmin: boolean;
+  isCurrentUserKanbanMaster: boolean;
+  isCurrentUserProductOwner: boolean;
+  currentUserId: number;
+  currectBoardId: number;
+  today: Date;
+  sl: any;
 
-  isUserKanbanMaster_inGroup:boolean = false;
-  isUserProductOwner_inGroup:boolean = false;
+  isUserKanbanMaster_inGroup = false;
+  isUserProductOwner_inGroup = false;
 
-  constructor(private boardsService: BoardsService,private route: ActivatedRoute) { }
+  constructor(private boardsService: BoardsService, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.today = new Date();
@@ -46,11 +46,11 @@ export class CardsComponent implements OnInit {
    });
 
     //TODO: Vloge znotraj izbrane skupine, ne na sploh!
-    let user = JSON.parse(localStorage.getItem('user'));
-    this.isCurrentUserKanbanMaster = user.roles.includes("kanban master");
-    this.isCurrentUserAdmin = user.roles.includes("admin");
-    this.isCurrentUserProductOwner = user.roles.includes("product owner")
-    this.currentUserId = user["id"];
+    const user = JSON.parse(localStorage.getItem('user'));
+    this.isCurrentUserKanbanMaster = user.roles.includes('kanban master');
+    this.isCurrentUserAdmin = user.roles.includes('admin');
+    this.isCurrentUserProductOwner = user.roles.includes('product owner');
+    this.currentUserId = user['id'];
 
     this.newCardForm = new FormGroup({
       'id': new FormControl(),
@@ -60,7 +60,7 @@ export class CardsComponent implements OnInit {
       'deadline': new FormControl(null, Validators.required),
       'priority': new FormControl(),
       'size': new FormControl(),
-      'project': new FormControl(null, Validators.required),      
+      'project': new FormControl(null, Validators.required),
 
     });
     //this.newCardForm.get('typeSilver').disable();
@@ -68,20 +68,20 @@ export class CardsComponent implements OnInit {
     this.newCardForm.get('id').disable();
 
     this.sl = {
-      dateFormat:"yyyy-mm-dd",
+      dateFormat: 'yyyy-mm-dd',
       firstDayOfWeek: 1,
-      dayNames: ["Nedelja", "Ponedeljek", "Torek", "Sreda", "Četrtek", "Petek", "Sobota"],
-      dayNamesShort: ["Ned", "Pon", "Tor", "Sre", "Čet", "Pet", "Sob"],
-      dayNamesMin: ["Ne","Po","To","Sr","Če","Pe","So"],
-      monthNames: [ "Januar","Februar","Marec","April","Maj","Junij","Julij","Avgust","September","Oktober","November","December" ],
-      monthNamesShort: [ "Jan", "Feb", "Mar", "Apr", "Maj", "Jun","Jul", "Avg", "Sep", "Okt", "Nov", "Dec" ],
+      dayNames: ['Nedelja', 'Ponedeljek', 'Torek', 'Sreda', 'Četrtek', 'Petek', 'Sobota'],
+      dayNamesShort: ['Ned', 'Pon', 'Tor', 'Sre', 'Čet', 'Pet', 'Sob'],
+      dayNamesMin: ['Ne', 'Po', 'To', 'Sr', 'Če', 'Pe', 'So'],
+      monthNames: [ 'Januar', 'Februar', 'Marec', 'April', 'Maj', 'Junij', 'Julij', 'Avgust', 'September', 'Oktober', 'November', 'December' ],
+      monthNamesShort: [ 'Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec' ],
       today: 'Danes',
       clear: 'Počisti'
     };
   }
 
   getBoard() {
-    this.boardsService.getBoard(this.currectBoardId).subscribe(board => {      
+    this.boardsService.getBoard(this.currectBoardId).subscribe(board => {
       this.board = <Board>board[0];
       this.projects = this.board.projects;
       this.getBoardUserData();
@@ -91,51 +91,58 @@ export class CardsComponent implements OnInit {
     });
   }
 
-  getBoardUserData(){
-    let projects:Project[] = this.board.projects;
+  getBoardUserData() {
+    const projects: Project[] = this.board.projects;
     projects.forEach(project => {
-      let groupMember:GroupMember = project.group_data.users.find(user=>user.id == this.currentUserId);
-      if(groupMember.allowed_group_roles.includes(2) && groupMember.group_active){
+      const groupMember: GroupMember = project.group_data.users.find(user => user.id == this.currentUserId);
+      if (groupMember.allowed_group_roles.includes(2) && groupMember.group_active) {
         this.isUserProductOwner_inGroup = true;
       }
-      if(groupMember.allowed_group_roles.includes(3) && groupMember.group_active){
+      if (groupMember.allowed_group_roles.includes(3) && groupMember.group_active) {
         this.isUserKanbanMaster_inGroup = true;
       }
     });
   }
 
-  loadModal(){
-    if(this.isUserKanbanMaster_inGroup){
-      this.cardsModalTitle ="Nova kartica (nujna zahteva)";
-    }else{
-      this.cardsModalTitle = "Nova kartica";
+  loadModal() {
+    if (this.isUserKanbanMaster_inGroup) {
+      this.cardsModalTitle = 'Nova kartica (nujna zahteva)';
+    } else {
+      this.cardsModalTitle = 'Nova kartica';
     }
    // this.newCardForm.reset();
   }
 
-  closeModal(){
+  closeModal() {
   }
 
-  cancelCard(){
+  cancelCard() {
     //this.newCardForm.reset(); reset ni ok
   }
 
-  saveCard(){
+  saveCard() {
     //New card
     //Create object
     const card: Card = {
-      id:this.newCardForm.get('id').value,
-      title:this.newCardForm.get('title').value,
-      assigneeId:(<GroupMember>this.newCardForm.get('assignee').value).id,
-      priorityId:0, //TODO
-      description:this.newCardForm.get('description').value,
-      deadline:(<Date>this.newCardForm.get("deadline").value).getFullYear()+"-"+((<Date>this.newCardForm.get("deadline").value).getMonth()+1) + "-"+(<Date>this.newCardForm.get("deadline").value).getDate(),
-      projectId:(<Project>this.newCardForm.get('project').value).id,
-      size:this.newCardForm.get('size').value,
-      typeSilver:this.isUserKanbanMaster_inGroup // Če doda kartico kanban master je to avtomatsko nujna zahteva
+      card_id: this.newCardForm.get('id').value,
+      title: this.newCardForm.get('title').value,
+      assigned_user_id: (<GroupMember>this.newCardForm.get('assignee').value).id,
+      card_priority_id: 0, // TODO
+      description: this.newCardForm.get('description').value,
+      deadline: null, //(<Date>this.newCardForm.get('deadline').value).getFullYear() + '-' + ((<Date>this.newCardForm.get('deadline').value).getMonth() + 1) + '-' + (<Date>this.newCardForm.get('deadline').value).getDate(),
+      project_id: (<Project>this.newCardForm.get('project').value).id,
+      size: this.newCardForm.get('size').value,
+      type_silver: this.isUserKanbanMaster_inGroup, // Če doda kartico kanban master je to avtomatsko nujna zahteva
+      number: null,
+      type_rejected: null,
+      created_at: null,
+      completed_at: null,
+      started_at: null,
+      display_offset: null,
+      delete_reason_id: null
     };
     //Send request
-    /*this.groupsService.postGroup(group).subscribe(res => {        
+    /*this.groupsService.postGroup(group).subscribe(res => {
       UIkit.modal('#new-group-modal').hide();
       UIkit.notification('Skupina dodana.', {status: 'success', timeout: 2000});
       UIkit.modal('#new-group-modal').hide();
@@ -146,7 +153,7 @@ export class CardsComponent implements OnInit {
     });  */
 
    // UIkit.modal('#new-group-modal').hide();
-        
+
   }
 
 }

@@ -12,7 +12,7 @@ export class ProjectsService {
     return this.http.get(Config.API + '/projects/');
   }
 
-  deleteProject(id:number){
+  deleteProject(id: number) {
     return this.http.delete(Config.API + '/projects/' + id + '/');
   }
 
@@ -20,8 +20,8 @@ export class ProjectsService {
     return this.http.post(Config.API + '/projects/', project);
   }
 
-  updateProject(project:Project){
-    return this.http.put(Config.API + '/projects/' + project.id + "/", project);
+  updateProject(project: Project) {
+    return this.http.put(Config.API + '/projects/' + project.id + '/', project);
   }
 
 

@@ -1,6 +1,6 @@
 
 .my-container {
-  margin-left: 80px;
+  margin-left: 40px;
   margin-right: 80px;
   display: flex;
   justify-content: center;
@@ -9,6 +9,7 @@
 .board {
   top: 10px;
   margin: auto;
+  margin-top: 0;
   position: relative;
   display: flex;
   flex-flow: row;
@@ -48,24 +49,36 @@
   width: 100%;
 }
 
-.coulmn {
+.column {
+  display: flex;
+  flex-flow: column;
+  margin: 12px;
+  width: 100%;
+}
+
+.coulmn-header {
   border-top: 2px solid;
   vertical-align: top;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .12);
-  height: 85vh;
   padding: 10px;
   padding-top: 5px;
   border-radius: 2px;
   overflow: hidden;
   width: 100%;
   min-width: 170px;
+  height: 65px;
   border-top: 5px solid;
-  margin: 2px;
+  background: white;
+}
+
+.project-container {
+  display: flex;
+  flex-flow: column;
 }
 
 .project-name-column {
   vertical-align: top;
-  height: 85vh;
+  height: 70vh;
   margin: 2px;
   width: 0;
 }
@@ -102,6 +115,7 @@
 }
 
 .subcolumn-title {
+  margin-right: 10px;
   margin-bottom: 0;
 }
 
@@ -124,8 +138,14 @@
 }
 
 .cards-container {
-  height: 700px;
+  height: 85vh;
   overflow-y: scroll;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .12);
+  padding: 10px;
+  padding-top: 5px;
+  border-radius: 2px;
+  width: 100%;
+  min-width: 170px;
 }
 
 .cards-container::-webkit-scrollbar {
@@ -137,6 +157,8 @@
   width: 40px;
   padding: 0;
   flex-basis: 0;
+  margin-left: 12px;
+  margin-right: -10px;
 }
 
 .add-column-subcolmn {
@@ -149,6 +171,7 @@
 
 .add-column-last {
   cursor: pointer;
+  margin-left: 12px;
 }
 
 .wip {
