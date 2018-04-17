@@ -486,7 +486,8 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
                 subcolumn_serializer = ColumnSerializer(x).data
                 subcolumn_cards = cards.filter(column_id=x.id)
                 for subcolumn_card in subcolumn_cards:
-                    subcolumns_cards_list.append(subcolumn_card.card_id)
+                    subcolumn_card_data = CardSerializer(subcolumn_card).data
+                    subcolumns_cards_list.append(subcolumn_card_data)
                 subcolumn_serializer["column_cards"] = subcolumns_cards_list
                 subcolumns_data.append(subcolumn_serializer)
 
