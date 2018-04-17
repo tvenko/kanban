@@ -10,6 +10,8 @@ import { GroupMember } from '../shared/models/group.interface';
 import { Card } from '../shared/models/card.interface';
 import { Priority } from '../shared/models/priority.interface';
 import { PriorityService } from '../shared/services/priority.service';
+import { BoardsListService } from '../shared/services/boards-list.service';
+import {Router} from '@angular/router';
 declare var UIkit: any;
 
 
@@ -39,22 +41,39 @@ export class CardsComponent implements OnInit {
   isUserKanbanMaster_inGroup = false;
   isUserProductOwner_inGroup = false;
 
-  constructor(private prioritySerive: PriorityService, private boardsService: BoardsService, private route: ActivatedRoute) { }
+  constructor(private prioritySerive: PriorityService, private boardsService: BoardsService, private route: ActivatedRoute, private boardsListService: BoardsListService, private router: Router,) { }
 
 
   ngOnInit() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    this.currentUserId = user['id'];
     this.today = new Date();
     this.sub = this.route.params.subscribe(params => {
       this.currectBoardId = +params['id']; // (+) converts string 'id' to a number
-      this.getBoard();
+      // Check if the user is allowed to see this board.
+      this.boardsListService.getBoards(this.currentUserId).subscribe(boards => {
+        let isAllowed = false;
+        Object.values(boards).forEach((x) => {
+          if (x[1] == this.currectBoardId) { //x[1] is board id
+            isAllowed = true;
+          }
+        });
+        if (!isAllowed) {
+          this.router.navigate(['/boards-list']);
+          return;
+        }
+
+        this.getBoard();
+
+      }, err => {
+        console.log('error geting boards from backend');
+      });
    });
 
 
-    const user = JSON.parse(localStorage.getItem('user'));
     this.isCurrentUserKanbanMaster = user.roles.includes('kanban master');
     this.isCurrentUserAdmin = user.roles.includes('admin');
     this.isCurrentUserProductOwner = user.roles.includes('product owner');
-    this.currentUserId = user['id'];
 
 
     this.newCardForm = new FormGroup({

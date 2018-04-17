@@ -1,7 +1,7 @@
 <app-main-navbar></app-main-navbar>
 <div class="uk-container">
     <!-- New board modal toggle button -->
-    <div *ngIf="isCurrentUserKanbanMaster">
+    <div *ngIf="isCurrentUserKanbanMaster" class="toolbar">
         <button class="uk-button uk-button-primary newBoardButton" (click)="loadModal()" uk-toggle="target: #new-board-modal">Nova tabla</button>
         <label class="switch"> 
            <input type="checkbox" (change)="displayOwnOnlySwitch($event)">
