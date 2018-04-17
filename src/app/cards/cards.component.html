@@ -78,9 +78,9 @@
         <div class="uk-form-controls  uk-margin">
           <label class="uk-form-label" for="edit-priority">Prioriteta</label>
           <select class="uk-select" id="edit-priority" formControlName="priority">
-              <!-- <ng-container *ngFor="let project of projects">
-                  <option [ngValue]="project"  >{{project.title}}</option>
-              </ng-container>     -->
+            <ng-container *ngFor="let priority of priorities">
+                <option [ngValue]="priority"  >{{priority.title}}</option>
+            </ng-container>     
           </select>
         </div>
         <span class="uk-alert-danger"

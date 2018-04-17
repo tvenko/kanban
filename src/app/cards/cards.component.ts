@@ -8,6 +8,8 @@ import { Board } from '../shared/models/board.interface';
 import { User } from '../shared/models/user.interface';
 import { GroupMember } from '../shared/models/group.interface';
 import { Card } from '../shared/models/card.interface';
+import { Priority } from '../shared/models/priority.interface';
+import { PriorityService } from '../shared/services/priority.service';
 declare var UIkit: any;
 
 
@@ -24,6 +26,7 @@ export class CardsComponent implements OnInit {
   newCardForm: FormGroup;
   projects: Project[] = [];
   board: Board;
+  priorities: Priority[];
 
   isCurrentUserAdmin: boolean;
   isCurrentUserKanbanMaster: boolean;
@@ -36,7 +39,8 @@ export class CardsComponent implements OnInit {
   isUserKanbanMaster_inGroup = false;
   isUserProductOwner_inGroup = false;
 
-  constructor(private boardsService: BoardsService, private route: ActivatedRoute) { }
+  constructor(private prioritySerive: PriorityService, private boardsService: BoardsService, private route: ActivatedRoute) { }
+
 
   ngOnInit() {
     this.today = new Date();
@@ -45,12 +49,13 @@ export class CardsComponent implements OnInit {
       this.getBoard();
    });
 
-    //TODO: Vloge znotraj izbrane skupine, ne na sploh!
+
     const user = JSON.parse(localStorage.getItem('user'));
     this.isCurrentUserKanbanMaster = user.roles.includes('kanban master');
     this.isCurrentUserAdmin = user.roles.includes('admin');
     this.isCurrentUserProductOwner = user.roles.includes('product owner');
     this.currentUserId = user['id'];
+
 
     this.newCardForm = new FormGroup({
       'id': new FormControl(),
@@ -105,12 +110,24 @@ export class CardsComponent implements OnInit {
   }
 
   loadModal() {
+    this.loadPriorities();
     if (this.isUserKanbanMaster_inGroup) {
       this.cardsModalTitle = 'Nova kartica (nujna zahteva)';
     } else {
       this.cardsModalTitle = 'Nova kartica';
     }
    // this.newCardForm.reset();
+  }
+
+  loadPriorities() {
+    this.prioritySerive.getProrities().subscribe(priorities => {
+      this.priorities = <Priority[]>priorities;
+      this.priorities.sort(function (a, b) {
+        return a.value - b.value;
+      });
+    }, err => {
+      console.log('Ni bilo mogoce dobiti prioritet ' + err);
+    });
   }
 
   closeModal() {
