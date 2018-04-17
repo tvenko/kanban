@@ -32,6 +32,9 @@ export class BoardComponent implements OnInit, OnDestroy {
   projects: Project[] = [];
   addProjectForm: FormGroup;
 
+  leftColumnId: number = null;
+  rightColumnId: number = null;
+
   constructor(private boardsService: BoardsService,
               private projectsService: ProjectsService,
               private route: ActivatedRoute,
@@ -77,6 +80,8 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.boardsService.getBoard(this.id).subscribe(board => {
       console.log(board[0]);
       this.board = <Board>board[0];
+      this.leftColumnId = this.board.type_left_border_column_id;
+      this.rightColumnId = this.board.type_right_border_column_id;
     }, err => {
       // Board doesn't exist. Redirect the user?
       console.log('Ni bilo mogoce dobiti table ' + err);
@@ -151,74 +156,17 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   getColumnById(columnId: number) {
-    for (const el of this.board.columns) {
-      if (el.id === columnId) {
-        return el;
+    for (const column of this.board.columns) {
+      for (const subcolumn of column.subcolumns) {
+        if (subcolumn.id === columnId) {
+          return subcolumn;
+        }
+      }
+      if (column.id === columnId) {
+        return column;
       }
     }
     return null;
-  }
-
-  setSpecialColumns(column: Column) {
-      if (this.newColumnForm.get('leftColumn').value) {
-        this.board.type_left_border_column_id = column.id;
-      }
-      if (this.newColumnForm.get('rightColumn').value) {
-        this.board.type_right_border_column_id = column.id;
-      }
-      if (this.newColumnForm.get('highPriority').value) {
-        this.board.type_priority_column_id = column.id;
-      }
-      if (this.newColumnForm.get('testColumn').value) {
-        this.board.type_acceptance_testing_column_id = column.id;
-      }
-      this.boardsService.updateBoard(this.board).subscribe(res => {
-        console.log('uspesno posodobljeni stolpci');
-        this.closeModal();
-      }, err => {
-        console.log(err);
-        this.closeModal();
-    });
-  }
-
-  showSpecialColumn(columnId: number) {
-    let display = '';
-    if (this.board.type_left_border_column_id === columnId) {
-      display += 'levi mejni stolpec, ';
-    }
-    if (this.board.type_right_border_column_id === columnId) {
-      display += 'desni mejni stolpec, ';
-    }
-    if (this.board.type_priority_column_id === columnId) {
-      display += 'stolpec z prioriteto, ';
-    }
-    if (this.board.type_acceptance_testing_column_id === columnId) {
-      display += 'testni stolpec, ';
-    }
-    if (display !== '') {
-      return display.substring(0, display.length - 2);
-    }
-    return null;
-  }
-
-  setLeftColumn(columnId: number) {
-    this.board.type_left_border_column_id = columnId;
-    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
-  }
-
-  setRightColumn(columnId: number) {
-    this.board.type_right_border_column_id = columnId;
-    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
-  }
-
-  setTestColumn(columnId: number) {
-    this.board.type_acceptance_testing_column_id = columnId;
-    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
-  }
-
-  setPriorityColumn(columnId: number) {
-    this.board.type_priority_column_id = columnId;
-    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
   }
 
   deleteColumn() {
@@ -291,4 +239,121 @@ export class BoardComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.sub.unsubscribe();
   }
+
+  setSpecialColumns(column: Column) {
+    if (this.newColumnForm.get('leftColumn').value) {
+      this.board.type_left_border_column_id = column.id;
+    }
+    if (this.newColumnForm.get('rightColumn').value) {
+      this.board.type_right_border_column_id = column.id;
+    }
+    if (this.newColumnForm.get('highPriority').value) {
+      this.board.type_priority_column_id = column.id;
+    }
+    if (this.newColumnForm.get('testColumn').value) {
+      this.board.type_acceptance_testing_column_id = column.id;
+    }
+    this.boardsService.updateBoard(this.board).subscribe(res => {
+      console.log('uspesno posodobljeni stolpci');
+      this.closeModal();
+    }, err => {
+      console.log(err);
+      this.closeModal();
+    });
+  }
+
+  showSpecialColumn(columnId: number) {
+    let display = '';
+    if (this.board.type_left_border_column_id === columnId) {
+      display += 'levi mejni stolpec, ';
+    }
+    if (this.board.type_right_border_column_id === columnId) {
+      display += 'desni mejni stolpec, ';
+    }
+    if (this.board.type_priority_column_id === columnId) {
+      display += 'stolpec z prioriteto, ';
+    }
+    if (this.board.type_acceptance_testing_column_id === columnId) {
+      display += 'testni stolpec, ';
+    }
+    if (display !== '') {
+      return display.substring(0, display.length - 2);
+    }
+    return null;
+  }
+
+  setLeftColumn(columnId: number) {
+    this.board.type_left_border_column_id = columnId;
+    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
+  }
+
+  setRightColumn(columnId: number) {
+    this.board.type_right_border_column_id = columnId;
+    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
+  }
+
+  setTestColumn(columnId: number) {
+    this.board.type_acceptance_testing_column_id = columnId;
+    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
+  }
+
+  setPriorityColumn(columnId: number) {
+    this.board.type_priority_column_id = columnId;
+    this.boardsService.updateBoard(this.board).subscribe(res => this.getBoard());
+  }
+
+  displayAddLeftColumnValidation(column: Column) {
+    if (this.rightColumnId === null) {
+      return true;
+    }
+    const righColumn = this.getColumnById(this.rightColumnId);
+    if (righColumn !== null) {
+      if (this.getColumnById(this.rightColumnId).parent_column_id === null && column.parent_column_id === null) {
+        return this.getColumnById(this.rightColumnId).display_offset >= column.display_offset;
+      } else if (righColumn.parent_column_id === null && column.parent_column_id !== null) {
+        return righColumn.display_offset >= this.getColumnById(column.parent_column_id).display_offset;
+      } else if (righColumn.parent_column_id !== null && column.parent_column_id === null) {
+        return this.getColumnById(righColumn.parent_column_id).display_offset >= column.display_offset;
+      } else {
+        if (righColumn.parent_column_id === column.parent_column_id) {
+          return righColumn.display_offset >= column.display_offset;
+        } else {
+          return this.getColumnById(righColumn.parent_column_id).display_offset >= this.getColumnById(column.parent_column_id).display_offset;
+        }
+      }
+    }
+    return false;
+  }
+
+  displayAddRightColumnValidation(column: Column) {
+    if (this.leftColumnId === null) {
+      return true;
+    }
+    const leftColumn = this.getColumnById(this.leftColumnId);
+    if (leftColumn !== null) {
+      if (leftColumn.parent_column_id === null && column.parent_column_id === null) {
+        return leftColumn.display_offset <= column.display_offset;
+      } else if (leftColumn.parent_column_id === null && column.parent_column_id !== null) {
+        return leftColumn.display_offset <= this.getColumnById(column.parent_column_id).display_offset;
+      } else if (leftColumn.parent_column_id !== null && column.parent_column_id === null) {
+        return this.getColumnById(leftColumn.parent_column_id).display_offset <= column.display_offset;
+      } else {
+        if (leftColumn.parent_column_id === column.parent_column_id) {
+          return leftColumn.display_offset <= column.display_offset;
+        } else {
+          return this.getColumnById(leftColumn.parent_column_id).display_offset <= this.getColumnById(column.parent_column_id).display_offset;
+        }
+      }
+    }
+    return false;
+  }
+
+  getColumnWip(column: Column) {
+    let wip = 0;
+    for (const subcolumn of column.subcolumns) {
+      wip += subcolumn.column_cards.length;
+    }
+    return wip;
+  }
+
 }

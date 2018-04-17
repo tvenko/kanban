@@ -78,7 +78,7 @@
 
 .project-name-column {
   vertical-align: top;
-  height: 70vh;
+  height: 100vh;
   margin: 2px;
   width: 0;
 }
@@ -114,14 +114,14 @@
   min-width: 170px;
 }
 
+.subcolumn-card-container {
+  display: flex;
+  flex-flow: column;
+}
+
 .subcolumn-title {
   margin-right: 10px;
   margin-bottom: 0;
-}
-
-.subcolumn-hr {
-  margin: 0;
-  margin-bottom: 20px;
 }
 
 .test {
@@ -133,8 +133,8 @@
 
 .vertical-line {
   border-left: 1px solid lightgray;
-  height: 78vh;
-  margin: 30px 10px;
+  height: 83vh;
+  margin: 10px 10px;
 }
 
 .cards-container {

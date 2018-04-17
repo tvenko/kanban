@@ -39,8 +39,8 @@
             <span class="edit-column" uk-icon="more-vertical" type="button"></span>
             <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
               <ul class="uk-nav uk-dropdown-nav">
-                <li class="change-type" (click)="setLeftColumn(column.id)">levi mejni stolpec</li>
-                <li class="change-type" (click)="setRightColumn(column.id)">desni mejni stolpec</li>
+                <li class="change-type" (click)="setLeftColumn(column.id)" *ngIf="displayAddLeftColumnValidation(column)">levi mejni stolpec</li>
+                <li class="change-type" (click)="setRightColumn(column.id)" *ngIf="displayAddRightColumnValidation(column)">desni mejni stolpec</li>
                 <li class="change-type" (click)="setTestColumn(column.id)">testni stolpec</li>
                 <li class="change-type" (click)="setPriorityColumn(column.id)">stolpec z najvišjo prioriteto</li>
               </ul>
@@ -79,8 +79,8 @@
             <span class="edit-column" uk-icon="more-vertical" type="button"></span>
             <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
               <ul class="uk-nav uk-dropdown-nav">
-                <li class="change-type" (click)="setLeftColumn(column.id)">levi mejni stolpec</li>
-                <li class="change-type" (click)="setRightColumn(column.id)">desni mejni stolpec</li>
+                <li class="change-type" (click)="setLeftColumn(column.id)" *ngIf="displayAddLeftColumnValidation(column)">levi mejni stolpec</li>
+                <li class="change-type" (click)="setRightColumn(column.id)" *ngIf="displayAddRightColumnValidation(column)">desni mejni stolpec</li>
                 <li class="change-type" (click)="setTestColumn(column.id)">testni stolpec</li>
                 <li class="change-type" (click)="setPriorityColumn(column.id)">stolpec z najvišjo prioriteto</li>
               </ul>
@@ -90,7 +90,7 @@
                   (click)="setDeleteColumn(column)"
                   *ngIf="column.subcolumns.length == 0 && editBoard">
             </span>
-            <span class="uk-badge wip-subcolumn" *ngIf="column?.wip_restriction > 0"> 0/{{ column?.wip_restriction }} </span>
+            <span class="uk-badge wip-subcolumn" *ngIf="column?.wip_restriction > 0"> {{ getColumnWip(column) }} /{{ column?.wip_restriction }} </span>
           </h4>
           <div class="special-column-text" *ngIf="showSpecialColumn(column.id) != null">{{ showSpecialColumn(column.id) }}</div>
           <div class="subcolumn-container">
@@ -108,8 +108,8 @@
                   <span class="edit-column" uk-icon="more-vertical" type="button"></span>
                   <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
                     <ul class="uk-nav uk-dropdown-nav">
-                      <li class="change-type" (click)="setLeftColumn(subcolumn.id)">levi mejni stolpec</li>
-                      <li class="change-type" (click)="setRightColumn(subcolumn.id)">desni mejni stolpec</li>
+                      <li class="change-type" (click)="setLeftColumn(subcolumn.id)" *ngIf="displayAddLeftColumnValidation(subcolumn)">levi mejni stolpec</li>
+                      <li class="change-type" (click)="setRightColumn(subcolumn.id)" *ngIf="displayAddRightColumnValidation(subcolumn)">desni mejni stolpec</li>
                       <li class="change-type" (click)="setTestColumn(subcolumn.id)">testni stolpec</li>
                       <li class="change-type" (click)="setPriorityColumn(subcolumn.id)">stolpec z najvišjo prioriteto</li>
                     </ul>
@@ -139,16 +139,18 @@
           </div>
         </div>
 
-        <div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)" *ngFor="let project of board?.projects">
-          <span *ngFor="let subcolumn of column.subcolumns; let j = index">
-            <span *ngFor="let card of subcolumn.column_cards">
-                <li draggable="true" (dragstart)="onDragStart($event, card, column)" class="board-item" *ngIf="card?.project_id == project?.id">
-                  <h3>ID: {{ card.title }}</h3>
-                  <div>Vsebina kartice</div>
-                </li>
-            </span>
-            <span class="vertical-line" *ngIf="j < column?.subcolumns.length-1"></span>
-          </span>
+        <div class="cards-container subcolumn-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)" *ngFor="let project of board?.projects">
+          <div class="subcolumn-container" *ngFor="let subcolumn of column.subcolumns; let j = index">
+            <div class="subcolumn-card-container">
+              <div class="subcolumn-card-container" *ngFor="let card of subcolumn.column_cards">
+                  <li draggable="true" (dragstart)="onDragStart($event, card, subcolumn)" class="board-item" *ngIf="card?.project_id == project?.id">
+                    <h3>ID: {{ card.title }}</h3>
+                    <div>Vsebina kartice</div>
+                  </li>
+              </div>
+            </div>
+            <div class="vertical-line" *ngIf="j < column?.subcolumns.length-1"></div>
+          </div>
         </div>
 
     </div>
