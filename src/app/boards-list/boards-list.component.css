@@ -8,10 +8,14 @@
 }
 
 .newBoardButton{
-  margin-top: -25px;
+  margin-top: 0px;
   margin-right: 40px;
-}
+  vertical-align: middle;
 
+}
+.toolbar {
+  margin-top: 20px;
+}
 .boardCard{
   margin-right: 20px;
   cursor: pointer;
@@ -28,7 +32,8 @@ a, a:visited, a:hover {
   display: inline-block;
   width: 60px;
   height: 34px;
-  margin-top: 25px;
+  vertical-align: middle;
+
 }
 
 /* Hide default HTML checkbox */
