@@ -83,6 +83,11 @@
   width: 0;
 }
 
+.remove-project:hover {
+  color: red;
+  cursor: pointer;
+}
+
 .vertical-text {
   transform: rotate(-90deg);
   float: right;

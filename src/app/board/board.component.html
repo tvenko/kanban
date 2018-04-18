@@ -9,7 +9,11 @@
   </div>
 
   <div class="project-container">
-    <ol class="project-name-column" *ngFor="let project of board?.projects"> <span class="vertical-text"> {{ project.title }} </span> </ol>
+    <ol class="project-name-column" *ngFor="let project of board?.projects">
+      <span class="vertical-text"> {{ project.title }}
+        <span uk-icon="close" class="remove-project" (click)="removeProject(project)"></span>
+      </span>
+    </ol>
   </div>
 
   <div class="board">
@@ -165,6 +169,7 @@
     </div>
   </div>
 </div>
+
 <!-- Add column modal -->
 <div id="new-column-modal" uk-modal>
   <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
@@ -229,6 +234,7 @@
   </div>
 </div>
 
+<!-- add project to board modal -->
 <div id="delete-column-modal" uk-modal>
   <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
     <button class="uk-modal-close-default" type="button" uk-close (click)="closeDeleteModal()"></button>
@@ -243,6 +249,18 @@
         <p>{{ error }}</p>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- warning if adding the project on board that group is not the same as previous one -->
+<div id="different-groups-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <h3>Skupini na projektih se razlikujeta. Ste prepričani, da želite projekt dodati na tablo?</h3>
+    <p class="uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close" type="button">prekliči</button>
+      <button class="uk-button uk-button-danger" type="button" (click)="postAddedProject()">dodaj</button>
+    </p>
   </div>
 </div>
 

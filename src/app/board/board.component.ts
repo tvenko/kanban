@@ -33,6 +33,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   currentUserId = null;
   projects: Project[] = [];
   addProjectForm: FormGroup;
+  addedProject: Project;
 
   leftColumnId: number = null;
   rightColumnId: number = null;
@@ -63,7 +64,7 @@ export class BoardComponent implements OnInit, OnDestroy {
        this.boardsListService.getBoards(this.currentUserId).subscribe(boards => {
           let isAllowed = false;
           Object.values(boards).forEach((x) => {
-            if (x[1] == this.id) { //x[1] is board id
+            if (x[1] === this.id) { // x[1] is board id
               isAllowed = true;
             }
           });
@@ -77,9 +78,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
         }, err => {
           console.log('error geting boards from backend');
-        }); 
-
-       
+        });
     });
 
     this.newColumnForm = new FormGroup({
@@ -131,21 +130,47 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   addProject() {
-    const project: Project = this.addProjectForm.get('project').value;
-    project.board_id = this.board.id;
-    console.log(project);
-    this.projectsService.updateProject(project).subscribe(
+    this.addedProject = this.addProjectForm.get('project').value;
+    this.addedProject.board_id = this.board.id;
+    let differentGroup = false;
+    for (const projectonBoard of this.board.projects) {
+      if (projectonBoard.developer_group_id !== this.addedProject.developer_group_id) {
+        differentGroup = true;
+      }
+    }
+    if (differentGroup) {
+      UIkit.modal('#add-project-modal').hide();
+      UIkit.modal('#different-groups-modal').show();
+    } else {
+      this.postAddedProject();
+    }
+  }
+
+  postAddedProject() {
+    this.projectsService.updateProject(this.addedProject).subscribe(
       res => {
         this.getBoard();
         this.loadProjects();
+        this.closeProjectModal();
       },
-        err => console.log('napaka pri dodajanju projekta na tablo'));
-    this.closeProjectModal();
+      err => console.log('napaka pri dodajanju projekta na tablo'));
   }
 
   closeProjectModal() {
     this.addProjectForm.reset();
     UIkit.modal('#add-project-modal').hide();
+    UIkit.modal('#different-groups-modal').hide();
+  }
+
+  removeProject(project: Project) {
+    project.board_id = null;
+    this.projectsService.updateProject(project).subscribe(
+      res => {
+        this.getBoard();
+        this.loadProjects();
+        this.addProjectForm.reset();
+      },
+      err => console.log('napaka pri brisanju projekta z table'));
   }
 
   postColumn() {
