@@ -10,6 +10,7 @@ import { GroupMember } from '../shared/models/group.interface';
 import { Card } from '../shared/models/card.interface';
 import { Priority } from '../shared/models/priority.interface';
 import { PriorityService } from '../shared/services/priority.service';
+import { CardsService } from '../shared/services/cards.service';
 import { BoardsListService } from '../shared/services/boards-list.service';
 import {Router} from '@angular/router';
 declare var UIkit: any;
@@ -38,36 +39,38 @@ export class CardsComponent implements OnInit {
   today: Date;
   sl: any;
 
+  selectedProject:Project;
+
   isUserKanbanMaster_inGroup = false;
   isUserProductOwner_inGroup = false;
 
-  constructor(private prioritySerive: PriorityService, private boardsService: BoardsService, private route: ActivatedRoute, private boardsListService: BoardsListService, private router: Router,) { }
+    constructor(private prioritySerive: PriorityService, private boardsService: BoardsService, private route: ActivatedRoute, private boardsListService: BoardsListService, private router: Router, private cardService:CardsService) { }
 
 
   ngOnInit() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    this.currentUserId = user['id'];
+     const user = JSON.parse(localStorage.getItem('user'));
+     this.currentUserId = user['id'];
     this.today = new Date();
     this.sub = this.route.params.subscribe(params => {
       this.currectBoardId = +params['id']; // (+) converts string 'id' to a number
-      // Check if the user is allowed to see this board.
-      this.boardsListService.getBoards(this.currentUserId).subscribe(boards => {
-        let isAllowed = false;
-        Object.values(boards).forEach((x) => {
-          if (x[1] == this.currectBoardId) { //x[1] is board id
-            isAllowed = true;
-          }
-        });
-        if (!isAllowed) {
-          this.router.navigate(['/boards-list']);
-          return;
-        }
-
-        this.getBoard();
-
-      }, err => {
-        console.log('error geting boards from backend');
-      });
+            // Check if the user is allowed to see this board.
+            this.boardsListService.getBoards(this.currentUserId).subscribe(boards => {
+              let isAllowed = false;
+              Object.values(boards).forEach((x) => {
+               if (x[1] == this.currectBoardId) { //x[1] is board id
+                 isAllowed = true;
+                }
+              });
+              if (!isAllowed) {
+                this.router.navigate(['/boards-list']);
+                return;
+              }
+      
+             this.getBoard();
+      
+            }, err => {
+              console.log('error geting boards from backend');
+            });
    });
 
 
@@ -77,7 +80,7 @@ export class CardsComponent implements OnInit {
 
 
     this.newCardForm = new FormGroup({
-      'id': new FormControl(),
+      //'id': new FormControl(),
       'title': new FormControl(null, Validators.required),
       'description': new FormControl(null, Validators.required),
       'assignee': new FormControl(null, Validators.required),
@@ -89,7 +92,7 @@ export class CardsComponent implements OnInit {
     });
     //this.newCardForm.get('typeSilver').disable();
 
-    this.newCardForm.get('id').disable();
+    //this.newCardForm.get('id').disable();
 
     this.sl = {
       dateFormat: 'yyyy-mm-dd',
@@ -115,6 +118,7 @@ export class CardsComponent implements OnInit {
     });
   }
 
+
   getBoardUserData() {
     const projects: Project[] = this.board.projects;
     projects.forEach(project => {
@@ -135,7 +139,7 @@ export class CardsComponent implements OnInit {
     } else {
       this.cardsModalTitle = 'Nova kartica';
     }
-   // this.newCardForm.reset();
+    this.newCardForm.reset();
   }
 
   loadPriorities() {
@@ -150,43 +154,46 @@ export class CardsComponent implements OnInit {
   }
 
   closeModal() {
+    this.newCardForm.reset();
   }
 
   cancelCard() {
-    //this.newCardForm.reset(); reset ni ok
+    this.newCardForm.reset();
   }
 
   saveCard() {
     //New card
     //Create object
     const card: Card = {
-      card_id: this.newCardForm.get('id').value,
+      card_id:null, //this.newCardForm.get('id').value,
       title: this.newCardForm.get('title').value,
       assigned_user_id: (<GroupMember>this.newCardForm.get('assignee').value).id,
-      card_priority_id: 0, // TODO
+      card_priority_id: (<Priority>this.newCardForm.get('priority').value).id,
       description: this.newCardForm.get('description').value,
-      deadline: null, //(<Date>this.newCardForm.get('deadline').value).getFullYear() + '-' + ((<Date>this.newCardForm.get('deadline').value).getMonth() + 1) + '-' + (<Date>this.newCardForm.get('deadline').value).getDate(),
+      deadline: (<Date>this.newCardForm.get('deadline').value).getFullYear() + '-' + ((<Date>this.newCardForm.get('deadline').value).getMonth() + 1) + '-' + (<Date>this.newCardForm.get('deadline').value).getDate(),
       project_id: (<Project>this.newCardForm.get('project').value).id,
       size: this.newCardForm.get('size').value,
       type_silver: this.isUserKanbanMaster_inGroup, // Če doda kartico kanban master je to avtomatsko nujna zahteva
-      number: null,
-      type_rejected: null,
-      created_at: null,
-      completed_at: null,
-      started_at: null,
-      display_offset: null,
-      delete_reason_id: null
+      number: -1,
+      type_rejected: false,
+      created_at: "2012-09-04 06:00:00.000000",
+      completed_at: "2012-09-04 06:00:00.000000",
+      started_at: "2012-09-04 06:00:00.000000",
+      display_offset:0,
+      delete_reason_id: 1,
+      active:true,
+      column_id:109
     };
     //Send request
-    /*this.groupsService.postGroup(group).subscribe(res => {
-      UIkit.modal('#new-group-modal').hide();
-      UIkit.notification('Skupina dodana.', {status: 'success', timeout: 2000});
-      UIkit.modal('#new-group-modal').hide();
-      this.loadGroups();
+    this.cardService.postCard(card).subscribe(res => {
+      UIkit.modal('#new-card-modal').hide();
+      UIkit.notification('Kartica dodana.', {status: 'success', timeout: 2000});
+      UIkit.modal('#new-card-modal').hide();
     }, err => {
-      UIkit.notification('Napaka pri dodajanju nove skupine.', {status: 'danger', timeout: 2000});
+      //TODO: loči napako, ko že obstaja silver
+      UIkit.notification('Napaka pri dodajanju nove kartice.', {status: 'danger', timeout: 2000});
       console.log(err);
-    });  */
+    });  
 
    // UIkit.modal('#new-group-modal').hide();
 

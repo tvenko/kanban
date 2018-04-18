@@ -14,13 +14,13 @@
     <!-- Cards form -->
     <form (ngSubmit)="saveCard()" [formGroup]="newCardForm">
       <fieldset class="uk-fieldset">
-        <!-- Card id -->
+        <!-- Card id
         <div class="uk-margin">
           <label class="uk-form-label" for="edit-id">Številka kartice</label>
           <div class="uk-form-controls">
             <input class="uk-input" id="edit-id" type="text" formControlName="id" >
           </div>
-        </div>
+        </div> -->
         <!-- Card title -->
         <div class="uk-margin">
           <label class="uk-form-label" for="edit-code-name">Naziv kartice</label>
@@ -45,16 +45,32 @@
           Vnesi opis kartice
         </span>
 
+        <!-- Show all projects -->
+        <div class="uk-form-controls  uk-margin">
+          <label class="uk-form-label" for="edit-project">Projekt</label>
+          <select [(ngModel)]="selectedProject" class="uk-select" id="edit-project" formControlName="project">
+              <ng-container *ngFor="let project of projects">
+                  <option [ngValue]="project"  >{{project.title}}</option>
+              </ng-container>    
+          </select>
+        </div>
+        <span class="uk-alert-danger"
+              *ngIf="!newCardForm.get('project').valid && newCardForm.get('project').touched">
+          Izberi projekt
+        </span>
+
         <!-- Card assignee -->
         <div class="uk-form-controls  uk-margin">
-          <label class="uk-form-label" for="edit-assignee">Zadolženi</label>
+          <label class="uk-form-label" for="edit-assignee">Zadolženi razvijalec</label>
           <select class="uk-select" id="edit-assignee" formControlName="assignee">
-            <ng-container *ngFor="let project of board?.projects">
-              <ng-container *ngFor="let groupMember of project.group_data.users">
-                <option disabled *ngIf="!groupMember.group_active" [ngValue]="groupMember">{{groupMember.name + " " +  groupMember.surname}} (neaktiven v skupini)</option>
-                <option  *ngIf="groupMember.group_active" [ngValue]="groupMember">{{groupMember.name + " " +  groupMember.surname}}</option>
+            <!-- <ng-container *ngFor="let project of board?.projects"> -->
+                <option selected disabled value='null' id="nullSelection"></option>
+
+              <ng-container *ngFor="let groupMember of selectedProject?.group_data.users">
+                <option disabled *ngIf="!groupMember.group_active && groupMember.allowed_group_roles.includes(1)" [ngValue]="groupMember">{{groupMember.name + " " +  groupMember.surname}} (neaktiven v skupini)</option>
+                <option  *ngIf="groupMember.group_active && groupMember.allowed_group_roles.includes(1)" [ngValue]="groupMember">{{groupMember.name + " " +  groupMember.surname}}</option>
               </ng-container>  
-            </ng-container>  
+            <!-- </ng-container>   -->
           </select>
         </div>
         <span class="uk-alert-danger"
@@ -94,19 +110,6 @@
             <input class="uk-input" id="edit-size" type="number" formControlName="size">
         </div>
 
-        <!-- Show all projects -->
-        <div class="uk-form-controls  uk-margin">
-          <label class="uk-form-label" for="edit-project">Projekt</label>
-          <select class="uk-select" id="edit-project" formControlName="project">
-              <ng-container *ngFor="let project of projects">
-                  <option [ngValue]="project"  >{{project.title}}</option>
-              </ng-container>    
-          </select>
-        </div>
-        <span class="uk-alert-danger"
-              *ngIf="!newCardForm.get('project').valid && newCardForm.get('project').touched">
-          Izberi projekt
-        </span>
 
         <!-- Card type 
         <div class="uk-form-controls  uk-margin"  *ngIf="isUserKanbanMaster_inGroup">
