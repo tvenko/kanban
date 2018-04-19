@@ -604,6 +604,24 @@ class CardList(generics.ListCreateAPIView):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
 
+    def post(self, request, *args, **kwargs):
+        serializer = CardSerializer(data=request.data)
+        if serializer.is_valid():
+            cards = Card.objects.all().filter(project_id=int(serializer.validated_data["project_id"].id))
+            if not cards:
+                serializer.save(number=1)
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+            else:
+                if serializer.validated_data["type_silver"]:
+                    return JsonResponse(serializer.error_messages, status=status.HTTP_406_NOT_ACCEPTABLE)
+                card = cards.order_by("-number")[0]
+                card_serializer = CardSerializer(card)
+                if serializer.is_valid():
+                    serializer.save(number=card_serializer.data["number"] + 1)
+
+        return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+
 
 class CardPriorityList(generics.ListCreateAPIView):
     """
@@ -612,3 +630,10 @@ class CardPriorityList(generics.ListCreateAPIView):
 
     queryset = CardPriority.objects.all()
     serializer_class = CardPrioritySerializer
+
+    # def post(self, request, *args, **kwargs):
+    #     card = Card(request.data)
+    #     print(card)
+    #     print(card.number)
+    #     print(card.project_id)
+    #     cards = Card.objects.all().filter(project_id=int(card.project_id))
