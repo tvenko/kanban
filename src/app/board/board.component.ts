@@ -9,6 +9,8 @@ import { ActivatedRoute } from '@angular/router';
 import { MessageService } from '../shared/services/message.service';
 import { BoardsListService } from '../shared/services/boards-list.service';
 import {Router} from '@angular/router';
+import {User} from '../shared/models/user.interface';
+import {UsersService} from '../shared/services/users.service';
 
 declare var UIkit: any;
 
@@ -21,6 +23,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   id: number;
   private sub: any;
   colors = ['#FFB300', '#FF3D00', '#29B6F6', '#8BC34A', '#ffd633', '#884EA0'];
+  cardColors = ['#cc3300', '#ffcc00', '#33cc33'];
   board: Board;
   dataTransfer = new Map();
   newColumnForm: FormGroup;
@@ -29,6 +32,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   newSubcolumnParent: number = null;
   delColumn: Column = null;
   editBoard = false;
+  users = new Map();
 
   currentUserId = null;
   projects: Project[] = [];
@@ -43,7 +47,8 @@ export class BoardComponent implements OnInit, OnDestroy {
               private router: Router,
               private projectsService: ProjectsService,
               private route: ActivatedRoute,
-              private messageService: MessageService) {
+              private messageService: MessageService,
+              private userService: UsersService) {
     this.messageService.listen().subscribe((msg: any) => {
       if (msg === 'editBoard') {
         this.editBoard = !this.editBoard;
@@ -93,7 +98,20 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.addProjectForm = new FormGroup({
       project: new FormControl(null, Validators.required),
     });
+    this.getUsers();
+  }
 
+  getUsers() {
+    this.userService.getUsers().subscribe(users => {
+      for (const user of <User[]>users) {
+        this.users.set(user.id, user);
+      }
+    }, err => console.log('uporabnikov ni bilo mogce dobiti'));
+  }
+
+  getUserName(id: number) {
+    const user = <User>this.users.get(id);
+    return user.name + ' ' + user.surname;
   }
 
   getBoard() {

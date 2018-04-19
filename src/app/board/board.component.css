@@ -18,7 +18,7 @@
   width: 100%;
 }
 
-.board-item {
+.card {
   position: relative;
   list-style: none;
   display: flex;
@@ -27,19 +27,48 @@
   overflow: hidden;
   box-sizing: border-box;
   margin: 5px 0;
-  padding: 5px 10px;
   text-decoration: none;
   border: 1px solid #ccc;
   border-radius: 3px;
+  width: 100%;
+  min-width: 170px;
 }
 
-.board-item:hover {
+.card:hover {
   color: midnightblue;
   will-change: box-shadow;
   cursor: pointer;
   background: lightgray;
   transition: box-shadow .2s cubic-bezier(.4, 0, 1, 1), background-color .2s cubic-bezier(.4, 0, .2, 1), color .2s cubic-bezier(.4, 0, .2, 1);
   box-shadow: 0 5px 6px 0 rgba(0, 0, 0, .14), 0 3px 1px -6px rgba(0, 0, 0, .2), 2px 5px 3px 0 rgba(0, 0, 0, .12);
+}
+
+.card-header {
+  height: 20px;
+  background: orangered;
+  margin: 0;
+  color: white;
+  font-size: 12px;
+  padding: 0 5px;
+}
+
+.card-body {
+  padding: 5px;
+}
+
+.card-title {
+  padding: 0;
+}
+
+.card-tail {
+  background: orange;
+  color: white;
+  float: right;
+  padding: 3px;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  border-radius: 3px;
 }
 
 .coulmn-container {
@@ -112,6 +141,7 @@
   display: flex;
   flex-wrap: nowrap;
   flex-flow: row;
+  width: 100%;
 }
 
 .subcolumn {
@@ -122,6 +152,7 @@
 .subcolumn-card-container {
   display: flex;
   flex-flow: column;
+  width: 100%;
 }
 
 .subcolumn-title {
