@@ -618,8 +618,9 @@ class CardList(generics.ListCreateAPIView):
                 card_serializer = CardSerializer(card)
                 if serializer.is_valid():
                     serializer.save(number=card_serializer.data["number"] + 1)
+                    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
-        return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+        return JsonResponse(serializer.data, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 
