@@ -95,8 +95,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="857">
-              <caret line="619" column="43" lean-forward="true" selection-start-line="619" selection-start-column="43" selection-end-line="619" selection-end-column="43" />
+            <state relative-caret-position="687">
+              <caret line="614" column="31" lean-forward="false" selection-start-line="614" selection-start-column="31" selection-end-line="614" selection-end-column="31" />
               <folding>
                 <element signature="e#0#50#0" expanded="true" />
               </folding>
@@ -164,8 +164,8 @@
         <option value="$PROJECT_DIR$/backend/migrations/0001_initial.py" />
         <option value="$PROJECT_DIR$/backend/serializers.py" />
         <option value="$PROJECT_DIR$/backend/urls.py" />
-        <option value="$PROJECT_DIR$/backend/views.py" />
         <option value="$PROJECT_DIR$/backend/models.py" />
+        <option value="$PROJECT_DIR$/backend/views.py" />
       </list>
     </option>
   </component>
@@ -657,6 +657,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="95">
           <caret line="220" column="8" lean-forward="false" selection-start-line="220" selection-start-column="8" selection-end-line="220" selection-end-column="8" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -670,8 +671,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="857">
-          <caret line="619" column="43" lean-forward="true" selection-start-line="619" selection-start-column="43" selection-end-line="619" selection-end-column="43" />
+        <state relative-caret-position="687">
+          <caret line="614" column="31" lean-forward="false" selection-start-line="614" selection-start-column="31" selection-end-line="614" selection-end-column="31" />
           <folding>
             <element signature="e#0#50#0" expanded="true" />
           </folding>
