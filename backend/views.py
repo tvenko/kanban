@@ -472,6 +472,7 @@ class BoardDetail(generics.RetrieveUpdateDestroyAPIView):
         board_column_data = []
 
         for i in board_columns:
+            print(i)
             column_serializer = ColumnSerializer(i).data
             column_subcolumns = columns.filter(
                 parent_column_id=i.id)
