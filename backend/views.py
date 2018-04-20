@@ -613,6 +613,7 @@ class CardList(generics.ListCreateAPIView):
                 return JsonResponse(serializer.data, status=status.HTTP_200_OK)
             else:
                 silver_type = cards.filter(type_silver=True)
+                print(serializer.validated_data["type_silver"])
                 if serializer.validated_data["type_silver"] and silver_type:
                     return JsonResponse(serializer.error_messages, status=status.HTTP_406_NOT_ACCEPTABLE)
                 card = cards.order_by("-number")[0]
@@ -623,6 +624,14 @@ class CardList(generics.ListCreateAPIView):
 
         return JsonResponse(serializer.data, status=status.HTTP_406_NOT_ACCEPTABLE)
 
+
+class CardDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    List card detail
+    """
+
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
 
 
 class CardPriorityList(generics.ListCreateAPIView):
