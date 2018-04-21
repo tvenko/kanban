@@ -63,7 +63,7 @@
         <div class="uk-form-controls  uk-margin">
           <label class="uk-form-label" for="edit-assignee">Zadolženi razvijalec</label>
           <select class="uk-select" id="edit-assignee" formControlName="assignee">
-            <option selected  value='null' id="nullSelection"></option> 
+            <option selected  id="nullSelection"></option> 
             <ng-container *ngFor="let groupMember of selectedProject?.group_data.users">
               <option disabled *ngIf="!groupMember.group_active && groupMember.allowed_group_roles.includes(1)" [ngValue]="groupMember">{{groupMember.name + " " +  groupMember.surname}} (neaktiven v skupini)</option>
               <option  *ngIf="groupMember.group_active && groupMember.allowed_group_roles.includes(1)" [ngValue]="groupMember">{{groupMember.name + " " +  groupMember.surname}}</option>

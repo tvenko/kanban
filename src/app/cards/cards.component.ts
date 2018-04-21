@@ -50,8 +50,8 @@ export class CardsComponent implements OnInit {
 
 
   ngOnInit() {
-     const user = JSON.parse(localStorage.getItem('user'));
-     this.currentUserId = user['id'];
+    const user = JSON.parse(localStorage.getItem('user'));
+    this.currentUserId = user['id'];
     this.today = new Date();
     this.sub = this.route.params.subscribe(params => {
       this.currectBoardId = +params['id']; // (+) converts string 'id' to a number
@@ -147,12 +147,16 @@ export class CardsComponent implements OnInit {
 
   loadModal() {
     //Get changes
-   // this.getBoard();
     this.newCardForm.reset();
+    this.projects = [];
+    this.currentUserProjects = [];
+    this.getBoard();
     this.silverBullet = false;
+    this.priorities = [];
     this.loadPriorities();
     this.cardsModalTitle = 'Nova kartica';
     this.newCardForm.reset();
+   
   }
 
   loadPriorities() {
