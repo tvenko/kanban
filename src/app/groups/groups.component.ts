@@ -158,6 +158,8 @@ export class GroupsComponent implements OnInit {
       if(this.members.filter(obj => obj.id == this.selectedUser.id).length != 0){
         if (!this.roles[3] && (this.members.filter(obj => obj.id == this.selectedUser.id))[0].allowed_group_roles.includes(3)){
           alert("Izbrani uporabnik mora imeti vlogo Kanban master");
+        }else if(this.roles[3] && this.roles[2]){
+          alert("Isti uporabnik ne more biti kanban master in product owner hkrati.");
         }else{
           
           this.members = this.members.filter(obj => obj.id != this.selectedUser.id)

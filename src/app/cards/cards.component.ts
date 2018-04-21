@@ -30,12 +30,14 @@ export class CardsComponent implements OnInit {
   projects: Project[] = [];
   board: Board;
   priorities: Priority[];
+  silverBullet = false;
 
   isCurrentUserAdmin: boolean;
   isCurrentUserKanbanMaster: boolean;
   isCurrentUserProductOwner: boolean;
   currentUserId: number;
   currectBoardId: number;
+  currentUserProjects: Project[] = [];
   today: Date;
   sl: any;
 
@@ -83,9 +85,9 @@ export class CardsComponent implements OnInit {
       //'id': new FormControl(),
       'title': new FormControl(null, Validators.required),
       'description': new FormControl(null, Validators.required),
-      'assignee': new FormControl(null, Validators.required),
-      'deadline': new FormControl(null, Validators.required),
-      'priority': new FormControl(),
+      'assignee': new FormControl(null),
+      'deadline': new FormControl(null),
+      'priority': new FormControl(null, Validators.required),
       'size': new FormControl(),
       'project': new FormControl(null, Validators.required),
 
@@ -112,6 +114,7 @@ export class CardsComponent implements OnInit {
       this.board = <Board>board[0];
       this.projects = this.board.projects;
       this.getBoardUserData();
+     
     }, err => {
       // Board doesn't exist. Redirect the user?
       console.log('Ni bilo mogoce dobiti table ' + err);
@@ -121,24 +124,34 @@ export class CardsComponent implements OnInit {
 
   getBoardUserData() {
     const projects: Project[] = this.board.projects;
+    this.currentUserProjects = [];
     projects.forEach(project => {
+      let addProject = false;
       const groupMember: GroupMember = project.group_data.users.find(user => user.id == this.currentUserId);
-      if (groupMember.allowed_group_roles.includes(2) && groupMember.group_active) {
-        this.isUserProductOwner_inGroup = true;
+      if(groupMember != null){
+        if (groupMember.allowed_group_roles.includes(2) && groupMember.group_active) {
+          this.isUserProductOwner_inGroup = true;
+          addProject = true;        
+        }
+        if (groupMember.allowed_group_roles.includes(3) && groupMember.group_active) {
+          this.isUserKanbanMaster_inGroup = true;
+          addProject = true;
+        }
       }
-      if (groupMember.allowed_group_roles.includes(3) && groupMember.group_active) {
-        this.isUserKanbanMaster_inGroup = true;
+      //Pokaži projekte, na katerih je uporabnik bodisi kanban master bodisi product owner
+      if(addProject){
+        this.currentUserProjects.push(project);
       }
     });
   }
 
   loadModal() {
+    //Get changes
+   // this.getBoard();
+    this.newCardForm.reset();
+    this.silverBullet = false;
     this.loadPriorities();
-    if (this.isUserKanbanMaster_inGroup) {
-      this.cardsModalTitle = 'Nova kartica (nujna zahteva)';
-    } else {
-      this.cardsModalTitle = 'Nova kartica';
-    }
+    this.cardsModalTitle = 'Nova kartica';
     this.newCardForm.reset();
   }
 
@@ -161,37 +174,93 @@ export class CardsComponent implements OnInit {
     this.newCardForm.reset();
   }
 
+  updateTitle(){
+    const groupMember: GroupMember = this.selectedProject.group_data.users.find(user => user.id == this.currentUserId);
+    if (groupMember.allowed_group_roles.includes(2) && groupMember.group_active) {
+      this.cardsModalTitle = "Nova kartica (nova funkcionalnost)";  
+      this.silverBullet = false;
+    }
+    if (groupMember.allowed_group_roles.includes(3) && groupMember.group_active) {
+      this.cardsModalTitle = "Nova kartica (najvišja prioriteta)";  
+      this.silverBullet = true;
+
+    }    
+  }
+
   saveCard() {
     //New card
+    let columnID = 108;
+    //Find correct columns
+    //Find silver bullet column
+    if(this.silverBullet){
+      //Preveri ali obstaja stolpec z najvišjo prioriteto
+      if(this.board.type_priority_column_id == null){
+        UIkit.notification('Stolpec z najvišjo prioriteto ne obstaja.', {status: 'danger', timeout: 2000});
+        return;
+      }else{
+        columnID = this.board.type_priority_column_id;
+      }      
+    }else{
+      //Find first column
+      let columns = this.board.columns;
+      columns.sort(function (a, b) {
+        return a.display_offset - b.display_offset;
+      });
+      while(columns[0].subcolumns != null && columns[0].subcolumns.length != 0){
+        columns = columns[0].subcolumns;
+        columns.sort(function (a, b) {
+          return a.display_offset - b.display_offset;
+        });
+      }
+      columnID = columns[0].id;
+    }
+
+    //Get asignee or null
+    let assigneeId = null;
+    if((<GroupMember>this.newCardForm.get('assignee').value) != null){
+      assigneeId = (<GroupMember>this.newCardForm.get('assignee').value).id;
+    }
+    //Get deadline or null
+    let deadlineDate = null;
+    if(this.newCardForm.get('deadline').value != null){
+      deadlineDate = (<Date>this.newCardForm.get('deadline').value).getFullYear() + '-' + ((<Date>this.newCardForm.get('deadline').value).getMonth() + 1) + '-' + (<Date>this.newCardForm.get('deadline').value).getDate();
+    }
+
     //Create object
     const card: Card = {
       card_id:null, //this.newCardForm.get('id').value,
       title: this.newCardForm.get('title').value,
-      assigned_user_id: (<GroupMember>this.newCardForm.get('assignee').value).id,
+      assigned_user_id: assigneeId,
       card_priority_id: (<Priority>this.newCardForm.get('priority').value).id,
       description: this.newCardForm.get('description').value,
-      deadline: (<Date>this.newCardForm.get('deadline').value).getFullYear() + '-' + ((<Date>this.newCardForm.get('deadline').value).getMonth() + 1) + '-' + (<Date>this.newCardForm.get('deadline').value).getDate(),
+      deadline: deadlineDate,
       project_id: (<Project>this.newCardForm.get('project').value).id,
-      size: this.newCardForm.get('size').value,
-      type_silver: this.isUserKanbanMaster_inGroup, // Če doda kartico kanban master je to avtomatsko nujna zahteva
-      number: -1,
+      size: this.newCardForm.get('size').value, //can be null
+      type_silver: this.silverBullet,
+      number: 1,
       type_rejected: false,
-      created_at: "2012-09-04 06:00:00.000000",
-      completed_at: "2012-09-04 06:00:00.000000",
-      started_at: "2012-09-04 06:00:00.000000",
+      created_at: "2012-09-04 06:00:00.000000", //null?
+      completed_at: null,
+      started_at: null,
       display_offset:0,
-      delete_reason_id: 1,
+      delete_reason_id: null,
       active:true,
-      column_id:109
+      column_id:columnID
     };
+    
+    console.log(JSON.stringify(card));
+    
     //Send request
     this.cardService.postCard(card).subscribe(res => {
       UIkit.modal('#new-card-modal').hide();
       UIkit.notification('Kartica dodana.', {status: 'success', timeout: 2000});
       UIkit.modal('#new-card-modal').hide();
     }, err => {
-      //TODO: loči napako, ko že obstaja silver
-      UIkit.notification('Napaka pri dodajanju nove kartice.', {status: 'danger', timeout: 2000});
+      if(err.status == 406){
+        UIkit.notification('Kartica z najvišjo prioriteto že obstaja.', {status: 'danger', timeout: 2000});
+      }else{
+        UIkit.notification('Napaka pri dodajanju nove kartice.', {status: 'danger', timeout: 2000});
+      }
       console.log(err);
     });  
 
