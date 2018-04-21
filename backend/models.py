@@ -71,6 +71,7 @@ class Card(Model):
     created_at = DateTimeField(auto_now_add=True)
     completed_at = DateTimeField(null=True, blank=True)
     started_at = DateTimeField(null=True, blank=True)
+    deadline = DateField(null=True, blank=True)
     display_offset = IntegerField()
 
 
