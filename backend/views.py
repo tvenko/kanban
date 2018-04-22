@@ -559,7 +559,7 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                 board_data.append(board.id)
                 projects = Project.objects.all().filter(board_id=board.id)
                 project_data = dict()
-                project_data["projects"] = []
+                project_data["projects"] = [    ]
 
                 for project in projects:
                     project_data["projects"].append(project.project_id)
@@ -649,3 +649,17 @@ class CardPriorityList(generics.ListCreateAPIView):
     #     print(card.number)
     #     print(card.project_id)
     #     cards = Card.objects.all().filter(project_id=int(card.project_id))
+
+
+class UserGroups(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        user_id = kwargs["pk"]
+        developer_group = DeveloperGroupMembership.objects.all().filter(user_id=user_id)
+        developer_group_set = set()
+        for groups in developer_group:
+            developer_group_set.add(groups.id)
+
+        return Response(developer_group_set, status=status.HTTP_202_ACCEPTED)

@@ -5,6 +5,7 @@ users_urls = [
     url(r'^user/$', views.UserList.as_view()),
     url(r'^user/(?P<pk>[0-9]+)/$', views.UserUpdate.as_view()),
     url(r'^user/(?P<email>.+)/$', views.SingleUser.as_view()),
+    url(r'^user_groups/(?P<pk>[0-9]+)/$', views.UserGroups.as_view()),
     # Note that this is only used for jwt logout.
     url(r'^user/invalidateToken/$', views.InvalidateToken.as_view(), name='invalidate-token'),
 ]
