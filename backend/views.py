@@ -559,7 +559,7 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                 board_data.append(board.id)
                 projects = Project.objects.all().filter(board_id=board.id)
                 project_data = dict()
-                project_data["projects"] = [    ]
+                project_data["projects"] = []
 
                 for project in projects:
                     project_data["projects"].append(project.project_id)
@@ -662,6 +662,6 @@ class UserGroups(generics.ListCreateAPIView):
         developer_group = DeveloperGroupMembership.objects.all().filter(user_id=user_id)
         developer_group_set = set()
         for groups in developer_group:
-            developer_group_set.add(groups.id)
+            developer_group_set.add(groups.developer_group_id.id)
 
         return Response(developer_group_set, status=status.HTTP_202_ACCEPTED)
