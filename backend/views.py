@@ -581,8 +581,10 @@ class UserProjects(generics.RetrieveUpdateDestroyAPIView):
                 for project in projects:
                     project_data["projects"].append(project.project_id)
                     developer_groups = DeveloperGroupMembership.objects.all().filter(developer_group_id=project.developer_group_id)
+
                     for developer_group in developer_groups:
-                        if developer_group.id == int(user_id) and developer_group.active: # Should probably also check if membership is active?
+                        user = get_object_or_404(User, email=developer_group.user_id)
+                        if user.id == int(user_id) and developer_group.active:
                             user_in_project = True
                 if user_in_project:
                     board_data.append(project_data)
