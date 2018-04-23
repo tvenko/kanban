@@ -615,8 +615,7 @@ class CardList(generics.ListCreateAPIView):
                 serializer.save(number=1)
                 return JsonResponse(serializer.data, status=status.HTTP_200_OK)
             else:
-                silver_type = cards.filter(type_silver=True)
-                print(serializer.validated_data["type_silver"])
+                silver_type = cards.filter(type_silver=True).filter(column_id=serializer.validated_data["column_id"])
                 if serializer.validated_data["type_silver"] and silver_type:
                     return JsonResponse(serializer.error_messages, status=status.HTTP_406_NOT_ACCEPTABLE)
                 card = cards.order_by("-number")[0]
