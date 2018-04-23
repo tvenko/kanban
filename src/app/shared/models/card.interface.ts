@@ -1,5 +1,5 @@
-
 export interface Card {
+  violation_user: number;
   card_id: number;
   active: boolean;
   title: string;

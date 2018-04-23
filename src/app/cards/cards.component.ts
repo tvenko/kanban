@@ -232,6 +232,7 @@ export class CardsComponent implements OnInit {
 
     //Create object
     const card: Card = {
+      violation_user: this.currentUserId,
       card_id:null, //this.newCardForm.get('id').value,
       title: this.newCardForm.get('title').value,
       assigned_user_id: assigneeId,
@@ -262,6 +263,9 @@ export class CardsComponent implements OnInit {
     }, err => {
       if(err.status == 406){
         UIkit.notification('Kartica z najvišjo prioriteto že obstaja.', {status: 'danger', timeout: 2000});
+      }else if(err.status == 409){
+        UIkit.notification('Kartica dodana, vendar je prišlo do kršitve omejitve WIP.', {status: 'warning', timeout: 2000});
+        UIkit.modal('#new-card-modal').hide();
       }else{
         UIkit.notification('Napaka pri dodajanju nove kartice.', {status: 'danger', timeout: 2000});
       }
