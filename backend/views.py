@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser
-from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board, Card, CardPriority
+from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board, Card, CardPriority, WipViolation, WipViolationReason
 from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer, ColumnSerializer, BoardSerializer, CardSerializer, CardPrioritySerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -609,8 +609,11 @@ class CardList(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = CardSerializer(data=request.data)
+
         if serializer.is_valid():
             cards = Card.objects.all().filter(project_id=int(serializer.validated_data["project_id"].id))
+            cards_on_column = Card.objects.all().filter(column_id=serializer.validated_data["column_id"])
+            wip_sum = len([card.size for card in cards_on_column])
             if not cards:
                 serializer.save(number=1)
                 return JsonResponse(serializer.data, status=status.HTTP_200_OK)
@@ -620,9 +623,19 @@ class CardList(generics.ListCreateAPIView):
                     return JsonResponse(serializer.error_messages, status=status.HTTP_406_NOT_ACCEPTABLE)
                 card = cards.order_by("-number")[0]
                 card_serializer = CardSerializer(card)
-                if serializer.is_valid():
+                if serializer.is_valid() and not (wip_sum + 1 > serializer.validated_data["column_id"].wip_restriction):
                     serializer.save(number=card_serializer.data["number"] + 1)
-                    return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+                    return JsonResponse(serializer.data,
+                                        status=status.HTTP_200_OK)
+                elif wip_sum + 1 > serializer.validated_data["column_id"].wip_restriction:
+                    serializer.save(number=card_serializer.data["number"] + 1)
+                    card = Card.objects.all().order_by("-card_id")[0]
+                    WipViolation.objects.create(card_id=card, column_id=serializer.validated_data["column_id"],
+                                                       user_id=User.objects.get(pk=request.data["violation_user"]), wip_violation_reason_id=WipViolationReason.objects.get(pk=1))
+                    return JsonResponse(serializer.data,
+                                        status=status.HTTP_409_CONFLICT)
+
+                return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
         return JsonResponse(serializer.data, status=status.HTTP_406_NOT_ACCEPTABLE)
 

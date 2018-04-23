@@ -45,7 +45,7 @@ class WipViolation(Model):
     user_id = ForeignKey('User', on_delete=CASCADE)
     wip_violation_reason_id = ForeignKey('WipViolationReason',
                                          on_delete=CASCADE)
-    date = DateTimeField()
+    date = DateTimeField(auto_now_add=True)
 
 
 class WipViolationReason(Model):
