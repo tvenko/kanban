@@ -157,7 +157,7 @@
           <div class="subcolumn-container" *ngFor="let subcolumn of column.subcolumns; let j = index">
             <div class="subcolumn-card-container">
               <div class="subcolumn-card-container" *ngFor="let card of subcolumn.column_cards">
-                  <li draggable="true" (dragstart)="onDragStart($event, card, subcolumn)" class="card" *ngIf="card?.project_id == project?.id">
+                  <li draggable="true" (click)="cardsComponent.onCardClick(card)" (dragstart)="onDragStart($event, card, subcolumn)" class="card" *ngIf="card?.project_id == project?.id">
                     <div class="card-header" [ngStyle]="{'background': cardColors[card.card_priority_id-1]}">
                       <span>#{{ card.number }}</span><span style="float: right">{{ getUserName(card?.assigned_user_id) }}</span>
                     </div>
