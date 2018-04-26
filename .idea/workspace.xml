@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9de438be-29f9-476c-befc-e7e2d3799060" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/backend/models.py" afterPath="$PROJECT_DIR$/backend/models.py" />
       <change beforePath="$PROJECT_DIR$/backend/views.py" afterPath="$PROJECT_DIR$/backend/views.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -104,7 +103,7 @@
         <entry file="file://$PROJECT_DIR$/backend/models.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="579">
-              <caret line="44" column="50" lean-forward="false" selection-start-line="44" selection-start-column="50" selection-end-line="44" selection-end-column="50" />
+              <caret line="113" column="51" lean-forward="true" selection-start-line="113" selection-start-column="51" selection-end-line="113" selection-end-column="51" />
               <folding />
             </state>
           </provider>
@@ -113,8 +112,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="585">
-              <caret line="635" column="71" lean-forward="false" selection-start-line="635" selection-start-column="71" selection-end-line="635" selection-end-column="71" />
+            <state relative-caret-position="2115">
+              <caret line="443" column="4" lean-forward="false" selection-start-line="443" selection-start-column="4" selection-end-line="443" selection-end-column="4" />
               <folding>
                 <element signature="e#0#50#0" expanded="true" />
               </folding>
@@ -157,6 +156,7 @@
       <find>offset</find>
       <find>DateField</find>
       <find>date</find>
+      <find>get</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -203,7 +203,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -232,6 +231,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -700,15 +700,15 @@
     <entry file="file://$PROJECT_DIR$/backend/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="579">
-          <caret line="44" column="50" lean-forward="false" selection-start-line="44" selection-start-column="50" selection-end-line="44" selection-end-column="50" />
+          <caret line="113" column="51" lean-forward="true" selection-start-line="113" selection-start-column="51" selection-end-line="113" selection-end-column="51" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/backend/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="635" column="71" lean-forward="false" selection-start-line="635" selection-start-column="71" selection-end-line="635" selection-end-column="71" />
+        <state relative-caret-position="2115">
+          <caret line="443" column="4" lean-forward="false" selection-start-line="443" selection-start-column="4" selection-end-line="443" selection-end-column="4" />
           <folding>
             <element signature="e#0#50#0" expanded="true" />
           </folding>

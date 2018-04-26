@@ -392,6 +392,17 @@ class ColumnList(generics.ListCreateAPIView):
     queryset = Column.objects.all()
     serializer_class = ColumnSerializer
 
+    def get(self, request, **kwargs):
+        columns = Column.objects.all()
+        columns_data = []
+        for column in columns:
+            serializer = ColumnSerializer(column).data
+            if serializer["parent_column_id"] == None:
+                serializer["subcolumns_length"] = len(Column.objects.all().filter(parent_column_id=column))
+            columns_data.append(serializer)
+
+        return Response(columns_data, status=status.HTTP_200_OK)
+
     def post(self, request, **kwargs):
         columns = Column.objects.all()
         serializer = ColumnSerializer(data=request.data)
@@ -422,6 +433,15 @@ class ColumnDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Column.objects.all()
     serializer_class = ColumnSerializer
 
+    def get(self, request, **kwargs):
+        column = Column.objects.get(pk=kwargs["pk"])
+        serializer = ColumnSerializer(column).data
+
+        if serializer["parent_column_id"] == None:
+            serializer["subcolumns_length"] = len(Column.objects.all().filter(parent_column_id=column))
+
+        return Response(serializer, status=status.HTTP_200_OK)
+    
     def delete(self, request, *args, **kwargs):
         columns = Column.objects.all()
         column = Column.objects.get(pk=kwargs["pk"])
