@@ -1,8 +1,40 @@
 <app-main-navbar></app-main-navbar>
-<div class="uk-container">
-  <div class="placeholder">
-    <h1>This is Documentation page!</h1>
-    <hr>
-    <p>Well it's still needs to be implemented... ¯\_(ツ)_/¯</p>
-  </div>
+
+<div class="uk-section uk-section-default center-padding">
+  <!-- Search box. -->
+  <!--<input class="uk-search uk-search-default" id="search-box" type="search" placeholder="Iskani niz" (input)="onSearchChange($event.target.value)">-->
+  <form class="uk-search uk-search-navbar uk-width-medium-1-2 uk-container-center">
+    <span uk-search-icon></span>
+    <input class="uk-search-input" id="search-box" type="search" placeholder="Iskanje..." (input)="onSearchChange($event.target.value)">
+    <button class="uk-modal-close-default" type="button" id="btn-clear" uk-close (click)="clearSearch()"></button>
+  </form>
+</div>
+
+
+<div class="uk-section uk-section-muted center-padding">
+  
+    <div class="uk-grid uk-grid-match uk-grid-divider">
+      <!-- Links. -->
+      <div class="uk-width-1-3@m">
+        <table class="uk-table uk-table-small uk-table-hover uk-table-divider uk-table-justify">
+          <tbody *ngFor="let doc of filteredDocs">
+            <tr class="clickable-tr" [ngClass]="{'subdoc': !doc.main}" [routerLink]="" (click)="moveToAnchor(doc?.index)">
+              <td class="table-cell">{{ doc?.index }}.</td>
+              <td class="table-cell">{{ doc?.title }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Documentation. -->
+      <div class="uk-width-expand@m">
+        <div *ngIf="filteredDocs.length === 0">
+          Ni zadetkov.
+        </div>
+        <dl class="uk-description-list uk-description-list-divider" *ngFor="let doc of filteredDocs">
+          <dt [ngClass]="{'subdoc': !doc.main}">{{ doc?.index }}. {{ doc?.title }}</dt>
+          <dd [attr.id]="'doc' + doc?.index" class="doc-text">{{ doc?.text }}</dd>
+        </dl>
+      </div>
+    </div>
 </div>

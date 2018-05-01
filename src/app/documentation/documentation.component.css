@@ -1,8 +1,26 @@
-.placeholder {
-  text-align: center;
-  margin-top: 300px;
+.uk-position-top-center {
+  margin-top: 120px;
 }
 
-.placeholder p {
-  color: gray;
+.clickable-tr, .clickable-tr:visited {
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.subdoc {
+  font-style: italic;
+  font-weight: lighter;
+}
+
+.center-padding {
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.doc-text {
+  font-size: 14px;
+  font-weight: lighter;
 }
