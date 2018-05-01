@@ -1,6 +1,6 @@
 <app-main-navbar></app-main-navbar>
 
-<div class="uk-section uk-section-default center-padding">
+<div class="center-padding uk-container">
   <!-- Search box. -->
   <!--<input class="uk-search uk-search-default" id="search-box" type="search" placeholder="Iskani niz" (input)="onSearchChange($event.target.value)">-->
   <form class="uk-search uk-search-navbar uk-width-medium-1-2 uk-container-center">
@@ -11,11 +11,11 @@
 </div>
 
 
-<div class="uk-section uk-section-muted center-padding">
+<div class="uk-section-muted center-padding uk-container">
   
-    <div class="uk-grid uk-grid-match uk-grid-divider">
+    <div class="uk-grid uk-grid-divider uk-grid-match">
       <!-- Links. -->
-      <div class="uk-width-1-3@m">
+      <div class="uk-width-1-3@m uk-first-column">
         <table class="uk-table uk-table-small uk-table-hover uk-table-divider uk-table-justify">
           <tbody *ngFor="let doc of filteredDocs">
             <tr class="clickable-tr" [ngClass]="{'subdoc': !doc.main}" [routerLink]="" (click)="moveToAnchor(doc?.index)">
