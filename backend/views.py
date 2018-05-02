@@ -2,8 +2,8 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser
-from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board, Card, CardPriority, WipViolation, WipViolationReason
-from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer, ColumnSerializer, BoardSerializer, CardSerializer, CardPrioritySerializer
+from backend.models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, GroupRole, Project, Column, Board, Card, CardPriority, WipViolation, WipViolationReason, Task, CardLog, DeleteReason
+from backend.serializers import UserSerializer, DeveloperGroupSerializer, AllowedRoleSerializer, RoleSerializer, DeveloperGroupMembershipSerializer, ProjectSerializer, ColumnSerializer, BoardSerializer, CardSerializer, CardPrioritySerializer, TaskSerializer, WipViolationSerializer, CardLogSerializer, DeleteReasonSerializer, WipViolationReasonSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -683,6 +683,60 @@ class CardPriorityList(generics.ListCreateAPIView):
     #     print(card.number)
     #     print(card.project_id)
     #     cards = Card.objects.all().filter(project_id=int(card.project_id))
+
+class CardAbout(generics.ListCreateAPIView):
+    """
+    List all cards priority.
+    """
+
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
+
+    def get(self, request, **kwargs):
+        card = Card.objects.get(pk=kwargs["pk"])
+
+        card_user = UserSerializer(card.assigned_user_id).data
+        card_delete_reason = DeveloperGroupSerializer(card.delete_reason_id).data
+        card_column = ColumnSerializer(card.column_id).data
+        card_project_id = ProjectSerializer(card.project_id).data
+        card_priority_id = CardPrioritySerializer(card.card_priority_id).data
+
+        card_tasks = []
+        for task in Task.objects.filter(card_id=card):
+            task_serializer = TaskSerializer(task).data
+            task_serializer["card_id"] = CardSerializer(task.card_id).data
+            task_serializer["assigned_user_id"] = UserSerializer(task.assigned_user_id).data
+            card_tasks.append(task_serializer)
+
+        card_wip_violations = []
+        for wip_violation in WipViolation.objects.filter(card_id=card):
+            wip_violation_serializer = WipViolationSerializer(wip_violation).data
+            wip_violation_serializer["card_id"] = CardSerializer(wip_violation.card_id).data
+            wip_violation_serializer["column_id"] = ColumnSerializer(wip_violation.column_id).data
+            wip_violation_serializer["user_id"] = UserSerializer(wip_violation.user_id).data
+            wip_violation_serializer["wip_violation_reason_id"] = WipViolationReasonSerializer(wip_violation.wip_violation_reason_id).data
+            card_wip_violations.append(wip_violation_serializer)
+
+        card_logs = []
+        for card_log in CardLog.objects.filter(card_id=card):
+            card_log_serializer = CardLogSerializer(card_log).data
+            card_log_serializer["card_id"] = CardSerializer(card_log.card_id).data
+            card_log_serializer["from_column_id"] = ColumnSerializer(card_log.from_column_id).data
+            card_log_serializer["to_column_id"] = ColumnSerializer(card_log.to_column_id).data
+            card_logs.append(card_log_serializer)
+            
+        card_serializer = CardSerializer(card).data
+        card_serializer["assigned_user_id"] = card_user
+        card_serializer["delete_reason_id"] = card_delete_reason
+        card_serializer["column_id"] = card_column
+        card_serializer["project_id"] = card_project_id
+        card_serializer["card_priority_id"] = card_priority_id
+        card_serializer["tasks"] = card_tasks
+        card_serializer["wip_violations"] = card_wip_violations
+        card_serializer["logs"] = card_logs
+
+        return Response(card_serializer, status=status.HTTP_202_ACCEPTED)
+
 
 
 class UserGroups(generics.ListCreateAPIView):

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, Project, Column, Board, Card, CardPriority
+from . models import User, Role, AllowedRole, DeveloperGroup, DeveloperGroupMembership, Project, Column, Board, Card, CardPriority, Task, WipViolation, CardLog, DeleteReason, WipViolationReason
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -87,4 +87,39 @@ class CardPrioritySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CardPriority
+        fields = '__all__'
+
+
+class CardLogSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CardLog
+        fields = '__all__'
+
+
+class TaskSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+
+class WipViolationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = WipViolation
+        fields = '__all__'
+
+
+class WipViolationReasonSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = WipViolationReason
+        fields = '__all__'
+
+
+class DeleteReasonSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DeleteReason
         fields = '__all__'

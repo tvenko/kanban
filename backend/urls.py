@@ -44,6 +44,7 @@ card_urls = [
     url(r'^cards/$', views.CardList.as_view()),
     url(r'^cards/(?P<pk>[0-9]+)/$', views.CardDetail.as_view()),
     url(r'^card_priority/$', views.CardPriorityList.as_view()),
+    url(r'^about_card/(?P<pk>[0-9]+)/$', views.CardAbout.as_view()),
 ]
 
 
