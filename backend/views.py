@@ -696,7 +696,7 @@ class CardAbout(generics.ListCreateAPIView):
         card = Card.objects.get(pk=kwargs["pk"])
 
         card_user = UserSerializer(card.assigned_user_id).data
-        card_delete_reason = DeveloperGroupSerializer(card.delete_reason_id).data
+        card_delete_reason = DeleteReasonSerializer(card.delete_reason_id).data
         card_column = ColumnSerializer(card.column_id).data
         card_project_id = ProjectSerializer(card.project_id).data
         card_priority_id = CardPrioritySerializer(card.card_priority_id).data
@@ -724,7 +724,7 @@ class CardAbout(generics.ListCreateAPIView):
             card_log_serializer["from_column_id"] = ColumnSerializer(card_log.from_column_id).data
             card_log_serializer["to_column_id"] = ColumnSerializer(card_log.to_column_id).data
             card_logs.append(card_log_serializer)
-            
+
         card_serializer = CardSerializer(card).data
         card_serializer["assigned_user_id"] = card_user
         card_serializer["delete_reason_id"] = card_delete_reason
