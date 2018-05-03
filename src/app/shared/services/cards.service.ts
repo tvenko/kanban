@@ -12,9 +12,6 @@ export class CardsService {
     return this.http.get(Config.API + '/cards/');
   }
 
-  /*deleteGroup(id:number){
-    return this.http.delete(Config.API + '/groups/' + id + '/');
-  }*/
 
   postCard(card: Card) {
     return this.http.post(Config.API + '/cards/', card);
@@ -28,9 +25,9 @@ export class CardsService {
     return this.http.delete(Config.API + '/cards/' + cardId + '/');
   }
 
-  /*updateGroup(group:Group){
-    return this.http.put(Config.API + '/groups/' + group.id + "/", group);
-  }*/
+  getDetailedCard(cardId: number){
+    return this.http.get(Config.API + '/about_card/' + cardId + '/');
+  }
 
 
 }
