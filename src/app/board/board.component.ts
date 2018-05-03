@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Column } from '../shared/models/column.interface';
 import { BoardsService } from '../shared/services/boards.service';
@@ -14,6 +14,7 @@ import {UsersService} from '../shared/services/users.service';
 import {Card} from '../shared/models/card.interface';
 import {CardsService} from '../shared/services/cards.service';
 import {Group} from '../shared/models/group.interface';
+import { CardsComponent } from './cards/cards.component';
 
 declare var UIkit: any;
 
@@ -22,7 +23,11 @@ declare var UIkit: any;
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
 })
+
 export class BoardComponent implements OnInit, OnDestroy {
+  @ViewChild(CardsComponent)
+     private cardsComponent: CardsComponent;
+
   id: number;
   private sub: any;
   colors = ['#FFB300', '#FF3D00', '#29B6F6', '#8BC34A', '#ffd633', '#884EA0'];

@@ -1,17 +1,17 @@
 import { Component, OnInit, group } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Project } from '../shared/models/project.interface';
-import { ProjectsService } from '../shared/services/projects.service';
+import { Project } from '../../shared/models/project.interface';
+import { ProjectsService } from '../../shared/services/projects.service';
 import { ActivatedRoute } from '@angular/router';
-import { BoardsService } from '../shared/services/boards.service';
-import { Board } from '../shared/models/board.interface';
-import { User } from '../shared/models/user.interface';
-import { GroupMember } from '../shared/models/group.interface';
-import { Card } from '../shared/models/card.interface';
-import { Priority } from '../shared/models/priority.interface';
-import { PriorityService } from '../shared/services/priority.service';
-import { CardsService } from '../shared/services/cards.service';
-import { BoardsListService } from '../shared/services/boards-list.service';
+import { BoardsService } from '../../shared/services/boards.service';
+import { Board } from '../../shared/models/board.interface';
+import { User } from '../../shared/models/user.interface';
+import { GroupMember } from '../../shared/models/group.interface';
+import { Card } from '../../shared/models/card.interface';
+import { Priority } from '../../shared/models/priority.interface';
+import { PriorityService } from '../../shared/services/priority.service';
+import { CardsService } from '../../shared/services/cards.service';
+import { BoardsListService } from '../../shared/services/boards-list.service';
 import {Router} from '@angular/router';
 declare var UIkit: any;
 
@@ -232,6 +232,7 @@ export class CardsComponent implements OnInit {
 
     //Create object
     const card: Card = {
+      violation_user: this.currentUserId,
       card_id:null, //this.newCardForm.get('id').value,
       title: this.newCardForm.get('title').value,
       assigned_user_id: assigneeId,
@@ -262,6 +263,9 @@ export class CardsComponent implements OnInit {
     }, err => {
       if(err.status == 406){
         UIkit.notification('Kartica z najvišjo prioriteto že obstaja.', {status: 'danger', timeout: 2000});
+      }else if(err.status == 409){
+        UIkit.notification('Kartica dodana, vendar je prišlo do kršitve omejitve WIP.', {status: 'warning', timeout: 2000});
+        UIkit.modal('#new-card-modal').hide();
       }else{
         UIkit.notification('Napaka pri dodajanju nove kartice.', {status: 'danger', timeout: 2000});
       }
@@ -270,6 +274,12 @@ export class CardsComponent implements OnInit {
 
    // UIkit.modal('#new-group-modal').hide();
 
+  }
+  
+
+  onCardClick(card){
+    UIkit.modal('#card-details-modal').show();
+    console.log("CLICK");
   }
 
 }

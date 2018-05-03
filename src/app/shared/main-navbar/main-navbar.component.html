@@ -23,15 +23,15 @@
               <li [ngClass]="{'uk-active': isActiveRoute('/board')}">
                 <a routerLink="/board">Tabla &nbsp; <i>dev</i></a>
               </li>-->
-              <li [ngClass]="{'uk-active': isActiveRoute('/documentation')}">
-                <a routerLink="/documentation">Dokumentacija</a>
-              </li>
               <li [ngClass]="{'uk-active': isActiveRoute('/analytics')}">
                 <a routerLink="/analytics">Analitika</a>
               </li>
-                <li *ngIf="isAdmin()" [ngClass]="{'uk-active': isActiveRoute('/users')}">
-                  <a routerLink="/users">Uporabniki</a>
-                </li>
+              <li *ngIf="isAdmin()" [ngClass]="{'uk-active': isActiveRoute('/users')}">
+                <a routerLink="/users">Uporabniki</a>
+              </li>
+              <li [ngClass]="{'uk-active': isActiveRoute('/documentation')}">
+                <a routerLink="/documentation">Pomoč</a>
+              </li>
             </ul>
           </div>
           <div class="uk-navbar-right">

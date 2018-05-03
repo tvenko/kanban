@@ -30,7 +30,7 @@ import {BoardsListService} from './shared/services/boards-list.service';
 import {CalendarModule} from 'primeng/calendar';
 import { ProjectsService } from './shared/services/projects.service';
 import {MessageService} from './shared/services/message.service';
-import { CardsComponent } from './cards/cards.component';
+import { CardsComponent } from './board/cards/cards.component';
 import { PriorityService } from './shared/services/priority.service';
 import { CardsService } from './shared/services/cards.service';
 
