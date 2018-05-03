@@ -12,17 +12,22 @@ export class CardsService {
     return this.http.get(Config.API + '/cards/');
   }
 
-  /*deleteGroup(id:number){
-    return this.http.delete(Config.API + '/groups/' + id + '/');
-  }*/
 
   postCard(card: Card) {
     return this.http.post(Config.API + '/cards/', card);
   }
 
-  /*updateGroup(group:Group){
-    return this.http.put(Config.API + '/groups/' + group.id + "/", group);
-  }*/
+  updateCard(card: Card) {
+    return this.http.put(Config.API + '/cards/' + card.card_id + '/', card);
+  }
+
+  deleteCard(cardId: number) {
+    return this.http.delete(Config.API + '/cards/' + cardId + '/');
+  }
+
+  getDetailedCard(cardId: number){
+    return this.http.get(Config.API + '/about_card/' + cardId + '/');
+  }
 
 
 }

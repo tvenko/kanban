@@ -13,6 +13,9 @@ import { PriorityService } from '../../shared/services/priority.service';
 import { CardsService } from '../../shared/services/cards.service';
 import { BoardsListService } from '../../shared/services/boards-list.service';
 import {Router} from '@angular/router';
+import { CardDetailed } from '../../shared/models/cardDetailed.interface';
+import { WipViolation } from '../../shared/models/wipViolation.interface';
+import { Log } from '../../shared/models/log.interface';
 declare var UIkit: any;
 
 
@@ -23,10 +26,12 @@ declare var UIkit: any;
 })
 export class CardsComponent implements OnInit {
 
+  
   private sub: any;
 
   cardsModalTitle: String;
   newCardForm: FormGroup;
+  editCardForm: FormGroup;
   projects: Project[] = [];
   board: Board;
   priorities: Priority[];
@@ -42,6 +47,8 @@ export class CardsComponent implements OnInit {
   sl: any;
 
   selectedProject:Project;
+  wipViolations:WipViolation[];
+  logs: Log[];
 
   isUserKanbanMaster_inGroup = false;
   isUserProductOwner_inGroup = false;
@@ -50,6 +57,7 @@ export class CardsComponent implements OnInit {
 
 
   ngOnInit() {
+    this.loadPriorities();
     const user = JSON.parse(localStorage.getItem('user'));
     this.currentUserId = user['id'];
     this.today = new Date();
@@ -82,7 +90,6 @@ export class CardsComponent implements OnInit {
 
 
     this.newCardForm = new FormGroup({
-      //'id': new FormControl(),
       'title': new FormControl(null, Validators.required),
       'description': new FormControl(null, Validators.required),
       'assignee': new FormControl(null),
@@ -90,6 +97,16 @@ export class CardsComponent implements OnInit {
       'priority': new FormControl(null, Validators.required),
       'size': new FormControl(),
       'project': new FormControl(null, Validators.required),
+    });
+
+    this.editCardForm = new FormGroup({
+      'title-edit': new FormControl(null, Validators.required),
+      'description-edit': new FormControl(null, Validators.required),
+      'assignee-edit': new FormControl(null),
+      'deadline-edit': new FormControl(null),
+      'priority-edit': new FormControl(null, Validators.required),
+      'size-edit': new FormControl(),
+      'project-edit': new FormControl(null),
 
     });
     //this.newCardForm.get('typeSilver').disable();
@@ -275,11 +292,46 @@ export class CardsComponent implements OnInit {
    // UIkit.modal('#new-group-modal').hide();
 
   }
+  saveEditedCard(){
+    console.log("EDIT");
+  }
   
 
+  loadEditCardModal(cardDetails:CardDetailed){
+    this.editCardForm.reset();
+    this.projects = [];
+    this.currentUserProjects = [];
+    this.getBoard();
+    this.silverBullet = false;
+    this.editCardForm.reset();
+    this.cardsModalTitle = 'Uredi kartico';
+    this.wipViolations = cardDetails.wip_violations;
+    this.logs = cardDetails.logs;
+    this.selectedProject = cardDetails.project_id[0];
+    this.editCardForm.get("title-edit").setValue(cardDetails.title);
+    this.editCardForm.get('description-edit').setValue(cardDetails.description);
+    this.editCardForm.get('project-edit').setValue(cardDetails.project_id.title);
+    if(cardDetails.assigned_user_id != null){
+      this.editCardForm.get('assignee-edit').setValue(cardDetails.assigned_user_id.id);
+    }
+    if(cardDetails.deadline != null){
+      this.editCardForm.get('deadline-edit').setValue(new Date(cardDetails.deadline));
+    } 
+    this.editCardForm.get('priority-edit').setValue(cardDetails.card_priority_id.id);
+    if(cardDetails.size != null){
+      this.editCardForm.get('size-edit').setValue(cardDetails.size);
+    }
+
+    
+  }
   onCardClick(card){
-    UIkit.modal('#card-details-modal').show();
-    console.log("CLICK");
+    this.cardService.getDetailedCard(card.card_id).subscribe(res => {
+      let cardDetails:CardDetailed = <CardDetailed>res;
+      this.loadEditCardModal(cardDetails);
+      UIkit.modal('#card-details-modal').show();
+    }, err => {
+      console.log(err);
+    });      
   }
 
 }

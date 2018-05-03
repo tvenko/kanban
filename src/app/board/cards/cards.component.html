@@ -127,6 +127,129 @@
     <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
       <button class="uk-modal-close-default" type="button"  uk-close></button>
       <h2 class="uk-modal-title">Podatki o kartici</h2>
+      <ul uk-tab uk-switcher>
+        <li class="uk-active"><a href="#">Osnovni Podatki</a></li>
+        <li><a href="#">Premiki</a></li>
+        <li><a href="#">Kršitve omejitev</a></li>
+      </ul>
+      <ul class="uk-switcher uk-margin">
+        <li>
+          <!-- Cards form -->
+          <form (ngSubmit)="saveEditedCard()" [formGroup]="editCardForm">
+            <fieldset class="uk-fieldset">
+              <!-- Card title -->
+              <div class="uk-margin">
+                <label class="uk-form-label" for="edit-code-name">Naziv kartice</label>
+                <div class="uk-form-controls">
+                  <input class="uk-input" id="edit-title" type="text" placeholder="Naziv kartice" formControlName="title-edit" [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('title-edit').valid && editCardForm.get('title-edit').touched}">
+                </div>
+              </div>
+              <span class="uk-alert-danger"
+              *ngIf="!editCardForm.get('title-edit').valid && editCardForm.get('title-edit').touched">
+                Vnesi naziv kartice
+              </span>
+
+              <!-- Card description -->
+              <div class="uk-margin">
+                <label class="uk-form-label" for="edit-description">Opis kartice</label>
+                <div class="uk-form-controls">
+                  <textarea class="uk-textarea" rows="5" id="edit-description" type="text" placeholder="Opis kartice" formControlName="description-edit"  [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('description-edit').valid && editCardForm.get('description-edit').touched}"></textarea>
+                </div>
+              </div>
+              <span class="uk-alert-danger"
+              *ngIf="!editCardForm.get('description-edit').valid && editCardForm.get('description-edit').touched">
+                Vnesi opis kartice
+              </span>
+
+              <!-- Show all projects -->
+              <div class="uk-form-controls  uk-margin">
+                <label class="uk-form-label" for="edit-project">Projekt</label>
+                <div class="uk-form-controls">
+                  <input class="uk-input" id="edit-project" disabled type="text" placeholder="Projekt" formControlName="project-edit" >
+                </div>
+              </div>
+
+              <!-- Card assignee -->
+              <div class="uk-form-controls  uk-margin">
+                <label class="uk-form-label" for="edit-assignee">Zadolženi razvijalec</label>
+                <select class="uk-select" id="edit-assignee" formControlName="assignee-edit">
+                  <option selected  id="nullSelection"></option> 
+                  <ng-container *ngFor="let groupMember of selectedProject?.group_data.users">
+                    <option disabled *ngIf="!groupMember.group_active && groupMember.allowed_group_roles.includes(1)" [ngValue]="groupMember.id">{{groupMember.name + " " +  groupMember.surname}} (neaktiven v skupini)</option>
+                    <option  *ngIf="groupMember.group_active && groupMember.allowed_group_roles.includes(1)" [ngValue]="groupMember.id">{{groupMember.name + " " +  groupMember.surname}}</option>
+                  </ng-container>  
+                </select>
+              </div>
+              <span class="uk-alert-danger"
+                    *ngIf="!editCardForm.get('assignee-edit').valid && editCardForm.get('assignee-edit').touched">
+                Izberi zadolženega
+              </span>
+
+              <!-- Deadline -->
+              <div class="uk-margin">
+                <label class="uk-form-label" for="edit-deadline">Rok</label>
+                <div class="uk-form-controls">
+                  <p-calendar id="edit-deadline" [locale]="sl" [minDate]="today" formControlName="deadline-edit" dateFormat="dd.mm.yy" showButtonBar="true"  [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('deadline-edit').valid && editCardForm.get('deadline-edit').touched}"  readonlyInput="true"></p-calendar>
+                </div>
+              </div>
+              <span class="uk-alert-danger"
+              *ngIf="!editCardForm.get('deadline-edit').valid && editCardForm.get('deadline-edit').touched &&  editCardForm.get('deadline-edit').dirty">
+                Izberi rok
+              </span>
+
+              <!-- Card prority -->
+              <div class="uk-form-controls  uk-margin">
+                <label class="uk-form-label" for="edit-priority">Prioriteta</label>
+                <select class="uk-select" id="edit-priority" formControlName="priority-edit">
+                  <ng-container *ngFor="let priority of priorities">
+                      <option [ngValue]="priority.id"  >{{priority.title}}</option>
+                  </ng-container>     
+                </select>
+              </div>
+              <span class="uk-alert-danger"
+                    *ngIf="!editCardForm.get('priority-edit').valid && editCardForm.get('priority-edit').touched">
+                Izberi prioriteto
+              </span>
+
+              <!-- Card size -->
+              <div class="uk-form-controls  uk-margin">
+                  <label class="uk-form-label" for="edit-size">Ocena zahtevnosti</label>
+                  <input class="uk-input" id="edit-size" type="number" formControlName="size-edit">
+              </div>
+              <div class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
+                <button class="uk-button uk-button-primary" type="submit" [disabled]="!editCardForm.valid">Shrani</button>
+              </div>
+            </fieldset>
+          </form>
+        </li>
+        <li>
+          <ul uk-accordion>
+              <ng-container *ngFor="let log of logs">
+                <li>
+                    <a class="uk-accordion-title" href="#">Iz {{log.from_column_id.title}} v {{log.to_column_id.title}} </a>
+                    <div class="uk-accordion-content">
+                        <div>Datum: {{log.date | date:'dd.MM.yyyy'}}</div>
+                    </div>
+                </li>
+              </ng-container>
+            </ul> 
+        </li>
+        <li>
+          <ul uk-accordion>
+              <ng-container *ngFor="let violation of wipViolations">
+                <li>
+                    <a class="uk-accordion-title" href="#">{{violation.wip_violation_reason_id.description}}</a>
+                    <div class="uk-accordion-content">
+                        <div>Datum: {{violation.date | date:'dd.MM.yyyy'}}</div>
+                        <div>Kršitelj: {{violation.user_id.name}} {{violation.user_id.surname}}</div>
+                        <div>Stolpec: {{violation.column_id.title}}</div>
+                    </div>
+                </li>
+              </ng-container>
+            </ul> 
+        </li>
+    </ul>
     </div>
   </div>
 </div>

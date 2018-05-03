@@ -65,9 +65,9 @@
 
         </div>
 
-        <div class="cards-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)" *ngFor="let project of board?.projects">
+        <div class="cards-container" (drop)="onDrop($event, column, project)" (dragover)="allowDrop($event)" *ngFor="let project of board?.projects">
           <span *ngFor="let card of column.column_cards">
-              <li draggable="true" (click)="cardsComponent.onCardClick(card)" (dragstart)="onDragStart($event, card, column)" class="card" *ngIf="card?.project_id == project?.id">
+              <li draggable="true" (click)="cardsComponent.onCardClick(card)" (dragstart)="onDragStart($event, card, column, project)" class="card" *ngIf="card?.project_id == project?.id">
                 <div class="card-header" [ngStyle]="{'background': cardColors[card.card_priority_id-1]}">
                       <span>#{{ card.number }}</span><span style="float: right">{{ getUserName(card?.assigned_user_id) }}</span>
                     </div>
@@ -153,11 +153,11 @@
           </div>
         </div>
 
-        <div class="cards-container subcolumn-container" (drop)="onDrop($event, card, column)" (dragover)="allowDrop($event)" *ngFor="let project of board?.projects">
-          <div class="subcolumn-container" *ngFor="let subcolumn of column.subcolumns; let j = index">
+        <div class="cards-container subcolumn-container" *ngFor="let project of board?.projects">
+          <div class="subcolumn-container" (drop)="onDrop($event, subcolumn, project)" (dragover)="allowDrop($event)" *ngFor="let subcolumn of column.subcolumns; let j = index">
             <div class="subcolumn-card-container">
               <div class="subcolumn-card-container" *ngFor="let card of subcolumn.column_cards">
-                  <li draggable="true" (click)="cardsComponent.onCardClick(card)" (dragstart)="onDragStart($event, card, subcolumn)" class="card" *ngIf="card?.project_id == project?.id">
+                  <li draggable="true" (click)="cardsComponent.onCardClick(card)" (dragstart)="onDragStart($event, card, subcolumn, project)" class="card" *ngIf="card?.project_id == project?.id">
                     <div class="card-header" [ngStyle]="{'background': cardColors[card.card_priority_id-1]}">
                       <span>#{{ card.number }}</span><span style="float: right">{{ getUserName(card?.assigned_user_id) }}</span>
                     </div>
@@ -283,7 +283,6 @@
     </p>
   </div>
 </div>
-
 
 <!-- add project modal -->
 <div id="add-project-modal" uk-modal>

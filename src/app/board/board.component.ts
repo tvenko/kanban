@@ -11,6 +11,8 @@ import { BoardsListService } from '../shared/services/boards-list.service';
 import {Router} from '@angular/router';
 import {User} from '../shared/models/user.interface';
 import {UsersService} from '../shared/services/users.service';
+import {Card} from '../shared/models/card.interface';
+import {CardsService} from '../shared/services/cards.service';
 import { CardsComponent } from './cards/cards.component';
 
 declare var UIkit: any;
@@ -38,6 +40,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   delColumn: Column = null;
   editBoard = false;
   users = new Map();
+  currentUser: User;
+  currentUserGroups: number[];
 
   currentUserId = null;
   projects: Project[] = [];
@@ -53,7 +57,8 @@ export class BoardComponent implements OnInit, OnDestroy {
               private projectsService: ProjectsService,
               private route: ActivatedRoute,
               private messageService: MessageService,
-              private userService: UsersService) {
+              private userService: UsersService,
+              private cardService: CardsService) {
     this.messageService.listen().subscribe((msg: any) => {
       if (msg === 'editBoard') {
         this.editBoard = !this.editBoard;
@@ -65,13 +70,14 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    this.currentUserId = user['id'];
+    this.currentUser = JSON.parse(localStorage.getItem('user'));
+    this.currentUserId = this.currentUser['id'];
     this.sub = this.route.params.subscribe(params => {
        this.id = +params['id'];
 
        // Check if the user is allowed to see this board.
        this.boardsListService.getBoards(this.currentUserId).subscribe(boards => {
+         console.log(boards);
           let isAllowed = false;
           Object.values(boards).forEach((x) => {
             if (x[1] === this.id) { // x[1] is board id
@@ -104,6 +110,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       project: new FormControl(null, Validators.required),
     });
     this.getUsers();
+    this.getUserGroups();
+    console.log(this.currentUser);
   }
 
   getUsers() {
@@ -115,8 +123,19 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   getUserName(id: number) {
-    const user = <User>this.users.get(id);
-    return user.name + ' ' + user.surname;
+    if (id !== null) {
+      const user = <User>this.users.get(id);
+      if (user !== null) {
+        return user.name + ' ' + user.surname;
+      }
+    }
+    return '';
+  }
+
+  getUserGroups() {
+    this.userService.getUserGroups(this.currentUserId).subscribe(groups => {
+      this.currentUserGroups = <number[]>groups;
+    });
   }
 
   getBoard() {
@@ -145,7 +164,6 @@ export class BoardComponent implements OnInit, OnDestroy {
           this.projects.push(project);
         }
       }
-      console.log(this.projects);
     }, err => {
       console.log('error geting projects from backend');
     });
@@ -187,6 +205,20 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   removeProject(project: Project) {
     project.board_id = null;
+    for (const column of this.board.columns) {
+      for (const subcolumn of column.subcolumns) {
+        for (const card of subcolumn.column_cards) {
+          if (card.project_id === project.id) {
+            this.cardService.deleteCard(card.card_id).subscribe();
+          }
+        }
+      }
+      for (const card of column.column_cards) {
+        if (card.project_id === project.id) {
+          this.cardService.deleteCard(card.card_id).subscribe();
+        }
+      }
+    }
     this.projectsService.updateProject(project).subscribe(
       res => {
         this.getBoard();
@@ -205,7 +237,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       display_offset: this.newColumnOffset,
       board_id: this.board.id,
       subcolumns: null,
-      column_cards: null
+      column_cards: null,
+      subcolumns_length: null
     };
     this.boardsService.postColumn(newColumn).subscribe(column => {
       UIkit.notification(
@@ -279,30 +312,88 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.error = null;
   }
 
-  onDragStart(event, card, column) {
+  onDragStart(event, card: Card, column: Column, project: Project) {
     this.dataTransfer.set('card', card);
     this.dataTransfer.set('column', column);
+    this.dataTransfer.set('project', project);
   }
 
-  onDrop(event, data, column) {
-    const card = this.dataTransfer.get('card');
-    const prevColumn = this.dataTransfer.get('column');
+  onDrop(event, column: Column, project: Project) {
+    const card: Card = this.dataTransfer.get('card');
+    const prevColumn: Column = this.dataTransfer.get('column');
+    const prevProject: Project = this.dataTransfer.get('project');
     this.dataTransfer.clear();
-    column.cards.push(card);
-    const index = prevColumn.cards.indexOf(card);
-    if (index > 0) {
-      if (prevColumn.cards.length > 1) {
-        prevColumn.cards.splice(card, 1);
-      } else {
-        prevColumn.cards = null;
+    if (this.allowedMove(prevProject, project, prevColumn, column)) {
+      if (column.column_cards.length >= column.wip_restriction && column.wip_restriction > 0) {
+        alert('S prestavljanjem kartice ste kršili WIP omejitev');
       }
+      const index = prevColumn.column_cards.indexOf(card);
+      if (prevColumn.column_cards.length > 0) {
+        prevColumn.column_cards.splice(index, 1);
+      } else {
+        prevColumn.column_cards = [];
+      }
+      column.column_cards.push(card);
+      card.column_id = column.id;
+      this.cardService.updateCard(card).subscribe(res => {
+        this.getBoard();
+      }, err => console.log(err));
     }
-    console.log(this.dataTransfer);
     event.preventDefault();
   }
 
   allowDrop(event) {
     event.preventDefault();
+  }
+
+  allowedMove(prevProject: Project, project: Project, prevColumn: Column, column: Column) {
+    const localColumns = this.boardsService.getLocalColumns();
+    if (prevProject.id === project.id && this.currentUserGroups.indexOf(+prevProject.developer_group_id) >= 0) {
+      // ce premika iz testnega stolpca je avtomatsko dovoljeno.
+      if (prevColumn.id === this.board.type_acceptance_testing_column_id) {
+        return true;
+      }
+      if (prevColumn.parent_column_id !== null) {
+        if (column.parent_column_id !== null) {
+          // premikamo iz podstolpca v podstolpec
+          // ce sta podstolpca v istem stolpcu
+          console.log('prevColumn: ', prevColumn, ' column: ', column);
+          if (prevColumn.parent_column_id === column.parent_column_id && Math.abs(+prevColumn.display_offset - +column.display_offset) === 1) {
+            return true;
+          } else {
+            // podstolpca nista v istem stolpcu
+            const parentPrevColumn = localColumns.get(prevColumn.parent_column_id);
+            const parentColumn = localColumns.get(column.parent_column_id);
+            if (Math.abs(+parentPrevColumn.display_offset - +prevColumn.display_offset) === 1 &&
+              (parentPrevColumn.display_offset > parentColumn.display_offset && parentColumn.subcolumns_length === column.display_offset + 1 && prevColumn.display_offset === 0 ||
+                parentPrevColumn.display_offset < parentColumn.display_offset && parentPrevColumn.subcolumns_length === prevColumn.display_offset + 1 && column.display_offset === 0 )) {
+              return true;
+            }
+          }
+        } else {
+          // premikamo iz iz podstolpca v navaden stolpec
+          const parentPrevColumn = localColumns.get(prevColumn.parent_column_id);
+          if (parentPrevColumn.display_offset > column.display_offset && prevColumn.display_offset === 0 && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1 ||
+            parentPrevColumn.display_offset < column.display_offset && parentPrevColumn.subcolumns_length === prevColumn.display_offset + 1 && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1) {
+            return true;
+          }
+        }
+      //  premikamo iz navadnega stolpca v podstolpec
+      } else if (column.parent_column_id !== null) {
+          const parentColumn = localColumns.get(column.parent_column_id);
+          if (parentColumn.display_offset < prevColumn.display_offset && parentColumn.subcolumns_length === column.display_offset + 1 && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1 ||
+            parentColumn.display_offset > prevColumn.display_offset && column.display_offset === 0 && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1) {
+            return true;
+          }
+      // premikamo iz navadnega stolpca v navaden stolpec
+      } else {
+        if (Math.abs(column.display_offset - prevColumn.display_offset) === 1) {
+          return true;
+        }
+      }
+      return false;
+    }
+    return false;
   }
 
   ngOnDestroy() {
