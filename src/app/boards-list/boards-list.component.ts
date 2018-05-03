@@ -85,7 +85,7 @@ export class BoardsListComponent implements OnInit {
         UIkit.notification('Tabla izbrisana.', {status: 'warning', timeout: 2000});
       }, err => {
         console.log('error deleting board from backend');
-        UIkit.notification('Tabla ni izbrisana. Vzrok: _____', {status: 'danger', timeout: 2000});
+        UIkit.notification('Tabla ni izbrisana. Vzrok: Težave s strežnikom.', {status: 'danger', timeout: 2000});
       });
     }
   }
@@ -95,6 +95,20 @@ export class BoardsListComponent implements OnInit {
     this.boardModalTitle = "Uredi tablo";
     this.selectedBoard = board;
     this.boardNameInput.setValue(board[0]);
+  }
+
+  copyBoard(board, event) {
+    event.stopPropagation();
+    let confirmCopy = confirm('Kopiram tablo?');
+    if (confirmCopy) {
+      this.boardsListService.copyBoard(board[1]).subscribe(msg => {
+        this.loadBoards();
+        UIkit.notification('Tabla uspešno kopirana.', {status: 'warning', timeout: 2000});
+      }, err => {
+        console.log('error copying the board');
+        UIkit.notification('Tabla ni kopirana. Vzrok: Težave s strežnikom.', {status: 'danger', timeout: 2000});
+      });
+    }
   }
 
   //******** NEW BOARD MODAL *********//

@@ -29,6 +29,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   id: number;
   private sub: any;
+  private msgServiceSub: any;
   colors = ['#FFB300', '#FF3D00', '#29B6F6', '#8BC34A', '#ffd633', '#884EA0'];
   cardColors = ['#cc3300', '#ffcc00', '#33cc33'];
   board: Board;
@@ -59,12 +60,15 @@ export class BoardComponent implements OnInit, OnDestroy {
               private messageService: MessageService,
               private userService: UsersService,
               private cardService: CardsService) {
-    this.messageService.listen().subscribe((msg: any) => {
+    this.msgServiceSub = this.messageService.listen().subscribe((msg: any) => {
       if (msg === 'editBoard') {
         this.editBoard = !this.editBoard;
       }
       if (msg === 'addProject') {
         UIkit.modal('#add-project-modal').show();
+      }
+      if (msg === 'copyBoard') {
+        this.copyBoard();
       }
     });
   }
@@ -398,6 +402,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.sub.unsubscribe();
+    this.msgServiceSub.unsubscribe();
   }
 
   setSpecialColumns(column: Column) {
@@ -514,6 +519,18 @@ export class BoardComponent implements OnInit, OnDestroy {
       wip += subcolumn.column_cards.length;
     }
     return wip;
+  }
+
+  copyBoard() {
+    let confirmCopy = confirm('Kopiram tablo?');
+    if (confirmCopy) {
+      this.boardsListService.copyBoard(this.id).subscribe(msg => {
+        UIkit.notification('Tabla uspešno kopirana.', {status: 'warning', timeout: 2000});
+      }, err => {
+        console.log('error copying the board');
+        UIkit.notification('Tabla ni kopirana. Vzrok: Težave s strežnikom.', {status: 'danger', timeout: 2000});
+      });
+    }
   }
 
 }

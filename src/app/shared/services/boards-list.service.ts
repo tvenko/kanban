@@ -15,6 +15,11 @@ export class BoardsListService {
     return this.http.put(Config.API + '/boards/' + board["id"] + '/', board);
   }
 
+  copyBoard(board) {
+    // To be determined.
+    return this.http.post(Config.API + '/boards/' + board["id"] + '/', board);
+  }
+
   postBoard(board) {
     // This should probably be changed.
     board["notify_overdue_n_days"] = -1;

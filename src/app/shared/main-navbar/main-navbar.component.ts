@@ -44,4 +44,9 @@ export class MainNavbarComponent implements OnInit {
     console.log('add project to board');
   }
 
+  copyBoard() {
+    this.messageService.filter('copyBoard');
+    console.log('copy board');
+  }
+
 }

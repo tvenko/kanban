@@ -13,6 +13,7 @@
     <div uk-height-match="target: > div > .uk-card" class="uk-grid-small" uk-grid >
         <div class="uk-card uk-card-default uk-card-body uk-card-hover boardCard" *ngFor="let board of boards" (click)='redirect(board[1])'>
             <div *ngIf="isCurrentUserKanbanMaster" class="uk-card-badge">
+                <button class="uk-icon-link uk-dark" uk-icon="copy"  (click)="copyBoard(board, $event)"></button>
                 <button class="uk-icon-link uk-dark" uk-icon="pencil"  (click)="editBoard(board, $event)" uk-toggle="target: #new-board-modal"></button>
                 <button class="uk-icon-link uk-dark" uk-icon="trash"  (click)="deleteBoard(board, $event)"></button>
             </div><br><h3 class="uk-text-center uk-card-title" ><a [routerLink]="['/board', board[1]]">{{board[0]}}</a></h3>
