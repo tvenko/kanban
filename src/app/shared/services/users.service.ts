@@ -16,6 +16,10 @@ export class UsersService {
     return this.http.get(Config.API + '/user/' + email + '/');
   }
 
+  getUserGroups(userId: number) {
+    return this.http.get(Config.API + '/user_groups/' + userId + '/');
+  }
+
   postUser(user: User) {
     return this.http.post(Config.API + '/user/', user);
   }

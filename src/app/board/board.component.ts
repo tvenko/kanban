@@ -11,6 +11,9 @@ import { BoardsListService } from '../shared/services/boards-list.service';
 import {Router} from '@angular/router';
 import {User} from '../shared/models/user.interface';
 import {UsersService} from '../shared/services/users.service';
+import {Card} from '../shared/models/card.interface';
+import {CardsService} from '../shared/services/cards.service';
+import {Group} from '../shared/models/group.interface';
 
 declare var UIkit: any;
 
@@ -33,6 +36,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   delColumn: Column = null;
   editBoard = false;
   users = new Map();
+  currentUser: User;
+  currentUserGroups: number[];
 
   currentUserId = null;
   projects: Project[] = [];
@@ -48,7 +53,8 @@ export class BoardComponent implements OnInit, OnDestroy {
               private projectsService: ProjectsService,
               private route: ActivatedRoute,
               private messageService: MessageService,
-              private userService: UsersService) {
+              private userService: UsersService,
+              private cardService: CardsService) {
     this.messageService.listen().subscribe((msg: any) => {
       if (msg === 'editBoard') {
         this.editBoard = !this.editBoard;
@@ -60,13 +66,14 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    this.currentUserId = user['id'];
+    this.currentUser = JSON.parse(localStorage.getItem('user'));
+    this.currentUserId = this.currentUser['id'];
     this.sub = this.route.params.subscribe(params => {
        this.id = +params['id'];
 
        // Check if the user is allowed to see this board.
        this.boardsListService.getBoards(this.currentUserId).subscribe(boards => {
+         console.log(boards);
           let isAllowed = false;
           Object.values(boards).forEach((x) => {
             if (x[1] === this.id) { // x[1] is board id
@@ -99,6 +106,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       project: new FormControl(null, Validators.required),
     });
     this.getUsers();
+    this.getUserGroups();
+    console.log(this.currentUser);
   }
 
   getUsers() {
@@ -110,8 +119,19 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   getUserName(id: number) {
-    const user = <User>this.users.get(id);
-    return user.name + ' ' + user.surname;
+    if (id !== null) {
+      const user = <User>this.users.get(id);
+      if (user !== null) {
+        return user.name + ' ' + user.surname;
+      }
+    }
+    return '';
+  }
+
+  getUserGroups() {
+    this.userService.getUserGroups(this.currentUserId).subscribe(groups => {
+      this.currentUserGroups = <number[]>groups;
+    });
   }
 
   getBoard() {
@@ -140,7 +160,6 @@ export class BoardComponent implements OnInit, OnDestroy {
           this.projects.push(project);
         }
       }
-      console.log(this.projects);
     }, err => {
       console.log('error geting projects from backend');
     });
@@ -182,6 +201,20 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   removeProject(project: Project) {
     project.board_id = null;
+    for (const column of this.board.columns) {
+      for (const subcolumn of column.subcolumns) {
+        for (const card of subcolumn.column_cards) {
+          if (card.project_id === project.id) {
+            this.cardService.deleteCard(card.card_id).subscribe();
+          }
+        }
+      }
+      for (const card of column.column_cards) {
+        if (card.project_id === project.id) {
+          this.cardService.deleteCard(card.card_id).subscribe();
+        }
+      }
+    }
     this.projectsService.updateProject(project).subscribe(
       res => {
         this.getBoard();
@@ -274,26 +307,83 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.error = null;
   }
 
-  onDragStart(event, card, column) {
+  onDragStart(event, card: Card, column: Column, project: Project) {
     this.dataTransfer.set('card', card);
     this.dataTransfer.set('column', column);
+    this.dataTransfer.set('project', project);
   }
 
-  onDrop(event, data, column) {
-    const card = this.dataTransfer.get('card');
-    const prevColumn = this.dataTransfer.get('column');
+  onDrop(event, column: Column, project: Project) {
+    const card: Card = this.dataTransfer.get('card');
+    const prevColumn: Column = this.dataTransfer.get('column');
+    const prevProject: Project = this.dataTransfer.get('project');
     this.dataTransfer.clear();
-    column.cards.push(card);
-    const index = prevColumn.cards.indexOf(card);
-    if (index > 0) {
-      if (prevColumn.cards.length > 1) {
-        prevColumn.cards.splice(card, 1);
+    console.log('move allowed: ', this.allowedMove(prevProject, project, prevColumn, column));
+    if (this.allowedMove(prevProject, project, prevColumn, column)) {
+      const index = prevColumn.column_cards.indexOf(card);
+      if (prevColumn.column_cards.length > 0) {
+        prevColumn.column_cards.splice(index, 1);
       } else {
-        prevColumn.cards = null;
+        prevColumn.column_cards = [];
+      }
+      column.column_cards.push(card);
+      card.column_id = column.id;
+      this.cardService.updateCard(card).subscribe(res => {
+        this.getBoard();
+      }, err => console.log(err));
+    }
+    event.preventDefault();
+  }
+
+  allowedMove(prevProject: Project, project: Project, prevColumn: Column, column: Column) {
+    if (prevProject.id === project.id && this.currentUserGroups.indexOf(+prevProject.developer_group_id) >= 0) {
+      if (prevColumn.id === this.board.type_acceptance_testing_column_id) {
+        return true;
+      }
+      if (prevColumn.parent_column_id !== null) {
+        if (column.parent_column_id !== null) {
+          if (prevColumn.parent_column_id === column.parent_column_id &&
+            Math.abs(+prevColumn.display_offset - +column.display_offset) === 1) {
+            return true;
+          } else {
+            this.boardsService.getColumn(prevColumn.parent_column_id).subscribe(res1 => {
+              const parentPrevColumn = <Column>res1;
+              this.boardsService.getColumn(column.parent_column_id).subscribe(res2 => {
+                const parentColumn = <Column>res2;
+                if (Math.abs(+parentPrevColumn.display_offset - +prevColumn.display_offset) === 1 &&
+                  (parentPrevColumn.display_offset > parentColumn.display_offset && prevColumn.display_offset === 0 ||
+                    parentPrevColumn.display_offset < parentColumn.display_offset && column.display_offset === 0 )) {
+                  return true;
+                }
+              });
+            });
+          }
+        } else {
+
+          this.boardsService.getColumn(prevColumn.parent_column_id).subscribe(res => {
+            const parentPrevColumn = <Column>res;
+            if (parentPrevColumn.display_offset > column.display_offset && prevColumn.display_offset === 0 && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1 ||
+              parentPrevColumn.display_offset < column.display_offset && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1) {
+              return true;
+            }
+          });
+        }
+      } else if (column.parent_column_id !== null) {
+          this.boardsService.getColumn(column.parent_column_id).subscribe(res => {
+            const parentColumn = <Column>res;
+            console.log(parentColumn);
+            if (parentColumn.display_offset > prevColumn.display_offset && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1 ||
+              parentColumn.display_offset < prevColumn.display_offset && column.display_offset === 0 && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1) {
+              return true;
+            }
+          });
+
+      } else {
+        if (Math.abs(column.display_offset - prevColumn.display_offset) === 1) {
+          return true;
+        }
       }
     }
-    console.log(this.dataTransfer);
-    event.preventDefault();
   }
 
   allowDrop(event) {

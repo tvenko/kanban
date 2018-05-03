@@ -20,6 +20,14 @@ export class CardsService {
     return this.http.post(Config.API + '/cards/', card);
   }
 
+  updateCard(card: Card) {
+    return this.http.put(Config.API + '/cards/' + card.card_id + '/', card);
+  }
+
+  deleteCard(cardId: number) {
+    return this.http.delete(Config.API + '/cards/' + cardId + '/');
+  }
+
   /*updateGroup(group:Group){
     return this.http.put(Config.API + '/groups/' + group.id + "/", group);
   }*/

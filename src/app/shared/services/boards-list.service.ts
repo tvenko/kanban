@@ -7,8 +7,8 @@ export class BoardsListService {
 
   constructor(private http: HttpClient) { }
 
-  getBoards(board_id) {
-    return this.http.get(Config.API + '/user_projects/' + board_id + '/');
+  getBoards(user_id) {
+    return this.http.get(Config.API + '/user_projects/' + user_id + '/');
   }
 
   updateBoard(board) {

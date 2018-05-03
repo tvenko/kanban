@@ -20,6 +20,10 @@ export class BoardsService {
     return this.http.put(Config.API + '/boards/' + board.id + '/', board);
   }
 
+  getColumn(columnId: number) {
+    return this.http.get(Config.API + '/columns/' + columnId + '/');
+  }
+
   postColumn(column: Column) {
     console.log(column);
     return this.http.post(Config.API + '/columns/', column);
