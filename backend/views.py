@@ -698,7 +698,37 @@ class CardAbout(generics.ListCreateAPIView):
         card_user = UserSerializer(card.assigned_user_id).data
         card_delete_reason = DeleteReasonSerializer(card.delete_reason_id).data
         card_column = ColumnSerializer(card.column_id).data
-        card_project_id = ProjectSerializer(card.project_id).data
+
+        project = card.project_id
+        group_memberships = DeveloperGroupMembership.objects.all()
+        users = User.objects.all()
+        cards = Card.objects.all()
+
+        projects_data = []
+        allowed_roles_query = group_memberships.filter(
+            developer_group_id=project.developer_group_id.id)
+        group_data = DeveloperGroupSerializer(
+            project.developer_group_id).data
+        project_data = ProjectSerializer(project).data
+        project_cards = cards.filter(project_id=project.id)
+        print(project_data)
+        if not project_cards:
+            project_data["card_active"] = False
+        else:
+            project_data["card_active"] = True
+        project_data["group_data"] = group_data
+
+        user_roles_dict = []
+        for z in allowed_roles_query:
+            user_roles = get_user_group_roles(z.id)
+            user_details = users.filter(id=z.user_id.id)[0]
+            user_data = UserSerializer(user_details).data
+            user_data["allowed_group_roles"] = user_roles
+            user_data["group_active"] = z.active
+            user_roles_dict.append(user_data)
+        group_data["users"] = user_roles_dict
+        projects_data.append(project_data)
+
         card_priority_id = CardPrioritySerializer(card.card_priority_id).data
 
         card_tasks = []
@@ -729,7 +759,7 @@ class CardAbout(generics.ListCreateAPIView):
         card_serializer["assigned_user_id"] = card_user
         card_serializer["delete_reason_id"] = card_delete_reason
         card_serializer["column_id"] = card_column
-        card_serializer["project_id"] = card_project_id
+        card_serializer["project_id"] = projects_data
         card_serializer["card_priority_id"] = card_priority_id
         card_serializer["tasks"] = card_tasks
         card_serializer["wip_violations"] = card_wip_violations
