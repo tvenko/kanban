@@ -28,7 +28,7 @@ export interface CardDetailed {
     project_id:Project;
     violation_user: number;
     card_priority_id: Priority;
-    task:Task[];
+    tasks:Task[];
     wip_violations:WipViolation[];
     logs:Log[];
   }

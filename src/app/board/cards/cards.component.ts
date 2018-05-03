@@ -1,4 +1,4 @@
-import { Component, OnInit, group } from '@angular/core';
+import { Component, OnInit, group, Output } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Project } from '../../shared/models/project.interface';
 import { ProjectsService } from '../../shared/services/projects.service';
@@ -16,6 +16,8 @@ import {Router} from '@angular/router';
 import { CardDetailed } from '../../shared/models/cardDetailed.interface';
 import { WipViolation } from '../../shared/models/wipViolation.interface';
 import { Log } from '../../shared/models/log.interface';
+import { BoardComponent } from '../board.component';
+import { Task } from '../../shared/models/task.interface';
 declare var UIkit: any;
 
 
@@ -24,9 +26,8 @@ declare var UIkit: any;
   templateUrl: './cards.component.html',
   styleUrls: ['./cards.component.css']
 })
-export class CardsComponent implements OnInit {
-
-  
+export class CardsComponent implements OnInit {  
+  tasks: Task[];
   private sub: any;
 
   cardsModalTitle: String;
@@ -106,7 +107,7 @@ export class CardsComponent implements OnInit {
       'deadline-edit': new FormControl(null),
       'priority-edit': new FormControl(null, Validators.required),
       'size-edit': new FormControl(),
-      'project-edit': new FormControl(null),
+      'project-edit': new FormControl(),
 
     });
     //this.newCardForm.get('typeSilver').disable();
@@ -306,11 +307,13 @@ export class CardsComponent implements OnInit {
     this.editCardForm.reset();
     this.cardsModalTitle = 'Uredi kartico';
     this.wipViolations = cardDetails.wip_violations;
+    this.tasks = cardDetails.tasks;
+    console.log(this.tasks);
     this.logs = cardDetails.logs;
     this.selectedProject = cardDetails.project_id[0];
     this.editCardForm.get("title-edit").setValue(cardDetails.title);
     this.editCardForm.get('description-edit').setValue(cardDetails.description);
-    this.editCardForm.get('project-edit').setValue(cardDetails.project_id.title);
+    this.editCardForm.get('project-edit').setValue(cardDetails.project_id[0].title);
     if(cardDetails.assigned_user_id != null){
       this.editCardForm.get('assignee-edit').setValue(cardDetails.assigned_user_id.id);
     }
