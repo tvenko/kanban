@@ -1,29 +1,35 @@
 [
     {
         "index": 1,
-        "title": "Lana Dorsey",
-        "text": "Esse adipisicing ut esse fugiat esse laborum esse pariatur elit nulla adipisicing laboris sunt. Adipisicing sit sit duis voluptate irure magna sit qui non eu tempor velit laboris. Ullamco deserunt nulla Lorem duis esse esse adipisicing irure voluptate est Lorem. Non ea reprehenderit fugiat fugiat est eu culpa excepteur mollit nostrud do. Est aliquip in non elit non minim veniam sunt in duis veniam in. Non ea aute ut deserunt ex consectetur quis mollit magna excepteur anim. Ipsum nulla ad excepteur velit ullamco in occaecat dolore ipsum irure enim eu.\r\n",
+        "title": "Prijava v sistem",
+        "text": "Za prijavo v sistem vpišite svoje uporabniško ime (e-naslov) in geslo v ustrezni polji in pritisnite gumb 'Prijava'.\r\n",
         "main": true
+    },
+    {
+        "index": 1.1,
+        "title": "Zaklepanje prijave v sistem",
+        "text": "Po treh napačnih poizkusih prijave se prijavno okno zaklene. Prijava je spet možna po preteku 30 sekund.\r\n",
+        "main": false
     },
 
 
 
     {
         "index": 2,
-        "title": "Marcie Crane",
-        "text": "Nulla id non nulla quis labore incididunt proident exercitation enim ea velit culpa culpa Lorem. Qui consectetur tempor sit incididunt. Laboris incididunt excepteur esse aliqua eiusmod dolore irure eiusmod. Nulla sunt minim laborum quis culpa ut id culpa ullamco officia. Aliquip veniam commodo Lorem commodo id occaecat amet est eu ea. Enim quis enim proident esse sit.\r\n",
+        "title": "Upravljanje z uporabniki",
+        "text": "Administrator lahko upravlja s podatki o uporabnikih. Poleg dodajanja in urejanja je omogočeno tudi brisanje, pri tem se uporabnik fizično ne izbriše temveč se le označi kot neaktiven. Za dodajanje uporabnika pritisnite gumb 'dodaj uporabnika', za urejanje ikono pisala in za brisanje/deaktiviranje prečrtan krog.\r\n",
         "main": true
     },
     {
         "index": 2.1,
-        "title": "Lana Dorsey",
-        "text": "Esse adipisicing ut esse fugiat esse laborum esse pariatur elit nulla adipisicing laboris sunt. Adipisicing sit sit duis voluptate irure magna sit qui non eu tempor velit laboris. Ullamco deserunt nulla Lorem duis esse esse adipisicing irure voluptate est Lorem. Non ea reprehenderit fugiat fugiat est eu culpa excepteur mollit nostrud do. Est aliquip in non elit non minim veniam sunt in duis veniam in. Non ea aute ut deserunt ex consectetur quis mollit magna excepteur anim. Ipsum nulla ad excepteur velit ullamco in occaecat dolore ipsum irure enim eu.\r\n",
+        "title": "Lastnosti uporabnika",
+        "text": "Pri dodajanju ali urejanju uporabnika lahko spreminjamo naslednje atribute: ime, priimek, uporabniško ime (e-naslov), geslo in možne vloge.\r\n",
         "main": false
     },
     {
         "index": 2.2,
-        "title": "Lana Dorsey",
-        "text": "Esse adipisicing ut esse fugiat esse laborum esse pariatur elit nulla adipisicing laboris sunt. Adipisicing sit sit duis voluptate irure magna sit qui non eu tempor velit laboris. Ullamco deserunt nulla Lorem duis esse esse adipisicing irure voluptate est Lorem. Non ea reprehenderit fugiat fugiat est eu culpa excepteur mollit nostrud do. Est aliquip in non elit non minim veniam sunt in duis veniam in. Non ea aute ut deserunt ex consectetur quis mollit magna excepteur anim. Ipsum nulla ad excepteur velit ullamco in occaecat dolore ipsum irure enim eu.\r\n",
+        "title": "Uporabniške vloge",
+        "text": "Uporabnikom lahko določimo vloge, ki so povezane z določenimi pravicami in zmožnostmi: developer (razvijalec), admin (administrator), kanban master (skrbnik metodologije) in product owner (lastnik izdelka). S tem določimo zgolj možne vloge. Konkretne vloge na posameznem projektu določimo kasneje.\r\n",
         "main": false
     },
 
@@ -33,20 +39,63 @@
 
     {
         "index": 3,
-        "title": "Cortez Bishop",
-        "text": "Pariatur magna commodo eiusmod laborum. Ad sint pariatur in excepteur. Incididunt magna laborum tempor deserunt magna ut ea reprehenderit aliquip amet Lorem. Adipisicing reprehenderit labore cillum amet commodo ullamco veniam consectetur magna amet labore. Fugiat irure eiusmod laborum id. Laborum duis non elit labore exercitation. Sint reprehenderit ea culpa eiusmod ut tempor.\r\n",
+        "title": "Upravljanje z razvojnimi skupinami",
+        "text": "Kanban master lahko upravlja s podatki o razvojnih skupinah. Poleg dodajanja in urejanja je omogočeno tudi brisanje. Za dodajanje razvojne skupine pritisnite gumb 'nova skupina', za urejanje ikono pisala in za brisanje/deaktiviranje ikono koša. Po vsakem kreiranju in urejanju morajo biti vloge ustrezno zastopane; vsaka razvojna skupina mora imeti enega kanban mastra, enega product ownerja ter enega ali več razvijalcev. Pri odstranjevanju članov iz skupine se le-ti dejansko ne izbrišejo, temveč le označijo kot neaktivni.\r\n",
         "main": true
     },
+
+
+
+
+
     {
         "index": 4,
-        "title": "Snider Walls",
-        "text": "Culpa aliqua cupidatat consequat aute nostrud culpa reprehenderit. Laborum sint tempor elit commodo nulla dolore est ipsum duis do nostrud cupidatat elit. Dolor irure id Lorem occaecat sit mollit eu voluptate pariatur eiusmod tempor ipsum excepteur dolore. Lorem eiusmod sit proident esse incididunt proident mollit velit nostrud cupidatat est reprehenderit. Duis eiusmod quis incididunt sint sint reprehenderit ad sunt. Exercitation qui ea exercitation qui Lorem dolor nulla tempor nulla ipsum adipisicing.\r\n",
+        "title": "Upravljanje s projekti",
+        "text": "Kanban master lahko upravlja s podatki o projektih. Poleg dodajanja in urejanja je omogočeno tudi brisanje. Za dodajanje projekta pritisnite gumb 'nov projekt', za urejanje ikono pisala in za brisanje/deaktiviranje ikono koša. Ob kreiranju projekta se določi: šifra projekta, naziv projekta, ime naročnika, datum začetka in predvideni datum zaključka. Posameznemu projektu se dodeli razvojna skupina, ista razvojna skupina lahko dela na več projektih. Po pričetku projekta se pri brisanju projekta le-ta zgolj označi kot neaktiven. Spreminjanje datuma pričetka po začetku projekta ni mogoče.\r\n",
+        "main": true
+    },
+
+
+
+
+    {
+        "index": 5,
+        "title": "Table",
+        "text": "Table omogočajo osnoven pregled nad delom na projektih (sledenje preko kartic). Administratorju je omogočen pregled nad katerokoli tablo. Kanban master lahko zahteva prikaz samo za tiste table, ki se nanašajo na njegove razvojne skupine s pritiskom na ustrezen gumb (prikaži samo moje table). Razvijalcem in product ownerjem se prikažejo samo table, ki se nanašajo na njihove razvojne skupine. Posamezno tablo lahko v okviru svojih pristojnosti pregledujejo samo aktivni uporabniki.\r\n",
         "main": true
     },
     {
-        "index": 5,
-        "title": "Yesenia Williams",
-        "text": "Dolore nostrud deserunt ex ullamco excepteur laboris sit esse veniam magna excepteur esse. Nostrud ad nostrud veniam velit labore. Adipisicing do fugiat do exercitation sit pariatur eiusmod Lorem laboris. Laborum Lorem consectetur commodo incididunt et occaecat.\r\n",
+        "index": 5.1,
+        "title": "Upravljanje s tablami",
+        "text": "Kanban master lahko upravlja s tablami. Poleg dodajanja in urejanja je omogočeno tudi brisanje. Za ustvarjanje table pritisnemo na gumb 'Nova tabla' in vpišemo ime nove table. Po pritisku na novo ustvarjeno tablo lahko na tablo dodamo projekte (gumb 'Dodaj projekt') ali uredimo strukturo table (gumb 'Uredi tablo'). Vsaka tabla lahko prikazuje enega ali več projektov, projekte lahko iz table odstranimo s pritiskom na gumb 'x'. Omejitev WIP je skupna za vse projekte na tabli. Spreminjanje strukture table je dovoljeno samo dokler je tabla prazna. Urejanje strukture table poteka z zaporednim dodajanjem stolpcev tako, da pritisnemo na gumb '+', kjer želimo, da se stolpec ustvari. Posamezni stolpci so lahko sestavljeni iz več podstolpcev. Vsakemu novemu stolpcu in podstolpcu moramo ob kreiranju definirati ustrezne atribute (ime, WIP omejitev, tip stolpca, ...), ki jih lahko kasneje spremenimo. Stolpce in podstolpce lahko brišemo, dokler le-ti ne vsebujejo kartic. Levi in desni mejni stolpec označujeta, kje se dejansko začne in konča razvoj. Ta stolpca imata določena tipa 'levi mejni stolpec' in 'desni mejni stolpec'.\r\n",
+        "main": false
+    },
+    {
+        "index": 5.2,
+        "title": "Kreiranje table s kopiranjem",
+        "text": "KanbanMaster lahko kreira novo tablo tako, da prekopira strukturo obstoječe s pritiskom na ustrezen gumb (kopiraj tablo). Ustvari se prazna tabla z enako strukturo (istimi stolpci) in enakimi omejitvami WIP. Ime ustvarjene table je enako imenu originalne table, doda se zgolj niz '_kopija_zapŠt'.\r\n",
+        "main": false
+    },
+
+
+
+
+    {
+        "index": 6,
+        "title": "Kartice",
+        "text": "Kartice predstavljajo posamezne enote dela (uporabniške zgodbe), ki jih je potrebno izvesti. Uporabniki lahko kartice v okviru svojih pristojnosti prestavljajo iz enega stolpca v drugega s pritiskom in vlečenjem posamezne kartice. Prestavljanje poteka za en stolpec v levo ali desno, izjemo predstavljajo zavrnjene zgodbe s strani product ownerja med sprejemnim testiranjem. Ob kliku na kartico se v pojavnem oknu izpišejo vsi podatke o kartici, ki so v sistemu.\r\n",
         "main": true
+    },
+    {
+        "index": 6.1,
+        "title": "Kreiranje in posodabljanje kartice",
+        "text": "Uporabnik lahko v okviru svojih pristojnosti kreira novo kartico s pritiskom na gumb 'nova kartica'. Kartica lahko predstavlja novo funkcionalnost, ki jo je treba razviti (navadna kartica), ali nujno zahtevo (silver bullet). Navadno kartico lahko kreira samo product owner. Ta se samodejno postavi v prvi stolpec. Kartico silver bullet lahko kreira samo kanban master. Ta se samodejno postavi v stolpec kartic z najvišjo prioriteto. Vsaka vrsta kartic ima svojo barvo, število nujnih zahtev je omejeno. Podatki kartic se lahko po ustvarjanju posodabljajo, odvisno od vloge uporabnika ter stolpca, v katerem je kartica. Podatke posodobimo s klikom na izbrano kartico in ikono pisala. Posodabljanje pred vstopom v začetni mejni stolpec je dovoljeno samo product ownerju in kanban masterju, posodabljanje znotraj mejnih stolpcev članom razvojne skupine in kanban masterju, posodabljanje po izstopu iz končnega mejnega stolpca pa ni dovoljeno nikomur.\r\n",
+        "main": false
+    },
+    {
+        "index": 6.2,
+        "title": "Kršitev WIP",
+        "text": "V posameznem stolpcu se lahko hkrati nahaja največ toliko kartic, kot je specificirano z omejitvijo WIP. V primeru, da se v posameznem stolpcu nahaja več kartic, se kršitev zabeleži. Kršitve lahko pregledujemo s klikom na kartico (prikaz podrobnosti).\r\n",
+        "main": false
     }
 ]
