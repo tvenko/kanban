@@ -10,4 +10,5 @@ export interface Column {
   board_id: number;
   subcolumns: Column[];
   column_cards: Card[];
+  subcolumns_length: number;
 }

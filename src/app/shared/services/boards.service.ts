@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnInit} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Config} from '../config/env.config';
 import {Column} from '../models/column.interface';
@@ -6,7 +6,12 @@ import {Board} from '../models/board.interface';
 
 @Injectable()
 export class BoardsService {
-  constructor(private http: HttpClient) {}
+
+  localColumns: Map<number, Column> = new Map<number, Column>();
+
+  constructor(private http: HttpClient) {
+    this.fillLocalColumns();
+  }
 
   getBoards() {
     return this.http.get(Config.API + '/boards/');
@@ -32,5 +37,17 @@ export class BoardsService {
   deleteColumn(id: number) {
     console.log('delete id: ', id);
     return this.http.delete(Config.API + '/columns/' + id + '/');
+  }
+
+  fillLocalColumns() {
+    this.http.get(Config.API + '/columns/').subscribe(columns => {
+      for (const column of <Column[]>columns) {
+        this.localColumns.set(column.id, column);
+      }
+    });
+  }
+
+  getLocalColumns() {
+    return this.localColumns;
   }
 }

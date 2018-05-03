@@ -238,7 +238,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       display_offset: this.newColumnOffset,
       board_id: this.board.id,
       subcolumns: null,
-      column_cards: null
+      column_cards: null,
+      subcolumns_length: null
     };
     this.boardsService.postColumn(newColumn).subscribe(column => {
       UIkit.notification(
@@ -341,54 +342,53 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   allowedMove(prevProject: Project, project: Project, prevColumn: Column, column: Column) {
+    const localColumns = this.boardsService.getLocalColumns();
     if (prevProject.id === project.id && this.currentUserGroups.indexOf(+prevProject.developer_group_id) >= 0) {
+      // ce premika iz testnega stolpca je avtomatsko dovoljeno.
       if (prevColumn.id === this.board.type_acceptance_testing_column_id) {
         return true;
       }
       if (prevColumn.parent_column_id !== null) {
         if (column.parent_column_id !== null) {
-          if (prevColumn.parent_column_id === column.parent_column_id &&
-            Math.abs(+prevColumn.display_offset - +column.display_offset) === 1) {
+          // premikamo iz podstolpca v podstolpec
+          // ce sta podstolpca v istem stolpcu
+          console.log('prevColumn: ', prevColumn, ' column: ', column);
+          if (prevColumn.parent_column_id === column.parent_column_id && Math.abs(+prevColumn.display_offset - +column.display_offset) === 1) {
             return true;
           } else {
-            this.boardsService.getColumn(prevColumn.parent_column_id).subscribe(res1 => {
-              const parentPrevColumn = <Column>res1;
-              this.boardsService.getColumn(column.parent_column_id).subscribe(res2 => {
-                const parentColumn = <Column>res2;
-                if (Math.abs(+parentPrevColumn.display_offset - +prevColumn.display_offset) === 1 &&
-                  (parentPrevColumn.display_offset > parentColumn.display_offset && prevColumn.display_offset === 0 ||
-                    parentPrevColumn.display_offset < parentColumn.display_offset && column.display_offset === 0 )) {
-                  return true;
-                }
-              });
-            });
+            // podstolpca nista v istem stolpcu
+            const parentPrevColumn = localColumns.get(prevColumn.parent_column_id);
+            const parentColumn = localColumns.get(column.parent_column_id);
+            if (Math.abs(+parentPrevColumn.display_offset - +prevColumn.display_offset) === 1 &&
+              (parentPrevColumn.display_offset > parentColumn.display_offset && parentColumn.subcolumns_length === column.display_offset + 1 && prevColumn.display_offset === 0 ||
+                parentPrevColumn.display_offset < parentColumn.display_offset && parentPrevColumn.subcolumns_length === prevColumn.display_offset + 1 && column.display_offset === 0 )) {
+              return true;
+            }
           }
         } else {
-
-          this.boardsService.getColumn(prevColumn.parent_column_id).subscribe(res => {
-            const parentPrevColumn = <Column>res;
-            if (parentPrevColumn.display_offset > column.display_offset && prevColumn.display_offset === 0 && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1 ||
-              parentPrevColumn.display_offset < column.display_offset && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1) {
-              return true;
-            }
-          });
+          // premikamo iz iz podstolpca v navaden stolpec
+          const parentPrevColumn = localColumns.get(prevColumn.parent_column_id);
+          if (parentPrevColumn.display_offset > column.display_offset && prevColumn.display_offset === 0 && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1 ||
+            parentPrevColumn.display_offset < column.display_offset && parentPrevColumn.subcolumns_length === prevColumn.display_offset + 1 && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1) {
+            return true;
+          }
         }
+      //  premikamo iz navadnega stolpca v podstolpec
       } else if (column.parent_column_id !== null) {
-          this.boardsService.getColumn(column.parent_column_id).subscribe(res => {
-            const parentColumn = <Column>res;
-            console.log(parentColumn);
-            if (parentColumn.display_offset > prevColumn.display_offset && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1 ||
-              parentColumn.display_offset < prevColumn.display_offset && column.display_offset === 0 && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1) {
-              return true;
-            }
-          });
-
+          const parentColumn = localColumns.get(column.parent_column_id);
+          if (parentColumn.display_offset < prevColumn.display_offset && parentColumn.subcolumns_length === column.display_offset + 1 && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1 ||
+            parentColumn.display_offset > prevColumn.display_offset && column.display_offset === 0 && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1) {
+            return true;
+          }
+      // premikamo iz navadnega stolpca v navaden stolpec
       } else {
         if (Math.abs(column.display_offset - prevColumn.display_offset) === 1) {
           return true;
         }
       }
+      return false;
     }
+    return false;
   }
 
   allowDrop(event) {
