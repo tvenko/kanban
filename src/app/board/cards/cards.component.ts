@@ -27,6 +27,7 @@ declare var UIkit: any;
   styleUrls: ['./cards.component.css']
 })
 export class CardsComponent implements OnInit {  
+  cardType: string;
   tasks: Task[];
   private sub: any;
 
@@ -308,6 +309,12 @@ export class CardsComponent implements OnInit {
     this.cardsModalTitle = 'Uredi kartico';
     this.wipViolations = cardDetails.wip_violations;
     this.tasks = cardDetails.tasks;
+    if(cardDetails.type_silver){
+      this.cardType="Kartica z najvišjo prioriteto";
+    }else{
+      this.cardType="Nova funkcionalnost";
+    }
+    
     console.log(this.tasks);
     this.logs = cardDetails.logs;
     this.selectedProject = cardDetails.project_id[0];

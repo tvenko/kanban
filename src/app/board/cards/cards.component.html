@@ -138,6 +138,9 @@
           <!-- Cards form -->
           <form (ngSubmit)="saveEditedCard()" [formGroup]="editCardForm">
             <fieldset class="uk-fieldset">
+              <div class="uk-margin">
+                <label class="uk-form-label uk-label">{{cardType}}</label>
+              </div>
               <!-- Card title -->
               <div class="uk-margin">
                 <label class="uk-form-label" for="edit-code-name">Naziv kartice</label>
