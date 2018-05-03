@@ -13,7 +13,6 @@ import {User} from '../shared/models/user.interface';
 import {UsersService} from '../shared/services/users.service';
 import {Card} from '../shared/models/card.interface';
 import {CardsService} from '../shared/services/cards.service';
-import {Group} from '../shared/models/group.interface';
 import { CardsComponent } from './cards/cards.component';
 
 declare var UIkit: any;
@@ -324,8 +323,10 @@ export class BoardComponent implements OnInit, OnDestroy {
     const prevColumn: Column = this.dataTransfer.get('column');
     const prevProject: Project = this.dataTransfer.get('project');
     this.dataTransfer.clear();
-    console.log('move allowed: ', this.allowedMove(prevProject, project, prevColumn, column));
     if (this.allowedMove(prevProject, project, prevColumn, column)) {
+      if (column.column_cards.length >= column.wip_restriction && column.wip_restriction > 0) {
+        alert('S prestavljanjem kartice ste kršili WIP omejitev');
+      }
       const index = prevColumn.column_cards.indexOf(card);
       if (prevColumn.column_cards.length > 0) {
         prevColumn.column_cards.splice(index, 1);
@@ -338,6 +339,10 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.getBoard();
       }, err => console.log(err));
     }
+    event.preventDefault();
+  }
+
+  allowDrop(event) {
     event.preventDefault();
   }
 
@@ -389,10 +394,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       return false;
     }
     return false;
-  }
-
-  allowDrop(event) {
-    event.preventDefault();
   }
 
   ngOnDestroy() {
