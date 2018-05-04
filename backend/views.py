@@ -16,6 +16,8 @@ from rest_framework.decorators import api_view, renderer_classes
 from rest_framework import response, schemas
 from . import urls
 
+from django.db.models import Q
+
 import uuid
 
 # TODO: remove session auth, remove auth for swagger
@@ -417,6 +419,17 @@ class ColumnList(generics.ListCreateAPIView):
                 if offset >= display_offset:
                     i.display_offset += 1
                     i.save()
+        else:
+            board_id = request.data["board_id"]
+            display_offset = request.data["display_offset"]
+            filtered_columns = columns.filter(board_id=board_id).filter(
+                parent_column_id=request.data["parent_column_id"])
+
+            for i in filtered_columns:
+                offset = i.display_offset
+                if offset >= display_offset:
+                    i.display_offset += 1
+                    i.save()
 
         if serializer.is_valid():
             serializer.save()
@@ -446,16 +459,28 @@ class ColumnDetail(generics.RetrieveUpdateDestroyAPIView):
         columns = Column.objects.all()
         column = Column.objects.get(pk=kwargs["pk"])
 
+
         board_id = column.board_id
         display_offset = column.display_offset
-        filtered_columns = columns.filter(board_id=board_id).filter(
-            parent_column_id=None)
 
-        for i in filtered_columns:
-            offset = i.display_offset
-            if offset >= display_offset:
-                i.display_offset -= 1
-                i.save()
+        if column.parent_column_id == None:
+            filtered_columns = columns.filter(board_id=board_id).filter(
+                parent_column_id=None)
+
+            for i in filtered_columns:
+                offset = i.display_offset
+                if offset >= display_offset:
+                    i.display_offset -= 1
+                    i.save()
+        else:
+            filtered_columns = columns.filter(board_id=board_id).filter(
+                parent_column_id=column.parent_column_id)
+
+            for i in filtered_columns:
+                offset = i.display_offset
+                if offset >= display_offset:
+                    i.display_offset -= 1
+                    i.save()
 
         column.delete()
 
@@ -636,6 +661,8 @@ class CardList(generics.ListCreateAPIView):
             wip_sum = len([card.size for card in cards_on_column])
             if not cards:
                 serializer.save(number=1)
+                card = Card.objects.all().order_by("-card_id")[0]
+                #CardLog.objects.create(card_id=card, role_id=role)
                 return JsonResponse(serializer.data, status=status.HTTP_200_OK)
             else:
                 silver_type = cards.filter(type_silver=True).filter(column_id=serializer.validated_data["column_id"])
