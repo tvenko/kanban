@@ -812,3 +812,54 @@ class WipViolationList(generics.ListCreateAPIView):
     queryset = WipViolation.objects.all()
     serializer_class = WipViolationSerializer
 
+
+class CopyBoard(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Board.objects.all()
+    serializer_class = BoardSerializer
+
+
+    def post(self, request, *args, **kwargs):
+        board = Board.objects.get(pk=kwargs["pk"])
+        all_columns = Column.objects.all().filter(board_id=kwargs["pk"])
+        kopija_parent_columns = Column.objects.all().filter(board_id=kwargs["pk"]).filter(parent_column_id=None)
+        kopija_child_columns = Column.objects.all().filter(board_id=kwargs["pk"]).filter(~Q(parent_column_id=None))
+
+        parent_columns = Column.objects.all().filter(board_id=kwargs["pk"]).filter(parent_column_id=None)
+        child_columns = Column.objects.all().filter(board_id=kwargs["pk"]).filter(~Q(parent_column_id=None))
+        
+
+        board.pk = None
+        board.save()
+
+        tmp = []
+        a = Board.objects.all().order_by("-pk")[0]
+        for i in parent_columns:
+            i.pk = None
+            i.board_id = a
+            i.save()
+            novi = Column.objects.all().order_by("-pk")[0]
+            tmp.append(novi)
+
+        bla = {}
+        for x,y in list(zip(kopija_parent_columns, tmp)):
+            bla[x.id] = y.id
+
+        for i in child_columns:
+            i.pk = None
+            i.board_id = a
+            i.parent_column_id = Column.objects.get(pk=bla[i.parent_column_id.id])
+            i.save()
+
+        if board.type_priority_column_id is not None:
+            board.type_priority_column_id.id = bla[board.type_priority_column_id.id]
+        if board.type_acceptance_testing_column_id is not None:
+            board.type_acceptance_testing_column_id.id = bla[board.type_acceptance_testing_column_id.id]
+        if board.type_left_border_column_id is not None:
+            board.type_left_border_column_id.id = bla[board.type_left_border_column_id.id]
+        if board.type_right_border_column_id is not None:
+            board.type_right_border_column_id.id = bla[board.type_right_border_column_id.id]
+
+        board.save()
+
+        return Response([], status=status.HTTP_202_ACCEPTED)

@@ -38,6 +38,7 @@ columns_urls = [
 board_urls = [
     url(r'^boards/$', views.BoardList.as_view()),
     url(r'^boards/(?P<pk>[0-9]+)/$', views.BoardDetail.as_view()),
+    url(r'^copy_boards/(?P<pk>[0-9]+)/$', views.CopyBoard.as_view()),
 ]
 
 wip_violations = [
@@ -49,6 +50,7 @@ card_urls = [
     url(r'^card_priority/$', views.CardPriorityList.as_view()),
     url(r'^about_card/(?P<pk>[0-9]+)/$', views.CardAbout.as_view()),
 ]
+
 
 
 urlpatterns = [
