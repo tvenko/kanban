@@ -827,7 +827,7 @@ class CopyBoard(generics.RetrieveUpdateDestroyAPIView):
 
         parent_columns = Column.objects.all().filter(board_id=kwargs["pk"]).filter(parent_column_id=None)
         child_columns = Column.objects.all().filter(board_id=kwargs["pk"]).filter(~Q(parent_column_id=None))
-        
+
 
         board.pk = None
         board.save()
@@ -845,18 +845,30 @@ class CopyBoard(generics.RetrieveUpdateDestroyAPIView):
         for x,y in list(zip(kopija_parent_columns, tmp)):
             bla[x.id] = y.id
 
+
+        tmp2 = []
+
         for i in child_columns:
             i.pk = None
             i.board_id = a
             i.parent_column_id = Column.objects.get(pk=bla[i.parent_column_id.id])
             i.save()
+            novi = Column.objects.all().order_by("-pk")[0]
+            tmp2.append(novi)
+
+        for x,y in list(zip(kopija_child_columns, tmp2)):
+            bla[x.id] = y.id
+
 
         if board.type_priority_column_id is not None:
             board.type_priority_column_id.id = bla[board.type_priority_column_id.id]
+
         if board.type_acceptance_testing_column_id is not None:
             board.type_acceptance_testing_column_id.id = bla[board.type_acceptance_testing_column_id.id]
+
         if board.type_left_border_column_id is not None:
             board.type_left_border_column_id.id = bla[board.type_left_border_column_id.id]
+
         if board.type_right_border_column_id is not None:
             board.type_right_border_column_id.id = bla[board.type_right_border_column_id.id]
 
