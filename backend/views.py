@@ -861,16 +861,16 @@ class CopyBoard(generics.RetrieveUpdateDestroyAPIView):
 
 
         if board.type_priority_column_id is not None:
-            board.type_priority_column_id.id = bla[board.type_priority_column_id.id]
+            board.type_priority_column_id = Column.objects.get(pk=bla[board.type_priority_column_id.id])
 
         if board.type_acceptance_testing_column_id is not None:
-            board.type_acceptance_testing_column_id.id = bla[board.type_acceptance_testing_column_id.id]
+            board.type_acceptance_testing_column_id = Column.objects.get(pk=bla[board.type_acceptance_testing_column_id.id])
 
         if board.type_left_border_column_id is not None:
-            board.type_left_border_column_id.id = bla[board.type_left_border_column_id.id]
+            board.type_left_border_column_id = Column.objects.get(pk=bla[board.type_left_border_column_id.id])
 
         if board.type_right_border_column_id is not None:
-            board.type_right_border_column_id.id = bla[board.type_right_border_column_id.id]
+            board.type_right_border_column_id = Column.objects.get(pk=bla[board.type_right_border_column_id.id])
 
         board.save()
 
