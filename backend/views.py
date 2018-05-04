@@ -437,7 +437,6 @@ class ColumnList(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-
 class ColumnDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     List all groups.
@@ -795,7 +794,6 @@ class CardAbout(generics.ListCreateAPIView):
         return Response(card_serializer, status=status.HTTP_202_ACCEPTED)
 
 
-
 class UserGroups(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -808,3 +806,9 @@ class UserGroups(generics.ListCreateAPIView):
             developer_group_set.add(groups.developer_group_id.id)
 
         return Response(developer_group_set, status=status.HTTP_202_ACCEPTED)
+
+
+class WipViolationList(generics.ListCreateAPIView):
+    queryset = WipViolation.objects.all()
+    serializer_class = WipViolationSerializer
+
