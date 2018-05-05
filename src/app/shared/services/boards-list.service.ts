@@ -15,9 +15,8 @@ export class BoardsListService {
     return this.http.put(Config.API + '/boards/' + board["id"] + '/', board);
   }
 
-  copyBoard(board) {
-    // To be determined.
-    return this.http.post(Config.API + '/boards/' + board["id"] + '/', board);
+  copyBoard(board_id) {
+    return this.http.post(Config.API + '/copy_boards/' + board_id + '/', {});
   }
 
   postBoard(board) {
