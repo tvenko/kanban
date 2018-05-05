@@ -827,9 +827,10 @@ class CopyBoard(generics.RetrieveUpdateDestroyAPIView):
 
         parent_columns = Column.objects.all().filter(board_id=kwargs["pk"]).filter(parent_column_id=None)
         child_columns = Column.objects.all().filter(board_id=kwargs["pk"]).filter(~Q(parent_column_id=None))
-
-
+        import random
+        
         board.pk = None
+        board.title = board.title + "_copy_" + str(random.random())
         board.save()
 
         tmp = []
