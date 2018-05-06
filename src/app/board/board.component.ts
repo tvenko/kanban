@@ -14,7 +14,6 @@ import {UsersService} from '../shared/services/users.service';
 import {Card} from '../shared/models/card.interface';
 import {CardsService} from '../shared/services/cards.service';
 import { CardsComponent } from './cards/cards.component';
-import {WipViolation} from '../shared/models/wipViolation.interface';
 
 declare var UIkit: any;
 
@@ -358,55 +357,17 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   allowedMove(prevProject: Project, project: Project, prevColumn: Column, column: Column) {
     const localColumns = this.boardsService.getLocalColumns();
+    console.log('enumerated: ', this.boardsService.enumeratedColumns);
     if (prevProject.id === project.id && this.currentUserGroups.indexOf(+prevProject.developer_group_id) >= 0) {
       // ce premika iz testnega stolpca lahko dela samo produkt owner, samo v stolpec z najvisjo prioriteto ali levo od njega.
       if (prevColumn.id === this.board.type_acceptance_testing_column_id) {
         if (this.currentUser.roles.indexOf('product owner') >= 0) {
-          const testColumnOffset = this.boardsService.localColumns.get(this.board.type_priority_column_id).display_offset;
-          return column.display_offset <= testColumnOffset;
+          return this.boardsService.enumeratedColumns.get(column.id) <= this.boardsService.enumeratedColumns.get(this.board.type_priority_column_id);
         }
         return false;
       }
-      if (prevColumn.parent_column_id !== null) {
-        if (column.parent_column_id !== null) {
-          // premikamo iz podstolpca v podstolpec
-          // ce sta podstolpca v istem stolpcu
-          if (prevColumn.parent_column_id === column.parent_column_id && Math.abs(+prevColumn.display_offset - +column.display_offset) === 1) {
-            return true;
-          } else {
-            // podstolpca nista v istem stolpcu
-            const parentPrevColumn = localColumns.get(prevColumn.parent_column_id);
-            const parentColumn = localColumns.get(column.parent_column_id);
-            if (Math.abs(+parentPrevColumn.display_offset - +parentColumn.display_offset) === 1 &&
-              (parentPrevColumn.display_offset > parentColumn.display_offset && parentColumn.subcolumns_length === column.display_offset + 1 && prevColumn.display_offset === 0 ||
-                parentPrevColumn.display_offset < parentColumn.display_offset && parentPrevColumn.subcolumns_length === prevColumn.display_offset + 1 && column.display_offset === 0 )) {
-              return true;
-            }
-          }
-        } else {
-          // premikamo iz iz podstolpca v navaden stolpec
-          const parentPrevColumn = localColumns.get(prevColumn.parent_column_id);
-          if (parentPrevColumn.display_offset > column.display_offset && prevColumn.display_offset === 0 && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1 ||
-            parentPrevColumn.display_offset < column.display_offset && parentPrevColumn.subcolumns_length === prevColumn.display_offset + 1 && Math.abs(parentPrevColumn.display_offset - column.display_offset) === 1) {
-            return true;
-          }
-        }
-      //  premikamo iz navadnega stolpca v podstolpec
-      } else if (column.parent_column_id !== null) {
-          const parentColumn = localColumns.get(column.parent_column_id);
-          if (parentColumn.display_offset < prevColumn.display_offset && parentColumn.subcolumns_length === column.display_offset + 1 && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1 ||
-            parentColumn.display_offset > prevColumn.display_offset && column.display_offset === 0 && Math.abs(parentColumn.display_offset - prevColumn.display_offset) === 1) {
-            return true;
-          }
-      // premikamo iz navadnega stolpca v navaden stolpec
-      } else {
-        if (Math.abs(column.display_offset - prevColumn.display_offset) === 1) {
-          return true;
-        }
-      }
-      return false;
+      return Math.abs(this.boardsService.enumeratedColumns.get(column.id) - this.boardsService.enumeratedColumns.get(prevColumn.id)) === 1;
     }
-    return false;
   }
 
   ngOnDestroy() {
@@ -480,46 +441,14 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (this.rightColumnId === null) {
       return true;
     }
-    const righColumn = this.getColumnById(this.rightColumnId);
-    if (righColumn !== null) {
-      if (this.getColumnById(this.rightColumnId).parent_column_id === null && column.parent_column_id === null) {
-        return this.getColumnById(this.rightColumnId).display_offset >= column.display_offset;
-      } else if (righColumn.parent_column_id === null && column.parent_column_id !== null) {
-        return righColumn.display_offset >= this.getColumnById(column.parent_column_id).display_offset;
-      } else if (righColumn.parent_column_id !== null && column.parent_column_id === null) {
-        return this.getColumnById(righColumn.parent_column_id).display_offset >= column.display_offset;
-      } else {
-        if (righColumn.parent_column_id === column.parent_column_id) {
-          return righColumn.display_offset >= column.display_offset;
-        } else {
-          return this.getColumnById(righColumn.parent_column_id).display_offset >= this.getColumnById(column.parent_column_id).display_offset;
-        }
-      }
-    }
-    return false;
+    return this.boardsService.enumeratedColumns.get(column.id) < this.boardsService.enumeratedColumns.get(this.rightColumnId);
   }
 
   displayAddRightColumnValidation(column: Column) {
     if (this.leftColumnId === null) {
       return true;
     }
-    const leftColumn = this.getColumnById(this.leftColumnId);
-    if (leftColumn !== null) {
-      if (leftColumn.parent_column_id === null && column.parent_column_id === null) {
-        return leftColumn.display_offset <= column.display_offset;
-      } else if (leftColumn.parent_column_id === null && column.parent_column_id !== null) {
-        return leftColumn.display_offset <= this.getColumnById(column.parent_column_id).display_offset;
-      } else if (leftColumn.parent_column_id !== null && column.parent_column_id === null) {
-        return this.getColumnById(leftColumn.parent_column_id).display_offset <= column.display_offset;
-      } else {
-        if (leftColumn.parent_column_id === column.parent_column_id) {
-          return leftColumn.display_offset <= column.display_offset;
-        } else {
-          return this.getColumnById(leftColumn.parent_column_id).display_offset <= this.getColumnById(column.parent_column_id).display_offset;
-        }
-      }
-    }
-    return false;
+    return this.boardsService.enumeratedColumns.get(column.id) > this.boardsService.enumeratedColumns.get(this.leftColumnId);
   }
 
   getColumnWip(column: Column) {

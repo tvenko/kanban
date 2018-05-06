@@ -9,6 +9,7 @@ import {WipViolation} from '../models/wipViolation.interface';
 export class BoardsService {
 
   localColumns: Map<number, Column> = new Map<number, Column>();
+  enumeratedColumns: Map<number, number> = new Map<number, number>();
 
   constructor(private http: HttpClient) {
     this.fillLocalColumns();
@@ -19,6 +20,7 @@ export class BoardsService {
   }
 
   getBoard(id: number) {
+    this.fillEnumeratedColumns(id);
     return this.http.get(Config.API + '/boards/' + id + '/');
   }
 
@@ -49,6 +51,25 @@ export class BoardsService {
     this.http.get(Config.API + '/columns/').subscribe(columns => {
       for (const column of <Column[]>columns) {
         this.localColumns.set(column.id, column);
+      }
+    });
+  }
+
+  fillEnumeratedColumns(id: number) {
+    this.http.get(Config.API + '/boards/' + id + '/').subscribe(board => {
+      const board1 = <Board>board[0];
+      console.log('board: ', board1);
+      let index = 0;
+      for (const column of board1.columns) {
+        if (column.subcolumns !== null && column.subcolumns.length > 0) {
+          for (const subcolmn of column.subcolumns) {
+            this.enumeratedColumns.set(subcolmn.id, index);
+            index++;
+          }
+        } else {
+          this.enumeratedColumns.set(column.id, index);
+          index++;
+        }
       }
     });
   }
