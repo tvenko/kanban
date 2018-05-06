@@ -145,7 +145,8 @@
               <div class="uk-margin">
                 <label class="uk-form-label" for="edit-code-name">Naziv kartice</label>
                 <div class="uk-form-controls">
-                  <input class="uk-input" id="edit-title" type="text" placeholder="Naziv kartice" formControlName="title-edit" [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('title-edit').valid && editCardForm.get('title-edit').touched}">
+                  <input class="uk-input" id="edit-title" type="text" placeholder="Naziv kartice" formControlName="title-edit"
+                         [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('title-edit').valid && editCardForm.get('title-edit').touched}">
                 </div>
               </div>
               <span class="uk-alert-danger"
@@ -157,7 +158,8 @@
               <div class="uk-margin">
                 <label class="uk-form-label" for="edit-description">Opis kartice</label>
                 <div class="uk-form-controls">
-                  <textarea class="uk-textarea" rows="5" id="edit-description" type="text" placeholder="Opis kartice" formControlName="description-edit"  [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('description-edit').valid && editCardForm.get('description-edit').touched}"></textarea>
+                  <textarea class="uk-textarea" rows="5" id="edit-description" type="text" placeholder="Opis kartice" formControlName="description-edit"
+                            [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('description-edit').valid && editCardForm.get('description-edit').touched}"></textarea>
                 </div>
               </div>
               <span class="uk-alert-danger"
@@ -169,7 +171,7 @@
               <div class="uk-form-controls  uk-margin">
                 <label class="uk-form-label" for="edit-project">Projekt</label>
                 <div class="uk-form-controls">
-                  <input class="uk-input" id="edit-project" disabled type="text" placeholder="Projekt" formControlName="project-edit" >
+                  <input class="uk-input" id="edit-project" disabled type="text" placeholder="Projekt" formControlName="project-edit">
                 </div>
               </div>
 
@@ -193,7 +195,8 @@
               <div class="uk-margin">
                 <label class="uk-form-label" for="edit-deadline">Rok</label>
                 <div class="uk-form-controls">
-                  <p-calendar id="edit-deadline" [locale]="sl" [minDate]="today" formControlName="deadline-edit" dateFormat="dd.mm.yy" showButtonBar="true"  [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('deadline-edit').valid && editCardForm.get('deadline-edit').touched}"  readonlyInput="true"></p-calendar>
+                  <p-calendar id="edit-deadline" [locale]="sl" [minDate]="today" formControlName="deadline-edit" dateFormat="dd.mm.yy" showButtonBar="true"
+                              [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('deadline-edit').valid && editCardForm.get('deadline-edit').touched}"  readonlyInput="true"></p-calendar>
                 </div>
               </div>
               <span class="uk-alert-danger"
@@ -227,7 +230,7 @@
                 </div>
               </div>
 
-              <div class="uk-text-right">
+              <div class="uk-text-right" *ngIf="canUserEdit">
                 <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
                 <button class="uk-button uk-button-primary" type="submit" [disabled]="!editCardForm.valid">Shrani</button>
               </div>

@@ -356,13 +356,12 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   allowedMove(prevProject: Project, project: Project, prevColumn: Column, column: Column) {
-    const localColumns = this.boardsService.getLocalColumns();
-    console.log('enumerated: ', this.boardsService.enumeratedColumns);
     if (prevProject.id === project.id && this.currentUserGroups.indexOf(+prevProject.developer_group_id) >= 0) {
       // ce premika iz testnega stolpca lahko dela samo produkt owner, samo v stolpec z najvisjo prioriteto ali levo od njega.
       if (prevColumn.id === this.board.type_acceptance_testing_column_id) {
         if (this.currentUser.roles.indexOf('product owner') >= 0) {
-          return this.boardsService.enumeratedColumns.get(column.id) <= this.boardsService.enumeratedColumns.get(this.board.type_priority_column_id);
+          return this.boardsService.enumeratedColumns.get(column.id) <= this.boardsService.enumeratedColumns.get(this.board.type_priority_column_id) ||
+            this.boardsService.enumeratedColumns.get(column.id) - this.boardsService.enumeratedColumns.get(prevColumn.id) === 1;
         }
         return false;
       }
