@@ -14,6 +14,7 @@ import {UsersService} from '../shared/services/users.service';
 import {Card} from '../shared/models/card.interface';
 import {CardsService} from '../shared/services/cards.service';
 import { CardsComponent } from './cards/cards.component';
+import {WipViolation} from '../shared/models/wipViolation.interface';
 
 declare var UIkit: any;
 
@@ -115,7 +116,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
     this.getUsers();
     this.getUserGroups();
-    console.log(this.currentUser);
   }
 
   getUsers() {
@@ -155,7 +155,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   addColumn(i: number, parentId: number) {
-    console.log('CHECK');
     this.newColumnOffset = i;
     this.newSubcolumnParent = parentId;
   }
@@ -330,6 +329,13 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (this.allowedMove(prevProject, project, prevColumn, column)) {
       if (column.column_cards.length >= column.wip_restriction && column.wip_restriction > 0) {
         alert('S prestavljanjem kartice ste kršili WIP omejitev');
+        const violation = {
+          card_id: card.card_id,
+          column_id: column.id,
+          user_id: this.currentUserId,
+          wip_violation_reason_id: 3
+        };
+        this.boardsService.postWipViolation(violation).subscribe();
       }
       const index = prevColumn.column_cards.indexOf(card);
       if (prevColumn.column_cards.length > 0) {
@@ -353,22 +359,25 @@ export class BoardComponent implements OnInit, OnDestroy {
   allowedMove(prevProject: Project, project: Project, prevColumn: Column, column: Column) {
     const localColumns = this.boardsService.getLocalColumns();
     if (prevProject.id === project.id && this.currentUserGroups.indexOf(+prevProject.developer_group_id) >= 0) {
-      // ce premika iz testnega stolpca je avtomatsko dovoljeno.
+      // ce premika iz testnega stolpca lahko dela samo produkt owner, samo v stolpec z najvisjo prioriteto ali levo od njega.
       if (prevColumn.id === this.board.type_acceptance_testing_column_id) {
-        return true;
+        if (this.currentUser.roles.indexOf('product owner') >= 0) {
+          const testColumnOffset = this.boardsService.localColumns.get(this.board.type_priority_column_id).display_offset;
+          return column.display_offset <= testColumnOffset;
+        }
+        return false;
       }
       if (prevColumn.parent_column_id !== null) {
         if (column.parent_column_id !== null) {
           // premikamo iz podstolpca v podstolpec
           // ce sta podstolpca v istem stolpcu
-          console.log('prevColumn: ', prevColumn, ' column: ', column);
           if (prevColumn.parent_column_id === column.parent_column_id && Math.abs(+prevColumn.display_offset - +column.display_offset) === 1) {
             return true;
           } else {
             // podstolpca nista v istem stolpcu
             const parentPrevColumn = localColumns.get(prevColumn.parent_column_id);
             const parentColumn = localColumns.get(column.parent_column_id);
-            if (Math.abs(+parentPrevColumn.display_offset - +prevColumn.display_offset) === 1 &&
+            if (Math.abs(+parentPrevColumn.display_offset - +parentColumn.display_offset) === 1 &&
               (parentPrevColumn.display_offset > parentColumn.display_offset && parentColumn.subcolumns_length === column.display_offset + 1 && prevColumn.display_offset === 0 ||
                 parentPrevColumn.display_offset < parentColumn.display_offset && parentPrevColumn.subcolumns_length === prevColumn.display_offset + 1 && column.display_offset === 0 )) {
               return true;

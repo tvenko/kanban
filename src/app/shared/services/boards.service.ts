@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Config} from '../config/env.config';
 import {Column} from '../models/column.interface';
 import {Board} from '../models/board.interface';
+import {WipViolation} from '../models/wipViolation.interface';
 
 @Injectable()
 export class BoardsService {
@@ -37,6 +38,11 @@ export class BoardsService {
   deleteColumn(id: number) {
     console.log('delete id: ', id);
     return this.http.delete(Config.API + '/columns/' + id + '/');
+  }
+
+  postWipViolation(violation) {
+    console.log(violation);
+    return this.http.post(Config.API + '/wip_violations/', violation);
   }
 
   fillLocalColumns() {
