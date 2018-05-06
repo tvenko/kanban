@@ -26,7 +26,7 @@ declare var UIkit: any;
 
 export class BoardComponent implements OnInit, OnDestroy {
   @ViewChild(CardsComponent)
-     private cardsComponent: CardsComponent;
+  cardsComponent: CardsComponent;
 
   id: number;
   private sub: any;
@@ -531,7 +531,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   copyBoard() {
-    let confirmCopy = confirm('Kopiram tablo?');
+    const confirmCopy = confirm('Kopiram tablo?');
     if (confirmCopy) {
       this.boardsListService.copyBoard(this.id).subscribe(msg => {
         UIkit.notification('Tabla uspešno kopirana.', {status: 'warning', timeout: 2000});

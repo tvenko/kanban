@@ -26,10 +26,12 @@ declare var UIkit: any;
   templateUrl: './cards.component.html',
   styleUrls: ['./cards.component.css']
 })
-export class CardsComponent implements OnInit {  
+export class CardsComponent implements OnInit {
   cardType: string;
   tasks: Task[];
   private sub: any;
+  selectedCard: Card;
+  error: string = null;
 
   cardsModalTitle: String;
   newCardForm: FormGroup;
@@ -48,14 +50,14 @@ export class CardsComponent implements OnInit {
   today: Date;
   sl: any;
 
-  selectedProject:Project;
-  wipViolations:WipViolation[];
+  selectedProject: Project;
+  wipViolations: WipViolation[];
   logs: Log[];
 
   isUserKanbanMaster_inGroup = false;
   isUserProductOwner_inGroup = false;
 
-    constructor(private prioritySerive: PriorityService, private boardsService: BoardsService, private route: ActivatedRoute, private boardsListService: BoardsListService, private router: Router, private cardService:CardsService) { }
+    constructor(private prioritySerive: PriorityService, private boardsService: BoardsService, private route: ActivatedRoute, private boardsListService: BoardsListService, private router: Router, private cardService: CardsService) { }
 
 
   ngOnInit() {
@@ -69,7 +71,7 @@ export class CardsComponent implements OnInit {
             this.boardsListService.getBoards(this.currentUserId).subscribe(boards => {
               let isAllowed = false;
               Object.values(boards).forEach((x) => {
-               if (x[1] == this.currectBoardId) { //x[1] is board id
+               if (x[1] === this.currectBoardId) { // x[1] is board id
                  isAllowed = true;
                 }
               });
@@ -77,9 +79,9 @@ export class CardsComponent implements OnInit {
                 this.router.navigate(['/boards-list']);
                 return;
               }
-      
+
              this.getBoard();
-      
+
             }, err => {
               console.log('error geting boards from backend');
             });
@@ -111,9 +113,9 @@ export class CardsComponent implements OnInit {
       'project-edit': new FormControl(),
 
     });
-    //this.newCardForm.get('typeSilver').disable();
+    // this.newCardForm.get('typeSilver').disable();
 
-    //this.newCardForm.get('id').disable();
+    // this.newCardForm.get('id').disable();
 
     this.sl = {
       dateFormat: 'yyyy-mm-dd',
@@ -133,7 +135,7 @@ export class CardsComponent implements OnInit {
       this.board = <Board>board[0];
       this.projects = this.board.projects;
       this.getBoardUserData();
-     
+
     }, err => {
       // Board doesn't exist. Redirect the user?
       console.log('Ni bilo mogoce dobiti table ' + err);
@@ -146,26 +148,26 @@ export class CardsComponent implements OnInit {
     this.currentUserProjects = [];
     projects.forEach(project => {
       let addProject = false;
-      const groupMember: GroupMember = project.group_data.users.find(user => user.id == this.currentUserId);
-      if(groupMember != null){
+      const groupMember: GroupMember = project.group_data.users.find(user => user.id === this.currentUserId);
+      if (groupMember != null) {
         if (groupMember.allowed_group_roles.includes(2) && groupMember.group_active) {
           this.isUserProductOwner_inGroup = true;
-          addProject = true;        
+          addProject = true;
         }
         if (groupMember.allowed_group_roles.includes(3) && groupMember.group_active) {
           this.isUserKanbanMaster_inGroup = true;
           addProject = true;
         }
       }
-      //Pokaži projekte, na katerih je uporabnik bodisi kanban master bodisi product owner
-      if(addProject){
+      // Pokaži projekte, na katerih je uporabnik bodisi kanban master bodisi product owner
+      if (addProject) {
         this.currentUserProjects.push(project);
       }
     });
   }
 
   loadModal() {
-    //Get changes
+    // Get changes
     this.newCardForm.reset();
     this.projects = [];
     this.currentUserProjects = [];
@@ -175,7 +177,7 @@ export class CardsComponent implements OnInit {
     this.loadPriorities();
     this.cardsModalTitle = 'Nova kartica';
     this.newCardForm.reset();
-   
+
   }
 
   loadPriorities() {
@@ -197,39 +199,39 @@ export class CardsComponent implements OnInit {
     this.newCardForm.reset();
   }
 
-  updateTitle(){
-    const groupMember: GroupMember = this.selectedProject.group_data.users.find(user => user.id == this.currentUserId);
+  updateTitle() {
+    const groupMember: GroupMember = this.selectedProject.group_data.users.find(user => user.id === this.currentUserId);
     if (groupMember.allowed_group_roles.includes(2) && groupMember.group_active) {
-      this.cardsModalTitle = "Nova kartica (nova funkcionalnost)";  
+      this.cardsModalTitle = 'Nova kartica (nova funkcionalnost)';
       this.silverBullet = false;
     }
     if (groupMember.allowed_group_roles.includes(3) && groupMember.group_active) {
-      this.cardsModalTitle = "Nova kartica (najvišja prioriteta)";  
+      this.cardsModalTitle = 'Nova kartica (najvišja prioriteta)';
       this.silverBullet = true;
 
-    }    
+    }
   }
 
   saveCard() {
-    //New card
+    // New card
     let columnID = 108;
-    //Find correct columns
-    //Find silver bullet column
-    if(this.silverBullet){
-      //Preveri ali obstaja stolpec z najvišjo prioriteto
-      if(this.board.type_priority_column_id == null){
+    // Find correct columns
+    // Find silver bullet column
+    if (this.silverBullet) {
+      // Preveri ali obstaja stolpec z najvišjo prioriteto
+      if (this.board.type_priority_column_id == null) {
         UIkit.notification('Stolpec z najvišjo prioriteto ne obstaja.', {status: 'danger', timeout: 2000});
         return;
-      }else{
+      } else {
         columnID = this.board.type_priority_column_id;
-      }      
-    }else{
-      //Find first column
+      }
+    } else {
+      // Find first column
       let columns = this.board.columns;
       columns.sort(function (a, b) {
         return a.display_offset - b.display_offset;
       });
-      while(columns[0].subcolumns != null && columns[0].subcolumns.length != 0){
+      while (columns[0].subcolumns != null && columns[0].subcolumns.length !== 0) {
         columns = columns[0].subcolumns;
         columns.sort(function (a, b) {
           return a.display_offset - b.display_offset;
@@ -238,68 +240,96 @@ export class CardsComponent implements OnInit {
       columnID = columns[0].id;
     }
 
-    //Get asignee or null
+    // Get asignee or null
     let assigneeId = null;
-    if((<GroupMember>this.newCardForm.get('assignee').value) != null){
+    if ((<GroupMember>this.newCardForm.get('assignee').value) != null) {
       assigneeId = (<GroupMember>this.newCardForm.get('assignee').value).id;
     }
-    //Get deadline or null
+    // Get deadline or null
     let deadlineDate = null;
-    if(this.newCardForm.get('deadline').value != null){
+    if (this.newCardForm.get('deadline').value != null) {
       deadlineDate = (<Date>this.newCardForm.get('deadline').value).getFullYear() + '-' + ((<Date>this.newCardForm.get('deadline').value).getMonth() + 1) + '-' + (<Date>this.newCardForm.get('deadline').value).getDate();
     }
 
-    //Create object
+    // Create object
     const card: Card = {
       violation_user: this.currentUserId,
-      card_id:null, //this.newCardForm.get('id').value,
+      card_id: null, // this.newCardForm.get('id').value,
       title: this.newCardForm.get('title').value,
       assigned_user_id: assigneeId,
       card_priority_id: (<Priority>this.newCardForm.get('priority').value).id,
       description: this.newCardForm.get('description').value,
       deadline: deadlineDate,
       project_id: (<Project>this.newCardForm.get('project').value).id,
-      size: this.newCardForm.get('size').value, //can be null
+      size: this.newCardForm.get('size').value, // can be null
       type_silver: this.silverBullet,
       number: 1,
       type_rejected: false,
-      created_at: "2012-09-04 06:00:00.000000", //null?
+      created_at: '2012-09-04 06:00:00.000000', // null?
       completed_at: null,
       started_at: null,
-      display_offset:0,
+      display_offset: 0,
       delete_reason_id: null,
-      active:true,
-      column_id:columnID
+      active: true,
+      column_id: columnID
     };
-    
+
     console.log(JSON.stringify(card));
-    
-    //Send request
+
+    // Send request
     this.cardService.postCard(card).subscribe(res => {
       UIkit.modal('#new-card-modal').hide();
       UIkit.notification('Kartica dodana.', {status: 'success', timeout: 2000});
       UIkit.modal('#new-card-modal').hide();
     }, err => {
-      if(err.status == 406){
+      if (err.status === 406) {
         UIkit.notification('Kartica z najvišjo prioriteto že obstaja.', {status: 'danger', timeout: 2000});
-      }else if(err.status == 409){
+      } else if (err.status === 409) {
         UIkit.notification('Kartica dodana, vendar je prišlo do kršitve omejitve WIP.', {status: 'warning', timeout: 2000});
         UIkit.modal('#new-card-modal').hide();
-      }else{
+      } else {
         UIkit.notification('Napaka pri dodajanju nove kartice.', {status: 'danger', timeout: 2000});
       }
       console.log(err);
-    });  
+    });
 
    // UIkit.modal('#new-group-modal').hide();
 
   }
-  saveEditedCard(){
-    console.log("EDIT");
-  }
-  
+  saveEditedCard() {
 
-  loadEditCardModal(cardDetails:CardDetailed){
+    let deadlineDate = null;
+    if (this.editCardForm.get('deadline-edit').value !== null) {
+      deadlineDate = (<Date>this.editCardForm.get('deadline-edit').value).getFullYear() + '-' +
+        ((<Date>this.editCardForm.get('deadline-edit').value).getMonth() + 1) + '-' +
+        (<Date>this.editCardForm.get('deadline-edit').value).getDate();
+    }
+
+    this.selectedCard.title = this.editCardForm.get('title-edit').value;
+    this.selectedCard.description = this.editCardForm.get('description-edit').value;
+    if (this.editCardForm.get('assignee-edit') === null) {
+      this.selectedCard.assigned_user_id = null;
+    } else {
+      this.selectedCard.assigned_user_id = this.editCardForm.get('assignee-edit').value;
+    }
+    this.selectedCard.deadline = deadlineDate;
+    this.selectedCard.card_priority_id = this.editCardForm.get('priority-edit').value;
+    this.selectedCard.size = this.editCardForm.get('size-edit').value;
+
+    this.cardService.updateCard(this.selectedCard).subscribe(res => {
+      UIkit.modal('#card-details-modal').hide();
+      UIkit.notification('Kartica je posodobljena.', {status: 'success', timeout: 2000});
+      UIkit.modal('#card-details-modal').hide();
+      this.error = null;
+      this.editCardForm.reset();
+    }, err => {
+      this.error = 'kartice ni bilo mogoče posodobiti. Prosimo poskusite kasneje';
+      console.log('napaka pri posodablanju kartice');
+    });
+  }
+
+
+  loadEditCardModal(cardDetails: CardDetailed) {
     this.editCardForm.reset();
     this.projects = [];
     this.currentUserProjects = [];
@@ -309,39 +339,40 @@ export class CardsComponent implements OnInit {
     this.cardsModalTitle = 'Uredi kartico';
     this.wipViolations = cardDetails.wip_violations;
     this.tasks = cardDetails.tasks;
-    if(cardDetails.type_silver){
-      this.cardType="Kartica z najvišjo prioriteto";
-    }else{
-      this.cardType="Nova funkcionalnost";
+    if (cardDetails.type_silver) {
+      this.cardType = 'Kartica z najvišjo prioriteto';
+    } else {
+      this.cardType = 'Nova funkcionalnost';
     }
-    
+
     console.log(this.tasks);
     this.logs = cardDetails.logs;
     this.selectedProject = cardDetails.project_id[0];
-    this.editCardForm.get("title-edit").setValue(cardDetails.title);
+    this.editCardForm.get('title-edit').setValue(cardDetails.title);
     this.editCardForm.get('description-edit').setValue(cardDetails.description);
     this.editCardForm.get('project-edit').setValue(cardDetails.project_id[0].title);
-    if(cardDetails.assigned_user_id != null){
+    if (cardDetails.assigned_user_id != null) {
       this.editCardForm.get('assignee-edit').setValue(cardDetails.assigned_user_id.id);
     }
-    if(cardDetails.deadline != null){
+    if (cardDetails.deadline != null) {
       this.editCardForm.get('deadline-edit').setValue(new Date(cardDetails.deadline));
-    } 
+    }
     this.editCardForm.get('priority-edit').setValue(cardDetails.card_priority_id.id);
-    if(cardDetails.size != null){
+    if (cardDetails.size != null) {
       this.editCardForm.get('size-edit').setValue(cardDetails.size);
     }
 
-    
+
   }
-  onCardClick(card){
+  onCardClick(card) {
     this.cardService.getDetailedCard(card.card_id).subscribe(res => {
-      let cardDetails:CardDetailed = <CardDetailed>res;
+      const cardDetails: CardDetailed = <CardDetailed>res;
       this.loadEditCardModal(cardDetails);
+      this.selectedCard = card;
       UIkit.modal('#card-details-modal').show();
     }, err => {
       console.log(err);
-    });      
+    });
   }
 
 }
