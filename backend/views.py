@@ -669,7 +669,11 @@ class CardList(generics.ListCreateAPIView):
                     return JsonResponse(serializer.error_messages, status=status.HTTP_406_NOT_ACCEPTABLE)
                 card = cards.order_by("-number")[0]
                 card_serializer = CardSerializer(card)
-                if serializer.is_valid() and not (wip_sum + 1 > serializer.validated_data["column_id"].wip_restriction):
+                if serializer.validated_data["column_id"].wip_restriction == 0:
+                    serializer.save(number=card_serializer.data["number"] + 1)
+                    return JsonResponse(serializer.data,
+                                        status=status.HTTP_200_OK)
+                elif serializer.is_valid() and not (wip_sum + 1 > serializer.validated_data["column_id"].wip_restriction):
                     serializer.save(number=card_serializer.data["number"] + 1)
                     return JsonResponse(serializer.data,
                                         status=status.HTTP_200_OK)
