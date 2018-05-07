@@ -23,7 +23,7 @@
         </div> -->
         <!-- Card title -->
         <div class="uk-margin">
-          <label class="uk-form-label" for="edit-code-name">Naziv kartice</label>
+          <label class="uk-form-label" for="edit-title">Naziv kartice</label>
           <div class="uk-form-controls">
             <input class="uk-input" id="edit-title" type="text" placeholder="Naziv kartice" formControlName="title" [ngClass]="{'danger-input uk-animation-shake' : !newCardForm.get('title').valid && newCardForm.get('title').touched}">
           </div>
@@ -143,9 +143,9 @@
               </div>
               <!-- Card title -->
               <div class="uk-margin">
-                <label class="uk-form-label" for="edit-code-name">Naziv kartice</label>
+                <label class="uk-form-label" for="edit-title1">Naziv kartice</label>
                 <div class="uk-form-controls">
-                  <input class="uk-input" id="edit-title" type="text" placeholder="Naziv kartice" formControlName="title-edit"
+                  <input class="uk-input" id="edit-title1" type="text" placeholder="Naziv kartice" formControlName="title-edit"
                          [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('title-edit').valid && editCardForm.get('title-edit').touched}">
                 </div>
               </div>
@@ -156,9 +156,9 @@
 
               <!-- Card description -->
               <div class="uk-margin">
-                <label class="uk-form-label" for="edit-description">Opis kartice</label>
+                <label class="uk-form-label" for="edit-description1">Opis kartice</label>
                 <div class="uk-form-controls">
-                  <textarea class="uk-textarea" rows="5" id="edit-description" type="text" placeholder="Opis kartice" formControlName="description-edit"
+                  <textarea class="uk-textarea" rows="5" id="edit-description1" type="text" placeholder="Opis kartice" formControlName="description-edit"
                             [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('description-edit').valid && editCardForm.get('description-edit').touched}"></textarea>
                 </div>
               </div>
@@ -169,16 +169,16 @@
 
               <!-- Show all projects -->
               <div class="uk-form-controls  uk-margin">
-                <label class="uk-form-label" for="edit-project">Projekt</label>
+                <label class="uk-form-label" for="edit-project1">Projekt</label>
                 <div class="uk-form-controls">
-                  <input class="uk-input" id="edit-project" disabled type="text" placeholder="Projekt" formControlName="project-edit">
+                  <input class="uk-input" id="edit-project1" disabled type="text" placeholder="Projekt" formControlName="project-edit">
                 </div>
               </div>
 
               <!-- Card assignee -->
               <div class="uk-form-controls  uk-margin">
-                <label class="uk-form-label" for="edit-assignee">Zadolženi razvijalec</label>
-                <select class="uk-select" id="edit-assignee" formControlName="assignee-edit">
+                <label class="uk-form-label" for="edit-assignee1">Zadolženi razvijalec</label>
+                <select class="uk-select" id="edit-assignee1" formControlName="assignee-edit">
                   <option selected  id="nullSelection"></option>
                   <ng-container *ngFor="let groupMember of selectedProject?.group_data.users">
                     <option disabled *ngIf="!groupMember.group_active && groupMember.allowed_group_roles.includes(1)" [ngValue]="groupMember.id">{{groupMember.name + " " +  groupMember.surname}} (neaktiven v skupini)</option>
@@ -193,9 +193,9 @@
 
               <!-- Deadline -->
               <div class="uk-margin">
-                <label class="uk-form-label" for="edit-deadline">Rok</label>
+                <label class="uk-form-label" for="edit-deadline1">Rok</label>
                 <div class="uk-form-controls">
-                  <p-calendar id="edit-deadline" [locale]="sl" [minDate]="today" formControlName="deadline-edit" dateFormat="dd.mm.yy" showButtonBar="true"
+                  <p-calendar id="edit-deadline1" [locale]="sl" [minDate]="today" formControlName="deadline-edit" dateFormat="dd.mm.yy" showButtonBar="true"
                               [ngClass]="{'danger-input uk-animation-shake' : !editCardForm.get('deadline-edit').valid && editCardForm.get('deadline-edit').touched}"  readonlyInput="true"></p-calendar>
                 </div>
               </div>
@@ -206,8 +206,8 @@
 
               <!-- Card prority -->
               <div class="uk-form-controls  uk-margin">
-                <label class="uk-form-label" for="edit-priority">Prioriteta</label>
-                <select class="uk-select" id="edit-priority" formControlName="priority-edit">
+                <label class="uk-form-label" for="edit-priority1">Prioriteta</label>
+                <select class="uk-select" id="edit-priority1" formControlName="priority-edit">
                   <ng-container *ngFor="let priority of priorities">
                       <option [ngValue]="priority.id"  >{{priority.title}}</option>
                   </ng-container>
@@ -220,8 +220,8 @@
 
               <!-- Card size -->
               <div class="uk-form-controls  uk-margin">
-                  <label class="uk-form-label" for="edit-size">Ocena zahtevnosti</label>
-                  <input class="uk-input" id="edit-size" type="number" formControlName="size-edit">
+                  <label class="uk-form-label" for="edit-size1">Ocena zahtevnosti</label>
+                  <input class="uk-input" id="edit-size1" type="number" formControlName="size-edit">
               </div>
 
               <div *ngIf="error != null">

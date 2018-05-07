@@ -65,6 +65,8 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.editBoard = !this.editBoard;
       }
       if (msg === 'addProject') {
+        this.addProjectForm.reset();
+        this.loadProjects();
         UIkit.modal('#add-project-modal').show();
       }
       if (msg === 'copyBoard') {
@@ -362,8 +364,9 @@ export class BoardComponent implements OnInit, OnDestroy {
         if (this.currentUser.roles.indexOf('product owner') >= 0) {
           return this.boardsService.enumeratedColumns.get(column.id) <= this.boardsService.enumeratedColumns.get(this.board.type_priority_column_id) ||
             this.boardsService.enumeratedColumns.get(column.id) - this.boardsService.enumeratedColumns.get(prevColumn.id) === 1;
+        } else {
+          return this.boardsService.enumeratedColumns.get(column.id) - this.boardsService.enumeratedColumns.get(prevColumn.id) === 1;
         }
-        return false;
       }
       return Math.abs(this.boardsService.enumeratedColumns.get(column.id) - this.boardsService.enumeratedColumns.get(prevColumn.id)) === 1;
     }
