@@ -34,8 +34,8 @@
       <div class="column" *ngIf="column?.subcolumns.length == 0 && !isHiddenColumn(column.id)">
         <div class="coulmn-header" [ngStyle]="{'border-top-color': colors[(i % 6)]}">
 
-          <h4 class="title" (click)="hideColumn(column.id)">
-            {{ column?.title }}
+          <h4 class="title">
+            <span (click)="hideColumn(column.id)">{{ column?.title }}</span>
             <span
               uk-icon="icon: plus-circle"
               class="edit-column"
@@ -91,8 +91,8 @@
 
       <div class="column" *ngIf="column?.subcolumns.length > 0 && !isHiddenColumn(column.id)">
         <div class="coulmn-header" [ngStyle]="{'border-top-color': colors[(i % 6)]}">
-          <h4 class="subcolumn-title" (click)="hideColumn(column.id)">
-            {{ column?.title }}
+          <h4 class="subcolumn-title">
+            <span (click)="hideColumn(column.id)">{{ column?.title }}</span>
             <span class="edit-column" uk-icon="more-vertical" type="button"></span>
             <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
               <ul class="uk-nav uk-dropdown-nav">
