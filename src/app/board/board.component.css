@@ -84,6 +84,22 @@
   flex-flow: column;
   margin: 12px;
   width: 100%;
+  flex-grow: 5;
+}
+
+.hidden-column {
+  width: 100%;
+  max-width: 40px;
+  margin-left: 20px;
+  border-top: 5px solid grey;
+  vertical-align: top;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .12);
+  padding: 10px;
+  border-radius: 2px;
+  overflow: hidden;
+  height: 95vh;
+  cursor: pointer;
+  flex-grow: 1;
 }
 
 .coulmn-header {
@@ -129,6 +145,7 @@
 
 .title {
   margin-bottom: 0;
+  cursor: pointer;
 }
 
 .special-column-text {
@@ -157,6 +174,7 @@
 }
 
 .subcolumn-title {
+  cursor: pointer;
   margin-right: 10px;
   margin-bottom: 0;
 }
@@ -248,4 +266,8 @@
 .change-type:hover {
   cursor: pointer;
   font-size: 16px;
+}
+.wip-input {
+  height: 30px;
+  width: 80px;
 }

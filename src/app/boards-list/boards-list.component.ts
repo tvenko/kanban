@@ -99,7 +99,7 @@ export class BoardsListComponent implements OnInit {
 
   copyBoard(board, event) {
     event.stopPropagation();
-    let confirmCopy = confirm('Kopiram tablo?');
+    const confirmCopy = confirm('Kopiram tablo?');
     if (confirmCopy) {
       this.boardsListService.copyBoard(board[1]).subscribe(msg => {
         this.loadBoards();
@@ -134,7 +134,7 @@ export class BoardsListComponent implements OnInit {
         // Workaround. Get the board, change the title, send it back.
         this.boardsService.getBoard(board["id"]).subscribe(msg => {
           msg[0]["title"] = board["title"];
-          this.boardsListService.updateBoard(msg[0]).subscribe(res => {        
+          this.boardsListService.updateBoard(msg[0]).subscribe(res => {
             UIkit.modal('#new-board-modal').hide();
             UIkit.notification('Tabla urejena.', {status: 'success', timeout: 2000});
             UIkit.modal('#new-board-modal').hide();
@@ -142,7 +142,7 @@ export class BoardsListComponent implements OnInit {
           }, err => {
             UIkit.notification('Napaka pri urejanju table.', {status: 'danger', timeout: 2000});
             console.log(err);
-          }); 
+          });
 
         }, err => {
           UIkit.notification('Napaka pri urejanju table.', {status: 'danger', timeout: 2000});
@@ -159,7 +159,7 @@ export class BoardsListComponent implements OnInit {
           title:this.boardName
         };
         //Send request
-        this.boardsListService.postBoard(board).subscribe(res => {        
+        this.boardsListService.postBoard(board).subscribe(res => {
           UIkit.modal('#new-board-modal').hide();
           UIkit.notification('Tabla dodana.', {status: 'success', timeout: 2000});
           UIkit.modal('#new-board-modal').hide();
@@ -167,10 +167,10 @@ export class BoardsListComponent implements OnInit {
         }, err => {
           UIkit.notification('Napaka pri dodajanju nove table.', {status: 'danger', timeout: 2000});
           console.log(err);
-        });  
+        });
 
         UIkit.modal('#new-board-modal').hide();
-      }    
+      }
     }
 
   }
