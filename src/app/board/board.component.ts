@@ -35,6 +35,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   board: Board;
   dataTransfer = new Map();
   newColumnForm: FormGroup;
+  changeWipForm: FormGroup;
   error: string;
   newColumnOffset: number = null;
   newSubcolumnParent: number = null;
@@ -115,6 +116,10 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     this.addProjectForm = new FormGroup({
       project: new FormControl(null, Validators.required),
+    });
+
+    this.changeWipForm = new FormGroup({
+      wip: new FormControl(null, Validators.required),
     });
     this.getUsers();
     this.getUserGroups();
@@ -498,4 +503,26 @@ export class BoardComponent implements OnInit, OnDestroy {
     return String(val) + 'vh';
   }
 
+  changeWip(column: Column) {
+    const wip = this.changeWipForm.get('wip').value;
+    if (column.column_cards.length <= wip || wip === 0) {
+      column.wip_restriction = wip;
+      this.boardsService.updateBoard(this.board).subscribe();
+    } else {
+      const confirmWip = confirm('Če spremenite WIP omejitev biste kršili wip omejitev. Ste prepričani, da želite spremeniti WIP omejitev?');
+      if (confirmWip) {
+        column.wip_restriction = wip;
+        this.boardsService.updateBoard(this.board).subscribe();
+        for (const card of column.column_cards) {
+          const violation = {
+            card_id: card.card_id,
+            column_id: column.id,
+            user_id: this.currentUserId,
+            wip_violation_reason_id: 4
+          };
+          this.boardsService.postWipViolation(violation).subscribe();
+        }
+      }
+    }
+  }
 }
