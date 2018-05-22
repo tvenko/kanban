@@ -27,10 +27,14 @@
         (click)="addColumn(i, null)">
       </div>
 
-      <div class="column" *ngIf="column?.subcolumns.length == 0">
+      <div class="hidden-column" *ngIf="isHiddenColumn(column.id)" (click)="showColumn(column.id)" [ngStyle]="{'margin-top': adjustHiddenColumn()}">
+        <span style="text-orientation: upright; writing-mode: vertical-lr;">{{ column?.title }}</span>
+      </div>
+
+      <div class="column" *ngIf="column?.subcolumns.length == 0 && !isHiddenColumn(column.id)">
         <div class="coulmn-header" [ngStyle]="{'border-top-color': colors[(i % 6)]}">
 
-          <h4 class="title">
+          <h4 class="title" (click)="hideColumn(column.id)">
             {{ column?.title }}
             <span
               uk-icon="icon: plus-circle"
@@ -83,12 +87,11 @@
               </li>
           </span>
         </div>
-
       </div>
 
-      <div class="column" *ngIf="column?.subcolumns.length > 0">
-        <div class="coulmn-header" [ngStyle]="{'border-top-color': colors[(i % 6)]}" >
-          <h4 class="subcolumn-title">
+      <div class="column" *ngIf="column?.subcolumns.length > 0 && !isHiddenColumn(column.id)">
+        <div class="coulmn-header" [ngStyle]="{'border-top-color': colors[(i % 6)]}">
+          <h4 class="subcolumn-title" (click)="hideColumn(column.id)">
             {{ column?.title }}
             <span class="edit-column" uk-icon="more-vertical" type="button"></span>
             <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">

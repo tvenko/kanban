@@ -43,6 +43,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   users = new Map();
   currentUser: User;
   currentUserGroups: number[];
+  hiddenColumns = [];
 
   currentUserId = null;
   projects: Project[] = [];
@@ -471,6 +472,30 @@ export class BoardComponent implements OnInit, OnDestroy {
         UIkit.notification('Tabla ni kopirana. Vzrok: Težave s strežnikom.', {status: 'danger', timeout: 2000});
       });
     }
+  }
+
+  hideColumn(id: number) {
+    this.hiddenColumns.push(id);
+  }
+
+  showColumn(id: number) {
+    const index = this.hiddenColumns.indexOf(id);
+    if (index >= 0) {
+      console.log('INDEX: ', index);
+      this.hiddenColumns.splice(index, 1);
+    }
+  }
+
+  isHiddenColumn(id: number) {
+    if (this.hiddenColumns.indexOf(id) >= 0) {
+      return true;
+    }
+    return false;
+  }
+
+  adjustHiddenColumn() {
+    const val = -(this.board.projects.length - 1) * 87;
+    return String(val) + 'vh';
   }
 
 }
