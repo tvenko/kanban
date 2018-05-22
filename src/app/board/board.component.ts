@@ -24,6 +24,7 @@ declare var UIkit: any;
 })
 
 export class BoardComponent implements OnInit, OnDestroy {
+
   @ViewChild(CardsComponent)
   cardsComponent: CardsComponent;
 
@@ -43,6 +44,9 @@ export class BoardComponent implements OnInit, OnDestroy {
   users = new Map();
   currentUser: User;
   currentUserGroups: number[];
+
+  showCriticalCards:boolean = false;
+  criticalDays:number = 0;
 
   currentUserId = null;
   projects: Project[] = [];
@@ -71,6 +75,9 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
       if (msg === 'copyBoard') {
         this.copyBoard();
+      }
+      if (msg === 'showCritical'){
+        this.showCritical();
       }
     });
   }
@@ -472,5 +479,29 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
     }
   }
+  showCritical() {
+    
+    let self = this
+    UIkit.modal.prompt("Ševilo preostalih dni:", null).then( (n) =>{ 
 
+      if(n != null){
+        if (isNaN(n)){
+          UIkit.notification('Vnesi število.', {status: 'danger', timeout: 2000});
+        }else{
+          self.showCriticalCards = true;
+          self.criticalDays = n
+        }
+
+      }
+    });
+  }
+  getDiferenceInDays(theDate) : number {
+    theDate = new Date(theDate);
+    if(theDate != null){
+      return Math.abs(theDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24) ;
+    }else{
+      return -1;
+    }
+    
+  }
 }
