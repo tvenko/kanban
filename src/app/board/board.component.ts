@@ -498,7 +498,6 @@ export class BoardComponent implements OnInit, OnDestroy {
           self.criticalDays = n
         }
 
-<<<<<<< HEAD
       }
     });
   }
@@ -509,8 +508,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     }else{
       return -1;
     }
-    
-=======
+  }
   hideColumn(id: number) {
     this.hiddenColumns.push(id);
   }
@@ -556,6 +554,5 @@ export class BoardComponent implements OnInit, OnDestroy {
         }
       }
     }
->>>>>>> e728079f8b23efebac5855015cfa16eda31ff243
   }
 }
