@@ -502,11 +502,14 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
   }
   getDiferenceInDays(theDate) : number {
-    theDate = new Date(theDate);
+    
     if(theDate != null){
-      return Math.abs(theDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24) ;
+      theDate = new Date(theDate);
+      console.log((theDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+      return (theDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24) ;
+
     }else{
-      return -1;
+      return -99999999;
     }
   }
   hideColumn(id: number) {
