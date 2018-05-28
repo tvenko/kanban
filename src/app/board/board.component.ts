@@ -505,7 +505,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     
     if(theDate != null){
       theDate = new Date(theDate);
-      console.log((theDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
       return (theDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24) ;
 
     }else{
