@@ -2,9 +2,9 @@
   <!-- New card modal toggle button.
        Only product owner or kanban master can add new cards -->
   <div *ngIf="isUserProductOwner_inGroup || isUserKanbanMaster_inGroup">
-      <button class="uk-button uk-button-primary newCardButton" (click)="loadModal()" uk-toggle="target: #new-card-modal">Nova kartica</button>
+      <button class="uk-button uk-button-primary newCardButton" (click)="loadModal()" uk-toggle="target: #new-card-modal; stack: true}">Nova kartica</button>
   </div>
-
+  
 
   <!-- new card modal -->
 <div id="new-card-modal" uk-modal>
@@ -230,9 +230,10 @@
                 </div>
               </div>
 
-              <div class="uk-text-right" *ngIf="canUserEdit">
-                <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
-                <button class="uk-button uk-button-primary" type="submit" [disabled]="!editCardForm.valid">Shrani</button>
+              <div class="uk-text-right" >
+                <button *ngIf="canUserEdit" class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
+                <button *ngIf="canUserDelete" class="uk-button uk-button-danger" type="button"  (click)="getDeleteReasons()"  uk-toggle="target: #delete-card-modal; stack: true}">Izbriši kartico</button>
+                <button *ngIf="canUserEdit" class="uk-button uk-button-primary" type="submit" [disabled]="!editCardForm.valid">Shrani</button>
               </div>
             </fieldset>
           </form>
@@ -280,6 +281,31 @@
         </li>
     </ul>
     </div>
+  </div>
+
+</div>
+
+<div id="delete-card-modal" uk-modal="stack: true">
+  <div class="uk-modal-dialog">
+      <button class="uk-modal-close-default" type="button" uk-close></button>
+      <div class="uk-modal-header">
+        <h2 class="uk-modal-title">Izberi razlog za brisanje</h2>
+      </div>
+      <div class="uk-modal-body">
+        <form (ngSubmit)="deleteCard()" [formGroup]="deleteCardForm">
+          <div class="uk-form-controls  uk-margin">
+            <select [(ngModel)]="selectedReason"  class="uk-select" id="select-reason" formControlName="reason">
+              <ng-container *ngFor="let reason of deleteReasons">
+                  <option [ngValue]="reason" >{{reason.description}}</option>
+              </ng-container>
+            </select>
+          </div>
+          <div class="uk-text-right" >
+            <button class="uk-button uk-button-default uk-modal-close" type="button" >Prekliči</button>
+            <button class="uk-button uk-button-primary" type="submit">Izbriši</button>
+          </div>
+      </form>
+      </div>
   </div>
 </div>
 
