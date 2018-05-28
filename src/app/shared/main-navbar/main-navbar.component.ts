@@ -48,5 +48,9 @@ export class MainNavbarComponent implements OnInit {
     this.messageService.filter('copyBoard');
     console.log('copy board');
   }
+  showCritical(){
+    this.messageService.filter('showCritical')
+    console.log('show critical')
+  }
 
 }
