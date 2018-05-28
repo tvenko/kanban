@@ -661,7 +661,7 @@ class CardList(generics.ListCreateAPIView):
             if not cards:
                 serializer.save(number=1)
                 card = Card.objects.all().order_by("-card_id")[0]
-                #CardLog.objects.create(card_id=card, role_id=role)
+                CardLog.objects.create(card_id=card, )
                 return JsonResponse(serializer.data, status=status.HTTP_200_OK)
             else:
                 silver_type = cards.filter(type_silver=True).filter(column_id=serializer.validated_data["column_id"])
@@ -713,6 +713,31 @@ class CardPriorityList(generics.ListCreateAPIView):
     #     print(card.number)
     #     print(card.project_id)
     #     cards = Card.objects.all().filter(project_id=int(card.project_id))
+
+
+class CardLogList(generics.ListCreateAPIView):
+    queryset = CardLog.objects.all()
+    serializer_class = CardLogSerializer
+
+
+class DeleteReasonList(generics.ListCreateAPIView):
+    queryset = DeleteReason.objects.all()
+    serializer_class = DeleteReasonSerializer
+
+
+class CardTime(generics.ListCreateAPIView):
+    queryset = CardLog.objects.all()
+    serializer_class = CardLogSerializer
+
+    def get(self, request, *args, **kwargs):
+        card_logs = CardLog.objects.all()
+        neki = []
+        for card_log in card_logs:
+            for x in card_logs:
+                neki.append(card_log.date - x.date)
+
+        return Response(neki, status=status.HTTP_202_ACCEPTED)
+
 
 class CardAbout(generics.ListCreateAPIView):
     """

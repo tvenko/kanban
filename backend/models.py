@@ -81,7 +81,7 @@ class CardLog(Model):
                                 on_delete=CASCADE)
     to_column_id = ForeignKey('Column', related_name='card_log_to_column',
                               on_delete=CASCADE)
-    date = DateTimeField()
+    date = DateTimeField(auto_now_add=True)
 
 
 class DeleteReason(Model):
