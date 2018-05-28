@@ -25,10 +25,13 @@ export class CardsService {
     return this.http.delete(Config.API + '/cards/' + cardId + '/');
   }
 
-  getDetailedCard(cardId: number){
+  getDetailedCard(cardId: number) {
     return this.http.get(Config.API + '/about_card/' + cardId + '/');
   }
 
+  postCardLog(cardLog) {
+    return this.http.post(Config.API + '/card_logs/', cardLog);
+  }
 
 }
 
