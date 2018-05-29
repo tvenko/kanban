@@ -80,8 +80,8 @@
       <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/backend/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1395">
-              <caret line="53" column="57" lean-forward="false" selection-start-line="53" selection-start-column="57" selection-end-line="53" selection-end-column="57" />
+            <state relative-caret-position="1292">
+              <caret line="39" column="54" lean-forward="false" selection-start-line="39" selection-start-column="43" selection-end-line="39" selection-end-column="54" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
               </folding>
@@ -92,8 +92,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/backend/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="511">
-              <caret line="63" column="10" lean-forward="false" selection-start-line="63" selection-start-column="4" selection-end-line="63" selection-end-column="10" />
+            <state relative-caret-position="2278">
+              <caret line="69" column="17" lean-forward="false" selection-start-line="69" selection-start-column="4" selection-end-line="69" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -102,8 +102,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/backend/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="977">
-              <caret line="681" column="39" lean-forward="false" selection-start-line="681" selection-start-column="27" selection-end-line="681" selection-end-column="39" />
+            <state relative-caret-position="93">
+              <caret line="743" column="0" lean-forward="true" selection-start-line="743" selection-start-column="0" selection-end-line="743" selection-end-column="0" />
               <folding>
                 <element signature="e#0#50#0" expanded="true" />
               </folding>
@@ -114,7 +114,7 @@
       <file leaf-file-name="serializers.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/backend/serializers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4080">
+            <state relative-caret-position="4046">
               <caret line="120" column="10" lean-forward="false" selection-start-line="120" selection-start-column="6" selection-end-line="120" selection-end-column="10" />
               <folding>
                 <element signature="e#0#38#0" expanded="true" />
@@ -655,7 +655,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend/serializers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4080">
+        <state relative-caret-position="4046">
           <caret line="120" column="10" lean-forward="false" selection-start-line="120" selection-start-column="6" selection-end-line="120" selection-end-column="10" />
           <folding>
             <element signature="e#0#38#0" expanded="true" />
@@ -681,8 +681,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1395">
-          <caret line="53" column="57" lean-forward="false" selection-start-line="53" selection-start-column="57" selection-end-line="53" selection-end-column="57" />
+        <state relative-caret-position="1292">
+          <caret line="39" column="54" lean-forward="false" selection-start-line="39" selection-start-column="43" selection-end-line="39" selection-end-column="54" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
           </folding>
@@ -691,16 +691,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/backend/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="511">
-          <caret line="63" column="10" lean-forward="false" selection-start-line="63" selection-start-column="4" selection-end-line="63" selection-end-column="10" />
+        <state relative-caret-position="2278">
+          <caret line="69" column="17" lean-forward="false" selection-start-line="69" selection-start-column="4" selection-end-line="69" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/backend/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="977">
-          <caret line="681" column="39" lean-forward="false" selection-start-line="681" selection-start-column="27" selection-end-line="681" selection-end-column="39" />
+        <state relative-caret-position="93">
+          <caret line="743" column="0" lean-forward="true" selection-start-line="743" selection-start-column="0" selection-end-line="743" selection-end-column="0" />
           <folding>
             <element signature="e#0#50#0" expanded="true" />
           </folding>

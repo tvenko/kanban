@@ -736,6 +736,35 @@ class CardTime(generics.ListCreateAPIView):
         cards_list = []
         for project in request.data["project_ids"]:
             project_cards = Card.objects.all().filter(project_id=project)
+
+            if request.data["createdStart"] != None:
+                createdStart = request.data["createdStart"]
+                createdStop = request.data["createdStop"]
+                project_cards = project_cards.filter(created_at__range = (createdStart, createdStop))
+
+            if request.data["finishedStart"] != None:
+                finishedStart = request.data["finishedStart"]
+                finishedStop = request.data["finishedStop"]
+                project_cards = project_cards.filter(completed_at__range=(finishedStart, finishedStop))
+
+            if request.data["developmentStart"] != None:
+                developmentStart = request.data["developmentStart"]
+                developmentStop = request.data["developmentStop"]
+                project_cards = project_cards.filter(started_at__range=(developmentStart, developmentStop))
+
+            if request.data["sizeStart"] != None:
+                sizeStart = request.data["sizeStart"]
+                sizeStop = request.data["sizeStop"]
+                project_cards = project_cards.filter(size__range=(sizeStart, sizeStop))
+
+            card_types = request.data["types"]
+
+            if "silver" in card_types:
+                project_cards = project_cards.filter(type_silver=True)
+
+            if "rejected" in card_types:
+                project_cards = project_cards.filter(type_rejected=True)
+
             for card in project_cards:
                 card_dict = {}
                 card_dict["number"] = card.number
@@ -753,11 +782,16 @@ class CardTime(generics.ListCreateAPIView):
                         card_dict["times"]["[" + str(log.from_column_id.id) + "]" + " " + log.from_column_id.title] += tmp_time
                         average_dict["[" + str(log.from_column_id.id) + "]" + " " + log.from_column_id.title].append(tmp_time)
                         previous = log.date
+                times = []
+                for key, item in card_dict["times"].items():
+                    times.append([key, item])
+                card_dict["times"] = times
                 cards_list.append(card_dict)
         list_of_data["cards"] = cards_list
+        averages = []
         for key, item in average_dict.items():
-            average_dict[key] = (sum(item) / float(len(item)))
-        list_of_data["average"] = average_dict
+            averages.append([key, (sum(item) / float(len(item)))])
+        list_of_data["average"] = averages
 
         return Response(list_of_data, status=status.HTTP_202_ACCEPTED)
 
