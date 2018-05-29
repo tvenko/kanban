@@ -737,25 +737,60 @@ class CardTime(generics.ListCreateAPIView):
         for project in request.data["project_ids"]:
             project_cards = Card.objects.all().filter(project_id=project)
 
-            if request.data["createdStart"] != None:
+            if request.data["createdStart"] != None and request.data["createdStop"] != None:
                 createdStart = request.data["createdStart"]
                 createdStop = request.data["createdStop"]
                 project_cards = project_cards.filter(created_at__range = (createdStart, createdStop))
 
-            if request.data["finishedStart"] != None:
+            if request.data["createdStart"] != None and request.data["createdStop"] == None:
+                createdStart = request.data["createdStart"]
+                project_cards = project_cards.filter(created_at__gte = createdStart)
+
+            if request.data["createdStart"] == None and request.data["createdStop"] != None:
+                createdStop = request.data["createdStop"]
+                project_cards = project_cards.filter(created_at__lte = createdStop)
+
+
+            if request.data["finishedStart"] != None and request.data["finishedStop"] != None:
                 finishedStart = request.data["finishedStart"]
                 finishedStop = request.data["finishedStop"]
                 project_cards = project_cards.filter(completed_at__range=(finishedStart, finishedStop))
 
-            if request.data["developmentStart"] != None:
+            if request.data["finishedStart"] != None and request.data["finishedStop"] == None:
+                finishedStart = request.data["finishedStart"]
+                project_cards = project_cards.filter(completed_at__gte=finishedStart)
+
+            if request.data["finishedStart"] == None and request.data["finishedStop"] != None:
+                finishedStop = request.data["finishedStop"]
+                project_cards = project_cards.filter(completed_at__lte=finishedStop)
+
+
+            if request.data["developmentStart"] != None and request.data["developmentStop"] != None:
                 developmentStart = request.data["developmentStart"]
                 developmentStop = request.data["developmentStop"]
                 project_cards = project_cards.filter(started_at__range=(developmentStart, developmentStop))
 
-            if request.data["sizeStart"] != None:
+            if request.data["developmentStart"] != None and request.data["developmentStop"] == None:
+                developmentStart = request.data["developmentStart"]
+                project_cards = project_cards.filter(started_at__gte=developmentStart)
+
+            if request.data["developmentStart"] == None and request.data["developmentStop"] != None:
+                developmentStop = request.data["developmentStop"]
+                project_cards = project_cards.filter(started_at__lte=developmentStop)
+
+
+            if request.data["sizeStart"] != None and request.data["sizeStop"] != None:
                 sizeStart = request.data["sizeStart"]
                 sizeStop = request.data["sizeStop"]
                 project_cards = project_cards.filter(size__range=(sizeStart, sizeStop))
+
+            if request.data["sizeStart"] != None and request.data["sizeStop"] == None:
+                sizeStart = request.data["sizeStart"]
+                project_cards = project_cards.filter(size__gte=sizeStart)
+
+            if request.data["sizeStart"] == None and request.data["sizeStop"] != None:
+                sizeStop = request.data["sizeStop"]
+                project_cards = project_cards.filter(size__lte=sizeStop)
 
             card_types = request.data["types"]
 
@@ -774,7 +809,7 @@ class CardTime(generics.ListCreateAPIView):
                 type_filtered = project_cards.filter(type_rejected=True)
                 for i in type_filtered:
                     all_projects_cards.add(i)
-
+                    
             for card in list(all_projects_cards):
                 card_dict = {}
                 card_dict["number"] = card.number
@@ -794,13 +829,13 @@ class CardTime(generics.ListCreateAPIView):
                         previous = log.date
                 times = []
                 for key, item in card_dict["times"].items():
-                    times.append([key, item])
+                    times.append([key, float("{0:.3f}".format(item))])
                 card_dict["times"] = times
                 cards_list.append(card_dict)
         list_of_data["cards"] = cards_list
         averages = []
         for key, item in average_dict.items():
-            averages.append([key, (sum(item) / float(len(item)))])
+            averages.append([key, float("{0:.3f}".format((sum(item) / float(len(item)))))])
         list_of_data["average"] = averages
 
         return Response(list_of_data, status=status.HTTP_202_ACCEPTED)
