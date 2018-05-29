@@ -655,13 +655,13 @@ class CardList(generics.ListCreateAPIView):
         serializer = CardSerializer(data=request.data)
 
         if serializer.is_valid():
-            cards = Card.objects.all().filter(project_id=int(serializer.validated_data["project_id"].id))
-            cards_on_column = Card.objects.all().filter(column_id=serializer.validated_data["column_id"])
+            cards = Card.objects.all().filter(project_id=int(serializer.validated_data["project_id"].id)).filter(active=True)
+            cards_on_column = Card.objects.all().filter(column_id=serializer.validated_data["column_id"]).filter(active=True)
             wip_sum = len([card.size for card in cards_on_column])
             if not cards:
                 serializer.save(number=1)
-                card = Card.objects.all().order_by("-card_id")[0]
-                CardLog.objects.create(card_id=card, )
+                #card = Card.objects.all().order_by("-card_id")[0]
+                #CardLog.objects.create(card_id=card, )
                 return JsonResponse(serializer.data, status=status.HTTP_200_OK)
             else:
                 silver_type = cards.filter(type_silver=True).filter(column_id=serializer.validated_data["column_id"])
@@ -679,7 +679,7 @@ class CardList(generics.ListCreateAPIView):
                                         status=status.HTTP_200_OK)
                 elif wip_sum + 1 > serializer.validated_data["column_id"].wip_restriction:
                     serializer.save(number=card_serializer.data["number"] + 1)
-                    card = Card.objects.all().order_by("-card_id")[0]
+                    card = Card.objects.all().filter(active=True).order_by("-card_id")[0]
                     WipViolation.objects.create(card_id=card, column_id=serializer.validated_data["column_id"],
                                                        user_id=User.objects.get(pk=request.data["violation_user"]), wip_violation_reason_id=WipViolationReason.objects.get(pk=1))
                     return JsonResponse(serializer.data,
