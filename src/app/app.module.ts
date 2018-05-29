@@ -34,6 +34,8 @@ import { CardsComponent } from './board/cards/cards.component';
 import { PriorityService } from './shared/services/priority.service';
 import { CardsService } from './shared/services/cards.service';
 
+import { AnalyticsService } from './shared/services/analytics.service';
+
 export function tokenGetterFunc() {
   return localStorage.getItem('auth_token');
 }
@@ -80,7 +82,8 @@ export function tokenGetterFunc() {
     BoardsListService,
     MessageService,
     PriorityService,
-    CardsService
+    CardsService,
+    AnalyticsService
   ],
   bootstrap: [AppComponent]
 })

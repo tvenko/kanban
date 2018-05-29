@@ -18,7 +18,7 @@ const appRoutes: Routes = [
   { path: 'users', component: UsersComponent, canActivate: [AuthGuard] },
   { path: 'board/:id', component: BoardComponent, canActivate: [AuthGuard] },
   { path: 'boards-list', component: BoardsListComponent, canActivate: [AuthGuard] },
-  { path: 'analytics', component: AnalyticsComponent, canActivate: [AuthGuard] },
+  { path: 'analytics/:id', component: AnalyticsComponent, canActivate: [AuthGuard] },
   { path: 'documentation', component: DocumentationComponent, canActivate: [AuthGuard] },
   { path: 'groups', component: GroupsComponent, canActivate: [AuthGuard] },
   { path: 'projects', component: ProjectsComponent, canActivate: [AuthGuard] },

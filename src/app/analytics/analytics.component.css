@@ -1,8 +1,10 @@
-.placeholder {
-  text-align: center;
-  margin-top: 300px;
+.uk-position-top-center {
+  margin-top: 120px;
 }
 
-.placeholder p {
-  color: gray;
+.center-padding {
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 50px;
+  padding-bottom: 50px;
 }

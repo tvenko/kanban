@@ -4,12 +4,15 @@
         <div class="uk-navbar">
           <div class="uk-navbar-left">
             <a routerLink="/boards-list" class="uk-navbar-item uk-logo">Kanbafake</a>
-            <ul class="uk-navbar-nav">
+            <ul class="uk-navbar-nav uk-dropdown-navbar">
               <li [ngClass]="{'uk-active': isActiveRoute('/boards-list')}">
                 <a routerLink="/boards-list">Table</a>
               </li>
-              <li *ngIf="isActiveRoute('/board')" [ngClass]="{'uk-active': isActiveRoute('/board')}">
-                <a> > Tabla {{id}}</a>
+              <li *ngIf="isActiveRoute('/board') || isActiveRoute('/analytics')" [ngClass]="{'uk-active': isActiveRoute('/board')}">
+                <a [routerLink]="['/board', id]">[ Tabla {{id}} ]</a>
+              </li>
+              <li *ngIf="isActiveRoute('/board') || isActiveRoute('/analytics')" [ngClass]="{'uk-active': isActiveRoute('/analytics')}">
+                  <a [routerLink]="['/analytics', id]">[ Analitika ]</a>
               </li>
               <li [ngClass]="{'uk-active': isActiveRoute('/projects')}">
                 <a routerLink="/projects">Projekti</a>
@@ -23,9 +26,6 @@
               <li [ngClass]="{'uk-active': isActiveRoute('/board')}">
                 <a routerLink="/board">Tabla &nbsp; <i>dev</i></a>
               </li>-->
-              <li [ngClass]="{'uk-active': isActiveRoute('/analytics')}">
-                <a routerLink="/analytics">Analitika</a>
-              </li>
               <li *ngIf="isAdmin()" [ngClass]="{'uk-active': isActiveRoute('/users')}">
                 <a routerLink="/users">Uporabniki</a>
               </li>
