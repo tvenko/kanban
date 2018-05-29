@@ -33,6 +33,7 @@ import {MessageService} from './shared/services/message.service';
 import { CardsComponent } from './board/cards/cards.component';
 import { PriorityService } from './shared/services/priority.service';
 import { CardsService } from './shared/services/cards.service';
+import { DeleteReasonsService } from './shared/services/deleteReasons.service';
 
 import { AnalyticsService } from './shared/services/analytics.service';
 
@@ -83,7 +84,8 @@ export function tokenGetterFunc() {
     MessageService,
     PriorityService,
     CardsService,
-    AnalyticsService
+    AnalyticsService,
+    DeleteReasonsService
   ],
   bootstrap: [AppComponent]
 })

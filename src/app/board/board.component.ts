@@ -362,6 +362,13 @@ export class BoardComponent implements OnInit, OnDestroy {
       this.cardService.updateCard(card).subscribe(res => {
         this.getBoard();
       }, err => console.log(err));
+
+      const cardLog = {
+        card_id: card.card_id,
+        from_column_id: prevColumn.id,
+        to_column_id: column.id
+      };
+      this.cardService.postCardLog(cardLog).subscribe();
     }
     event.preventDefault();
   }
@@ -505,7 +512,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     
     if(theDate != null){
       theDate = new Date(theDate);
-      console.log((theDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
       return (theDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24) ;
 
     }else{

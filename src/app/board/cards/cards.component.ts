@@ -19,6 +19,8 @@ import { Log } from '../../shared/models/log.interface';
 import { BoardComponent } from '../board.component';
 import { Task } from '../../shared/models/task.interface';
 import {UsersService} from "../../shared/services/users.service";
+import { DeleteReasonsService } from '../../shared/services/deleteReasons.service';
+import { DeleteReason } from '../../shared/models/deleteReason.interface';
 declare var UIkit: any;
 
 
@@ -37,9 +39,11 @@ export class CardsComponent implements OnInit {
   cardsModalTitle: String;
   newCardForm: FormGroup;
   editCardForm: FormGroup;
+  deleteCardForm: FormGroup;
   projects: Project[] = [];
   board: Board;
   priorities: Priority[];
+  deleteReasons: DeleteReason[];
   silverBullet = false;
 
   isCurrentUserAdmin: boolean;
@@ -60,6 +64,8 @@ export class CardsComponent implements OnInit {
   isUserKanbanMaster_inGroup = false;
   isUserProductOwner_inGroup = false;
   canUserEdit = false;
+  canUserDelete = false;
+  selectedReason: DeleteReason = null;
 
   constructor(private prioritySerive: PriorityService,
               private boardsService: BoardsService,
@@ -67,11 +73,13 @@ export class CardsComponent implements OnInit {
               private boardsListService: BoardsListService,
               private router: Router,
               private cardService: CardsService,
-              private userService: UsersService) { }
+              private userService: UsersService,
+              private deleteReasonService: DeleteReasonsService) { }
 
 
   ngOnInit() {
     this.canUserEdit = false;
+    this.canUserDelete = false;
     this.loadPriorities();
     const user = JSON.parse(localStorage.getItem('user'));
     this.currentUserId = user['id'];
@@ -124,6 +132,10 @@ export class CardsComponent implements OnInit {
       'size-edit': new FormControl(),
       'project-edit': new FormControl({disabled: true}),
 
+    });
+
+    this.deleteCardForm = new FormGroup({
+      'reason': new FormControl(null, Validators.required),
     });
     // this.newCardForm.get('typeSilver').disable();
 
@@ -349,6 +361,7 @@ export class CardsComponent implements OnInit {
 
 
   loadEditCardModal(cardDetails: CardDetailed) {
+      this.canUserDelete = this.canDelete();
       this.canUserEdit = this.canEdit();
       this.editCardForm.reset();
       this.projects = [];
@@ -383,6 +396,33 @@ export class CardsComponent implements OnInit {
       }
   }
 
+  getDeleteReasons(){
+    this.deleteReasonService.getReasons().subscribe(reasons => {
+      this.deleteReasons = <DeleteReason[]>reasons;
+    }, err => {
+      console.log('Ni bilo mogoce dobiti šifranta razlogov za brisanje ' + err);
+    });
+  }
+
+  deleteCard(){
+
+    this.selectedCard.active = false;
+    this.selectedCard.delete_reason_id = this.selectedReason.id;
+    console.log(this.selectedCard);
+    this.cardService.updateCard(this.selectedCard).subscribe(res => {
+      UIkit.modal('#delete-card-modal').hide();
+      UIkit.modal('#card-details-modal').hide();
+      UIkit.notification('Kartica izbrisana.', {status: 'success', timeout: 2000});
+      this.error = null;
+      this.editCardForm.reset();
+    }, err => {
+      this.error = 'kartice ni bilo mogoče izbrisati. Prosimo poskusite kasneje';
+      console.log('napaka pri posodablanju kartice');
+    });
+
+
+  }
+
   canEdit() {
     let onProject = false;
     for (const p of this.board.projects) {
@@ -403,6 +443,28 @@ export class CardsComponent implements OnInit {
       return true;
     }
     console.log('on project', onProject, ' developer: ', this.isCurrentUserDeveloper);
+    return false;
+  }
+
+  canDelete(){
+    let onProject = false;
+    //Preveri, da uporabnik briše samo kartice, ki pripadajo njegovemu projektu.
+    for (const p of this.board.projects) {
+      if (p.id === this.selectedCard.project_id) {
+        onProject = this.currentUserGroups.indexOf(+p.developer_group_id) >= 0;
+      }
+    }
+
+    const leftColumnIndex = this.boardsService.enumeratedColumns.get(this.board.type_left_border_column_id);
+    const rightColumnIndex = this.boardsService.enumeratedColumns.get(this.board.type_right_border_column_id);
+    const columnIndex = this.boardsService.enumeratedColumns.get(this.selectedCard.column_id);
+    //Preveri brisanje za vlogo Product Owner (lahko briše samo kartico, za katero se še ni pričel razvoj).
+    if (columnIndex < leftColumnIndex && (this.isCurrentUserProductOwner) && onProject) {
+      return true;
+    //Preveri brisanje za vlogo KanbanMaster (lahko briše kartico v kateremkoli stolpcu).
+    } else if (this.isCurrentUserKanbanMaster && onProject) {
+      return true;
+    }
     return false;
   }
 
