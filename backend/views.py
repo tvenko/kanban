@@ -759,11 +759,21 @@ class CardTime(generics.ListCreateAPIView):
 
             card_types = request.data["types"]
 
+            all_projects_cards = set()
+
+            if "new" in card_types:
+                for i in project_cards:
+                    all_projects_cards.add(i)
+
             if "silver" in card_types:
-                project_cards = project_cards.filter(type_silver=True)
+                type_filtered = project_cards.filter(type_silver=True)
+                for i in type_filtered:
+                    all_projects_cards.add(i)
 
             if "rejected" in card_types:
-                project_cards = project_cards.filter(type_rejected=True)
+                type_filtered = project_cards.filter(type_rejected=True)
+                for i in type_filtered:
+                    all_projects_cards.add(i)
 
             for card in project_cards:
                 card_dict = {}
