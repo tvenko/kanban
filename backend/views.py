@@ -775,7 +775,7 @@ class CardTime(generics.ListCreateAPIView):
                 for i in type_filtered:
                     all_projects_cards.add(i)
 
-            for card in project_cards:
+            for card in list(all_projects_cards):
                 card_dict = {}
                 card_dict["number"] = card.number
                 card_dict["title"] = card.title
