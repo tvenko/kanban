@@ -729,14 +729,37 @@ class CardTime(generics.ListCreateAPIView):
     queryset = CardLog.objects.all()
     serializer_class = CardLogSerializer
 
-    def get(self, request, *args, **kwargs):
-        card_logs = CardLog.objects.all()
-        neki = []
-        for card_log in card_logs:
-            for x in card_logs:
-                neki.append(card_log.date - x.date)
+    def post(self, request, *args, **kwargs):
+        from collections import defaultdict
+        list_of_data = {}
+        average_dict = defaultdict(list)
+        cards_list = []
+        for project in request.data["project_ids"]:
+            project_cards = Card.objects.all().filter(project_id=project)
+            for card in project_cards:
+                card_dict = {}
+                card_dict["number"] = card.number
+                card_dict["title"] = card.title
+                card_dict["card_id"] = card.card_id
+                card_logs = CardLog.objects.all().filter(card_id=card)
+                card_dict["times"] = defaultdict(lambda: 0)
+                if card_logs:
+                    tmp_time = abs(card.created_at - card_logs[0].date).total_seconds() / 3600
+                    card_dict["times"]["[" + str(card_logs[0].from_column_id.id) + "]" + " " + card_logs[0].from_column_id.title] += tmp_time
+                    average_dict["[" + str(card_logs[0].from_column_id.id) + "]" + " " + card_logs[0].from_column_id.title].append(tmp_time)
+                    previous = card_logs[0].date
+                    for log in card_logs[1:]:
+                        tmp_time = abs(previous - log.date).total_seconds() / 3600
+                        card_dict["times"]["[" + str(log.from_column_id.id) + "]" + " " + log.from_column_id.title] += tmp_time
+                        average_dict["[" + str(log.from_column_id.id) + "]" + " " + log.from_column_id.title].append(tmp_time)
+                        previous = log.date
+                cards_list.append(card_dict)
+        list_of_data["cards"] = cards_list
+        for key, item in average_dict.items():
+            average_dict[key] = (sum(item) / float(len(item)))
+        list_of_data["average"] = average_dict
 
-        return Response(neki, status=status.HTTP_202_ACCEPTED)
+        return Response(list_of_data, status=status.HTTP_202_ACCEPTED)
 
 
 class CardAbout(generics.ListCreateAPIView):
