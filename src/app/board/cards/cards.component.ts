@@ -1,4 +1,4 @@
-import { Component, OnInit, group, Output } from '@angular/core';
+import { Component, OnInit, group, Output, ChangeDetectorRef, NgZone } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Project } from '../../shared/models/project.interface';
 import { ProjectsService } from '../../shared/services/projects.service';
@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { BoardsService } from '../../shared/services/boards.service';
 import { Board } from '../../shared/models/board.interface';
 import { User } from '../../shared/models/user.interface';
-import { GroupMember } from '../../shared/models/group.interface';
+import { GroupMember, Group } from '../../shared/models/group.interface';
 import { Card } from '../../shared/models/card.interface';
 import { Priority } from '../../shared/models/priority.interface';
 import { PriorityService } from '../../shared/services/priority.service';
@@ -74,7 +74,9 @@ export class CardsComponent implements OnInit {
               private router: Router,
               private cardService: CardsService,
               private userService: UsersService,
-              private deleteReasonService: DeleteReasonsService) { }
+              private deleteReasonService: DeleteReasonsService,
+              private _ngZone: NgZone,
+              private ref: ChangeDetectorRef) { }
 
 
   ngOnInit() {
@@ -111,7 +113,6 @@ export class CardsComponent implements OnInit {
     this.isCurrentUserAdmin = user.roles.includes('admin');
     this.isCurrentUserProductOwner = user.roles.includes('product owner');
     this.isCurrentUserDeveloper = user.roles.includes('developer');
-
 
     this.newCardForm = new FormGroup({
       'title': new FormControl(null, Validators.required),
@@ -449,20 +450,34 @@ export class CardsComponent implements OnInit {
   canDelete(){
     let onProject = false;
     //Preveri, da uporabnik briše samo kartice, ki pripadajo njegovemu projektu.
+    let isUserProductOwner = false;
+    let isUserKanbanMaster = false;
     for (const p of this.board.projects) {
       if (p.id === this.selectedCard.project_id) {
-        onProject = this.currentUserGroups.indexOf(+p.developer_group_id) >= 0;
+        console.log(p)    
+        p.group_data.users.forEach(groupMember => {
+          if(groupMember.id == this.currentUserId && groupMember.group_active){
+            onProject = true;
+            if (groupMember.allowed_group_roles.includes(2)) {
+              isUserProductOwner = true;
+            }
+            if (groupMember.allowed_group_roles.includes(3)) {
+              isUserKanbanMaster = true;
+            }
+          }
+        });
       }
     }
 
+    console.log("on project: ", onProject, " kanban master: ", isUserKanbanMaster, " product owner: ", isUserProductOwner);
     const leftColumnIndex = this.boardsService.enumeratedColumns.get(this.board.type_left_border_column_id);
     const rightColumnIndex = this.boardsService.enumeratedColumns.get(this.board.type_right_border_column_id);
     const columnIndex = this.boardsService.enumeratedColumns.get(this.selectedCard.column_id);
     //Preveri brisanje za vlogo Product Owner (lahko briše samo kartico, za katero se še ni pričel razvoj).
-    if (columnIndex < leftColumnIndex && (this.isCurrentUserProductOwner) && onProject) {
+    if (columnIndex < leftColumnIndex && (isUserProductOwner) && onProject) {
       return true;
     //Preveri brisanje za vlogo KanbanMaster (lahko briše kartico v kateremkoli stolpcu).
-    } else if (this.isCurrentUserKanbanMaster && onProject) {
+    } else if (isUserKanbanMaster && onProject) {
       return true;
     }
     return false;
@@ -471,9 +486,12 @@ export class CardsComponent implements OnInit {
   onCardClick(card) {
     this.cardService.getDetailedCard(card.card_id).subscribe(res => {
       this.selectedCard = card;
+      this.canUserDelete = this.canDelete();
       const cardDetails: CardDetailed = <CardDetailed>res;
       this.loadEditCardModal(cardDetails);
       UIkit.modal('#card-details-modal').show();
+
+      console.log("Can user delete: ", this.canUserDelete);
     }, err => {
       console.log(err);
     });

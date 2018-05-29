@@ -35,6 +35,7 @@ export class BoardsListComponent implements OnInit {
   }
 
   ngOnInit() {
+    
     let user = JSON.parse(localStorage.getItem('user'));
     this.isCurrentUserKanbanMaster = user.roles.includes("kanban master");
     this.isCurrentUserAdmin = user.roles.includes("admin");
