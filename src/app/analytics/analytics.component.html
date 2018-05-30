@@ -16,10 +16,10 @@
 
 					<div class="uk-form-controls uk-width-1-3">
 			          <label  for="options">Tip kartice:</label>
-					    <div *ngFor="let option of typeOptions">
+					    <div *ngFor="let option of typeOptions; let i = index" [attr.data-index]="i">
 					        <label>
 					            <input type="checkbox"
-					                   name="options"
+					                   name="options1{{i}}"
 					                   value="{{option.value}}"
 					                   [(ngModel)]="option.checked"/>
 					            {{option.name}}
@@ -30,10 +30,10 @@
 
 					<div class="uk-form-controls uk-width-1-3">
 			            <label for="options">Projekt:</label>
-					    <div *ngFor="let option of projectOptions">
+					    <div *ngFor="let option of projectOptions; let i = index" [attr.data-index]="i">
 					        <label>
 					            <input type="checkbox"
-					                   name="options"
+					                   name="options2{{i}}"
 					                   value="{{option.value}}"
 					                   [(ngModel)]="option.checked"/>
 					            {{option.name}}
@@ -164,10 +164,10 @@
 
 								<div class="uk-form-controls uk-width-1-3">
 						          <label  for="options">Tip kartice:</label>
-								    <div *ngFor="let option of typeOptions">
+								    <div *ngFor="let option of typeOptions; let i = index" [attr.data-index]="i">
 								        <label>
 								            <input type="checkbox"
-								                   name="options"
+								                   name="options1{{i}}"
 								                   value="{{option.value}}"
 								                   [(ngModel)]="option.checked"/>
 								            {{option.name}}
@@ -178,10 +178,10 @@
 
 								<div class="uk-form-controls uk-width-1-3">
 						            <label for="options">Projekt:</label>
-								    <div *ngFor="let option of projectOptions">
+								    <div *ngFor="let option of projectOptions; let i = index" [attr.data-index]="i">
 								        <label>
 								            <input type="checkbox"
-								                   name="options"
+								                   name="options2{{i}}"
 								                   value="{{option.value}}"
 								                   [(ngModel)]="option.checked"/>
 								            {{option.name}}
@@ -286,8 +286,22 @@
 						        </form>
 						        <br><br>
 									        <div class="uk-background-default center-padding">
-									        <h4>Diagram</h4>
-									        
+									        <h4>Komulativni diagram</h4>
+									        <br>
+
+
+									        <canvas *ngIf="chartData.length > 0"
+											      baseChart
+											      [chartType]="'line'"
+											      [datasets]="chartData"
+											      [labels]="chartLabels"
+											      [options]="chartOptions"
+											      [legend]="true"
+											      (chartClick)="onChartClick($event)">
+											  </canvas>
+
+
+
 
 										</div>
 

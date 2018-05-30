@@ -13,6 +13,20 @@ declare var UIkit: any;
 })
 export class AnalyticsComponent implements OnInit, OnDestroy {
 
+  chartOptions = {
+    responsive: true
+  };
+
+  chartData = [];
+  chartLabels: any;
+
+  onChartClick(event) {
+    console.log(event);
+  }
+
+
+
+
   typeOptions = [
     {name:'Nova zahteva', value:'new', checked:true},
     {name:'Silver bullet', value:'silver', checked:true},
@@ -59,6 +73,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   columnStop = null;
   startDate = null;
   endDate = null;
+
+  columnMap = {};
 
   constructor(private boardsListService: BoardsListService, private router: Router,
               private route: ActivatedRoute, private boardsService: BoardsService,
@@ -110,6 +126,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             });
             board["columns"].forEach((column) => {
               this.columns.push({id:column["id"], title:column["title"]});
+              this.columnMap[column["id"]] = column["title"];
             });
             console.log(this.columns);
 
@@ -275,12 +292,26 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
     this.analyticsService.postComulative(reqData).subscribe(data => {
       console.log(data);
-      // this.avgTimes = data["average"];
-      // this.cards = data["cards"];
+      
+      let cData = [];
+      let cLabels = [];
+      Object.keys(data).forEach((key) => {
+        cData.push({ data:data[key], label:this.columnMap[key] });
+      });
 
-    }, err => {
-      console.log('Napaka ' + err);
-    });
+      let currDate = this.startDate;
+      while(currDate < this.endDate) {
+        cLabels.push(this.SIformatDate(currDate));
+        currDate.setDate(currDate.getDate() + 1);
+      }
+      console.log(cLabels);
+
+      this.chartData = cData;
+      this.chartLabels = cLabels;
+
+        }, err => {
+          console.log('Napaka ' + err);
+        });
   }
 
   formatDate(date) {
@@ -293,6 +324,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     if (day.length < 2) day = '0' + day;
 
     return [year, month, day].join('-');
+  }
+
+  SIformatDate(date) {
+    var d = date,
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
+
+    return [day, month, year].join('.');
   }
 
 

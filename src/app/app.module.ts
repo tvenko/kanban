@@ -36,6 +36,7 @@ import { CardsService } from './shared/services/cards.service';
 import { DeleteReasonsService } from './shared/services/deleteReasons.service';
 
 import { AnalyticsService } from './shared/services/analytics.service';
+import { ChartsModule } from 'ng2-charts';
 
 export function tokenGetterFunc() {
   return localStorage.getItem('auth_token');
@@ -66,6 +67,7 @@ export function tokenGetterFunc() {
     ReactiveFormsModule,
     HttpModule,
     CalendarModule,
+    ChartsModule,
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetterFunc,
