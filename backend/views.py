@@ -971,6 +971,7 @@ class CardTime2(generics.ListCreateAPIView):
         end_date = datetime.datetime.strptime(request.data["end_date"], "%Y-%m-%d").date()
 
         day_column_dict = {}
+
         previous = None
         previous_date = None
         for n in range(int((end_date - start_date).days)):
@@ -996,7 +997,25 @@ class CardTime2(generics.ListCreateAPIView):
             date = start_date + datetime.timedelta(n)
             day_column_dict[str(date)] = previous
 
-        return Response(day_column_dict, status=status.HTTP_202_ACCEPTED)
+        for key, value in day_column_dict.items():
+            for column in request.data["columns"]:
+                if column not in value:
+                    day_column_dict[key][column] = 0
+
+        from operator import add
+        column_day_dict = defaultdict(list)
+        for key, item in sorted(day_column_dict.items()):
+            for key2, item2 in item.items():
+                column_day_dict[key2].append(item2)
+
+        previous = sorted(column_day_dict.items())[0][1]
+
+        for key, value in sorted(column_day_dict.items())[1:]:
+            tmp = list(map(add, value, previous))
+            column_day_dict[key] = tmp
+            previous = tmp
+
+        return Response(column_day_dict, status=status.HTTP_202_ACCEPTED)
 
 
 class CardAbout(generics.ListCreateAPIView):
