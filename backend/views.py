@@ -992,10 +992,10 @@ class CardTime2(generics.ListCreateAPIView):
                 previous = day_column_dict[str(date)]
                 previous_date = date
 
-        start_date = previous_date + datetime.timedelta(1)
-        for n in range(int((end_date - start_date).days)):
-            date = start_date + datetime.timedelta(n)
-            day_column_dict[str(date)] = previous
+        #start_date = previous_date + datetime.timedelta(1)
+        #for n in range(int((end_date - start_date).days)):
+        #    date = start_date + datetime.timedelta(n)
+        #    day_column_dict[str(date)] = previous
 
         for key, value in day_column_dict.items():
             for column in request.data["columns"]:
