@@ -11,4 +11,8 @@ export class AnalyticsService {
     return this.http.post(Config.API + '/card_time/', data);
   }
 
+  postComulative(data) {
+    return this.http.post(Config.API + '/card_time2/', data);
+  }
+
 }
