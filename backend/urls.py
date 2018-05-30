@@ -51,6 +51,7 @@ card_urls = [
     url(r'^about_card/(?P<pk>[0-9]+)/$', views.CardAbout.as_view()),
     url(r'^card_logs/$', views.CardLogList.as_view()),
     url(r'^card_time/$', views.CardTime.as_view()),
+    url(r'^card_time2/$', views.CardTime2.as_view()),
     url(r'^card_delete_reason/$', views.DeleteReasonList.as_view()),
 ]
 

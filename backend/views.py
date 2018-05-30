@@ -841,6 +841,164 @@ class CardTime(generics.ListCreateAPIView):
         return Response(list_of_data, status=status.HTTP_202_ACCEPTED)
 
 
+class CardTime2(generics.ListCreateAPIView):
+    queryset = CardLog.objects.all()
+    serializer_class = CardLogSerializer
+
+    def post(self, request, *args, **kwargs):
+        from collections import defaultdict
+        list_of_data = {}
+        column_dict = defaultdict(list)
+        cards_list = []
+        import datetime
+        for project in request.data["project_ids"]:
+            project_cards = Card.objects.all().filter(project_id=project)
+
+            if request.data["createdStart"] != None and request.data["createdStop"] != None:
+                createdStart = request.data["createdStart"]
+                createdStop = request.data["createdStop"]
+                project_cards = project_cards.filter(
+                    created_at__range=(createdStart, createdStop))
+
+            if request.data["createdStart"] != None and request.data["createdStop"] == None:
+                createdStart = request.data["createdStart"]
+                project_cards = project_cards.filter(
+                    created_at__gte=createdStart)
+
+            if request.data["createdStart"] == None and request.data["createdStop"] != None:
+                createdStop = request.data["createdStop"]
+                project_cards = project_cards.filter(
+                    created_at__lte=createdStop)
+
+            if request.data["finishedStart"] != None and request.data["finishedStop"] != None:
+                finishedStart = request.data["finishedStart"]
+                finishedStop = request.data["finishedStop"]
+                project_cards = project_cards.filter(
+                    completed_at__range=(finishedStart, finishedStop))
+
+            if request.data["finishedStart"] != None and request.data["finishedStop"] == None:
+                finishedStart = request.data["finishedStart"]
+                project_cards = project_cards.filter(
+                    completed_at__gte=finishedStart)
+
+            if request.data["finishedStart"] == None and request.data["finishedStop"] != None:
+                finishedStop = request.data["finishedStop"]
+                project_cards = project_cards.filter(
+                    completed_at__lte=finishedStop)
+
+            if request.data["developmentStart"] != None and request.data["developmentStop"] != None:
+                developmentStart = request.data["developmentStart"]
+                developmentStop = request.data["developmentStop"]
+                project_cards = project_cards.filter(
+                    started_at__range=(developmentStart, developmentStop))
+
+            if request.data["developmentStart"] != None and request.data["developmentStop"] == None:
+                developmentStart = request.data["developmentStart"]
+                project_cards = project_cards.filter(
+                    started_at__gte=developmentStart)
+
+            if request.data["developmentStart"] == None and request.data["developmentStop"] != None:
+                developmentStop = request.data["developmentStop"]
+                project_cards = project_cards.filter(
+                    started_at__lte=developmentStop)
+
+            if request.data["sizeStart"] != None and request.data["sizeStop"] != None:
+                sizeStart = request.data["sizeStart"]
+                sizeStop = request.data["sizeStop"]
+                project_cards = project_cards.filter(
+                    size__range=(sizeStart, sizeStop))
+
+            if request.data["sizeStart"] != None and request.data["sizeStop"] == None:
+                sizeStart = request.data["sizeStart"]
+                project_cards = project_cards.filter(size__gte=sizeStart)
+
+            if request.data["sizeStart"] == None and request.data["sizeStop"] != None:
+                sizeStop = request.data["sizeStop"]
+                project_cards = project_cards.filter(size__lte=sizeStop)
+
+            card_types = request.data["types"]
+
+            all_projects_cards = set()
+
+            if "new" in card_types:
+                for i in project_cards:
+                    all_projects_cards.add(i)
+
+            if "silver" in card_types:
+                type_filtered = project_cards.filter(type_silver=True)
+                for i in type_filtered:
+                    all_projects_cards.add(i)
+
+            if "rejected" in card_types:
+                type_filtered = project_cards.filter(type_rejected=True)
+                for i in type_filtered:
+                    all_projects_cards.add(i)
+
+            for card in list(all_projects_cards):
+                card_logs = CardLog.objects.all().filter(card_id=card)
+                if card_logs:
+                    column_id = card_logs[0].from_column_id.id
+                    column_dict[str(column_id) + "_" + str(card_logs[0].card_id.card_id)].append([card_logs[0].card_id.created_at.date(), card_logs[0].date, card_logs[0].card_id.card_id])
+                    previous = card_logs[0]
+
+                    for log in card_logs[1:]:
+                        column_id = log.from_column_id.id
+                        if column_dict[str(column_id) + "_" + str(log.card_id.card_id)]:
+                            for x in column_dict[str(column_id) + "_" + str(log.card_id.card_id)]:
+                                if x[0] != previous.date.date():
+                                        column_dict[str(column_id) + "_" + str(
+                                            log.card_id.card_id)].append(
+                                            [previous.date.date(), log.date,
+                                             log.card_id.card_id])
+                        else:
+                            column_dict[str(column_id) + "_" + str(log.card_id.card_id) ].append([previous.date.date(), log.date, log.card_id.card_id])
+                        previous = log
+
+                    if column_dict[str(previous.to_column_id.id) + "_" + str(previous.card_id.card_id)]:
+                        for x in column_dict[str(previous.to_column_id.id) + "_" + str(previous.card_id.card_id)]:
+                            if x[0] != previous.date.date():
+                                column_dict[str(previous.to_column_id.id) + "_" + str(previous.card_id.card_id)].append([previous.date.date(), datetime.datetime.now(), previous.card_id.card_id])
+                    else:
+                        column_dict[str(previous.to_column_id.id) + "_" + str(
+                            previous.card_id.card_id)].append(
+                            [previous.date.date(), datetime.datetime.now(),
+                             previous.card_id.card_id])
+                else:
+                    column_id = card.column_id.id
+                    column_dict[str(column_id) + "_" + str(card.card_id)].append([card.created_at.date(), datetime.datetime.now(), card.card_id])
+
+        start_date = datetime.datetime.strptime(request.data["start_date"], "%Y-%m-%d").date()
+        end_date = datetime.datetime.strptime(request.data["end_date"], "%Y-%m-%d").date()
+
+        day_column_dict = {}
+        previous = None
+        previous_date = None
+        for n in range(int((end_date - start_date).days)):
+            date = start_date + datetime.timedelta(n)
+            day_column_dict[str(date)] = defaultdict(lambda: 0)
+            counter = 0
+            for column in request.data["columns"]:
+                for key, item in column_dict.items():
+                    column_id = int(key.split("_")[0])
+                    card_id = int(key.split("_")[1])
+                    if column == column_id:
+                        for dates in item:
+                            if date >= dates[0] and date <= dates[1].date():
+                                counter += 1
+                                day_column_dict[str(date)][column_id] += 1
+                                break
+            if day_column_dict[str(date)]:
+                previous = day_column_dict[str(date)]
+                previous_date = date
+
+        start_date = previous_date + datetime.timedelta(1)
+        for n in range(int((end_date - start_date).days)):
+            date = start_date + datetime.timedelta(n)
+            day_column_dict[str(date)] = previous
+
+        return Response(day_column_dict, status=status.HTTP_202_ACCEPTED)
+
+
 class CardAbout(generics.ListCreateAPIView):
     """
     List all cards priority.
