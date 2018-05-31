@@ -827,6 +827,12 @@ class CardTime(generics.ListCreateAPIView):
                         card_dict["times"]["[" + str(log.from_column_id.id) + "]" + " " + log.from_column_id.title] += tmp_time
                         average_dict["[" + str(log.from_column_id.id) + "]" + " " + log.from_column_id.title].append(tmp_time)
                         previous = log.date
+                else:
+                    import datetime
+                    tmp_time = abs(card.created_at.replace(tzinfo=None) - datetime.datetime.now()).total_seconds() / 3600
+                    card_dict["times"]["[" + str(card.column_id.id) + "]" + " " + card.column_id.title] += tmp_time
+                    average_dict["[" + str(card.column_id.id) + "]" + " " + card.column_id.title].append(tmp_time)
+                    
                 times = []
                 for key, item in card_dict["times"].items():
                     times.append([key, float("{0:.3f}".format(item))])
