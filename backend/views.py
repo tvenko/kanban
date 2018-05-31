@@ -833,7 +833,7 @@ class CardTime(generics.ListCreateAPIView):
 
                     tmp = abs(previous.date.replace(tzinfo=None) - datetime.datetime.now()).total_seconds() / 3600
                     card_dict["times"]["[" + str(previous.to_column_id.id) + "]" + " " + previous.to_column_id.title] += tmp
-                    average_dict["[" + str(previous.to_column_id.id) + "]" + " " + previous.to_column_id.title].append(tmp_time)
+                    average_dict["[" + str(previous.to_column_id.id) + "]" + " " + previous.to_column_id.title].append(tmp)
 
                 else:
                     print("Ni logov")
@@ -849,6 +849,7 @@ class CardTime(generics.ListCreateAPIView):
         list_of_data["cards"] = cards_list
         averages = []
         for key, item in average_dict.items():
+            print(key, item)
             averages.append([key, float("{0:.3f}".format((sum(item) / float(len(item)))))])
         list_of_data["average"] = averages
 
