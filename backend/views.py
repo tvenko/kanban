@@ -734,6 +734,7 @@ class CardTime(generics.ListCreateAPIView):
         list_of_data = {}
         average_dict = defaultdict(list)
         cards_list = []
+        import datetime
         for project in request.data["project_ids"]:
             project_cards = Card.objects.all().filter(project_id=project)
 
@@ -818,17 +819,24 @@ class CardTime(generics.ListCreateAPIView):
                 card_logs = CardLog.objects.all().filter(card_id=card)
                 card_dict["times"] = defaultdict(lambda: 0)
                 if card_logs:
+                    print("neki")
                     tmp_time = abs(card.created_at - card_logs[0].date).total_seconds() / 3600
                     card_dict["times"]["[" + str(card_logs[0].from_column_id.id) + "]" + " " + card_logs[0].from_column_id.title] += tmp_time
                     average_dict["[" + str(card_logs[0].from_column_id.id) + "]" + " " + card_logs[0].from_column_id.title].append(tmp_time)
-                    previous = card_logs[0].date
+                    previous = card_logs[0]
+
                     for log in card_logs[1:]:
-                        tmp_time = abs(previous - log.date).total_seconds() / 3600
+                        tmp_time = abs(previous.date - log.date).total_seconds() / 3600
                         card_dict["times"]["[" + str(log.from_column_id.id) + "]" + " " + log.from_column_id.title] += tmp_time
                         average_dict["[" + str(log.from_column_id.id) + "]" + " " + log.from_column_id.title].append(tmp_time)
-                        previous = log.date
+                        previous = log
+
+                    tmp = abs(previous.date.replace(tzinfo=None) - datetime.datetime.now()).total_seconds() / 3600
+                    card_dict["times"]["[" + str(previous.to_column_id.id) + "]" + " " + previous.to_column_id.title] += tmp
+                    average_dict["[" + str(previous.to_column_id.id) + "]" + " " + previous.to_column_id.title].append(tmp_time)
+
                 else:
-                    import datetime
+                    print("Ni logov")
                     tmp_time = abs(card.created_at.replace(tzinfo=None) - datetime.datetime.now()).total_seconds() / 3600
                     card_dict["times"]["[" + str(card.column_id.id) + "]" + " " + card.column_id.title] += tmp_time
                     average_dict["[" + str(card.column_id.id) + "]" + " " + card.column_id.title].append(tmp_time)
