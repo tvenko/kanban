@@ -974,7 +974,7 @@ class CardTime2(generics.ListCreateAPIView):
                     column_dict[str(column_id) + "_" + str(card.card_id)].append([card.created_at.date(), datetime.datetime.now(), card.card_id])
 
         start_date = datetime.datetime.strptime(request.data["start_date"], "%Y-%m-%d").date()
-        end_date = datetime.datetime.strptime(request.data["end_date"], "%Y-%m-%d").date() + datetime.timedelta(1)
+        end_date = datetime.datetime.strptime(request.data["end_date"], "%Y-%m-%d").date()
 
         day_column_dict = {}
 
