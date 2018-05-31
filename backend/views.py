@@ -832,7 +832,7 @@ class CardTime(generics.ListCreateAPIView):
                     tmp_time = abs(card.created_at.replace(tzinfo=None) - datetime.datetime.now()).total_seconds() / 3600
                     card_dict["times"]["[" + str(card.column_id.id) + "]" + " " + card.column_id.title] += tmp_time
                     average_dict["[" + str(card.column_id.id) + "]" + " " + card.column_id.title].append(tmp_time)
-                    
+
                 times = []
                 for key, item in card_dict["times"].items():
                     times.append([key, float("{0:.3f}".format(item))])
@@ -974,7 +974,7 @@ class CardTime2(generics.ListCreateAPIView):
                     column_dict[str(column_id) + "_" + str(card.card_id)].append([card.created_at.date(), datetime.datetime.now(), card.card_id])
 
         start_date = datetime.datetime.strptime(request.data["start_date"], "%Y-%m-%d").date()
-        end_date = datetime.datetime.strptime(request.data["end_date"], "%Y-%m-%d").date()
+        end_date = datetime.datetime.strptime(request.data["end_date"], "%Y-%m-%d").date() + datetime.timedelta(1)
 
         day_column_dict = {}
 
@@ -982,6 +982,7 @@ class CardTime2(generics.ListCreateAPIView):
         previous_date = None
         for n in range(int((end_date - start_date).days)):
             date = start_date + datetime.timedelta(n)
+            print(date)
             day_column_dict[str(date)] = defaultdict(lambda: 0)
             counter = 0
             for column in request.data["columns"]:
