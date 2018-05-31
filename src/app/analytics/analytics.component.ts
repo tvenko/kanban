@@ -18,7 +18,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   };
 
   chartData = [];
-  chartLabels: any;
+  chartLabels = [];
 
   onChartClick(event) {
     console.log(event);
@@ -75,6 +75,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   endDate = null;
 
   columnMap = {};
+  columnOffsetMap = {};
 
   constructor(private boardsListService: BoardsListService, private router: Router,
               private route: ActivatedRoute, private boardsService: BoardsService,
@@ -124,9 +125,22 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             board["projects"].forEach((proj) => {
               this.projectOptions.push({name:proj["title"], value:proj["id"], checked:true});
             });
+            let offset = 0;
             board["columns"].forEach((column) => {
-              this.columns.push({id:column["id"], title:column["title"]});
-              this.columnMap[column["id"]] = column["title"];
+              if (column.subcolumns.length > 0) {
+                column.subcolumns.forEach((subcolumn) => {
+                  this.columns.push({id:subcolumn["id"], title: column["title"] + ": " + subcolumn["title"], offset: offset});
+                  this.columnMap[subcolumn["id"]] = column["title"] + ": " + subcolumn["title"];
+                  this.columnOffsetMap[subcolumn["id"]] = offset;
+                  offset++;
+                });
+              }
+              else {
+                this.columns.push({id:column["id"], title:column["title"], offset: offset});
+                this.columnMap[column["id"]] = column["title"];
+                this.columnOffsetMap[column["id"]] = offset;
+                offset++;
+              }
             });
             console.log(this.columns);
 
@@ -282,7 +296,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     reqData["end_date"] = this.formatDate(this.endDate);
 
     let filteredColumns = this.columns.filter((col) => {
-      return col["id"] >= this.columnStart && col["id"] <= this.columnStop;
+      return col["offset"] >= this.columnStart && col["offset"] <= this.columnStop;
     });
     reqData["columns"] = filteredColumns.map((col) => {
       return col["id"];
@@ -293,21 +307,26 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.analyticsService.postComulative(reqData).subscribe(data => {
       console.log(data);
       
-      let cData = [];
-      let cLabels = [];
-      Object.keys(data).forEach((key) => {
-        cData.push({ data:data[key], label:this.columnMap[key] });
-      });
+      this.chartData.length = 0;
+      // Sort the labels.
 
-      let currDate = this.startDate;
+      let sortedData = [];
+      Object.keys(data).forEach((key) => {
+        sortedData.push({ data:data[key], label:this.columnMap[key], offset: this.columnOffsetMap[key] });
+      });
+      sortedData.sort(this.compareByOffset);
+
+      sortedData.forEach((d) => {
+        this.chartData.push({ data:d.data, label:d.label });
+      });
+      
+
+      this.chartLabels.length = 0;
+      let currDate = new Date(this.startDate);
       while(currDate < this.endDate) {
-        cLabels.push(this.SIformatDate(currDate));
+        this.chartLabels.push(this.SIformatDate(currDate));
         currDate.setDate(currDate.getDate() + 1);
       }
-      console.log(cLabels);
-
-      this.chartData = cData;
-      this.chartLabels = cLabels;
 
         }, err => {
           console.log('Napaka ' + err);
@@ -333,6 +352,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     year = d.getFullYear();
 
     return [day, month, year].join('.');
+  }
+
+  compareByOffset(a, b) {
+    if (a.offset < b.offset)
+      return -1;
+    if (a.offset > b.offset)
+      return 1;
+    return 0;
   }
 
 
