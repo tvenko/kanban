@@ -47,8 +47,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   currentUserGroups: number[];
   hiddenColumns = [];
 
-  showCriticalCards:boolean = false;
-  criticalDays:number = 0;
+  showCriticalCards = false;
+  criticalDays = 0;
 
   currentUserId = null;
   projects: Project[] = [];
@@ -78,7 +78,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (msg === 'copyBoard') {
         this.copyBoard();
       }
-      if (msg === 'showCritical'){
+      if (msg === 'showCritical') {
         this.showCritical();
       }
     });
@@ -475,8 +475,21 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   getColumnWip(column: Column) {
     let wip = 0;
-    for (const subcolumn of column.subcolumns) {
-      wip += subcolumn.column_cards.length;
+    if (column.subcolumns != null && column.subcolumns.length > 0) {
+      for (const subcolumn of column.subcolumns) {
+        for (const card of subcolumn.column_cards) {
+          if (card.active) {
+            wip++;
+          }
+        }
+      }
+    } else {
+      for (const card of column.column_cards) {
+        if (card.active) {
+          console.log('check');
+          wip++;
+        }
+      }
     }
     return wip;
   }
@@ -493,28 +506,28 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
   }
   showCritical() {
-    
-    let self = this
-    UIkit.modal.prompt("Ševilo preostalih dni:", null).then( (n) =>{ 
 
-      if(n != null){
-        if (isNaN(n)){
+    const self = this;
+    UIkit.modal.prompt('Ševilo preostalih dni:', null).then( (n) => {
+
+      if (n != null) {
+        if (isNaN(n)) {
           UIkit.notification('Vnesi število.', {status: 'danger', timeout: 2000});
-        }else{
+        } else {
           self.showCriticalCards = true;
-          self.criticalDays = n
+          self.criticalDays = n;
         }
 
       }
     });
   }
-  getDiferenceInDays(theDate) : number {
-    
-    if(theDate != null){
+  getDiferenceInDays(theDate): number {
+
+    if (theDate != null) {
       theDate = new Date(theDate);
       return (theDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24) ;
 
-    }else{
+    } else {
       return -99999999;
     }
   }

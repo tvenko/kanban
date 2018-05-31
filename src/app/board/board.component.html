@@ -68,7 +68,7 @@
               *ngIf="column.subcolumns.length == 0 && column?.column_cards.length == 0 && editBoard">
             </span>
 
-            <span class="uk-badge wip" *ngIf="column?.wip_restriction > 0"> {{ column?.column_cards.length }} / {{ column?.wip_restriction }} </span>
+            <span class="uk-badge wip" *ngIf="column?.wip_restriction > 0"> {{ getColumnWip(column) }} / {{ column?.wip_restriction }} </span>
             <br>
           </h4>
 
@@ -161,7 +161,7 @@
                     *ngIf=" subcolumn?.column_cards.length == 0 && editBoard">
                   </span>
 
-                  <span class="uk-badge wip-subcolumn" *ngIf="subcolumn?.wip_restriction > 0"> {{ subcolumn?.column_cards.length }} / {{ subcolumn?.wip_restriction }}</span>
+                  <span class="uk-badge wip-subcolumn" *ngIf="subcolumn?.wip_restriction > 0"> {{ getColumnWip(subcolumn) }} / {{ subcolumn?.wip_restriction }}</span>
 
                 </h6>
                 <div class="special-column-text">{{ showSpecialColumn(subcolumn.id) }}</div>
