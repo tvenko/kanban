@@ -83,12 +83,15 @@
                       <span>#{{ card.number }}</span><span style="float: right">{{ getUserName(card?.assigned_user_id) }}</span>
                     </div>
                     <div class="card-body" [ngStyle]="{'background-color': (showCriticalCards && criticalDays > getDiferenceInDays(card.deadline) && getDiferenceInDays(card.deadline) != -99999999) ? 'LightCoral ' : ''}">
+                        <!-- <p *ngIf="card.card_priority_id==5" [hidden]="!showCardPriority"><span class="uk-label uk-label-success">Could have</span></p>
+                        <p *ngIf="card.card_priority_id==4" [hidden]="!showCardPriority"><span class="uk-label uk-label-warning">Should have</span></p>
+                        <p *ngIf="card.card_priority_id==3" [hidden]="!showCardPriority"><span class="uk-label uk-label-danger">Must have</span></p> -->
                       <h5 class="card-title">{{ card.title }}</h5>
-                      <p>{{ card.description }}</p>
+                      <p [hidden]="!showCardDescription" >{{ card.description }}</p>
                     </div>
                     <div>
-                      <div class="card-tail">
-                        {{ card.size }}
+                      <div [hidden]="!showCardDificulty" class="card-tail">
+                          {{ card.size }}
                       </div>
                     </div>
               </li>
@@ -333,3 +336,40 @@
     </form>
   </div>
 </div>
+
+<!-- edit cards display modal-->
+<div id="edit-card-display-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+      <button class="uk-modal-close-default" type="button" uk-close ></button>
+      <h3>Prilagodi prikaz kartic na tabli</h3>
+      <form (ngSubmit)="finishEditCardDisplay()" [formGroup]="editCardDisplayForm">
+        <fieldset class="uk-fieldset">
+          <div class="uk-margin">
+            <label><input class="uk-checkbox" type="checkbox" checked disabled> ID kartice</label>
+          </div>
+          <div class="uk-margin">
+            <label><input class="uk-checkbox" type="checkbox" checked disabled> Naziv zgodbe</label>
+          </div>
+          <div class="uk-margin">
+            <label><input class="uk-checkbox" type="checkbox" checked disabled> Odgovorna oseba</label>
+          </div>
+          <div class="uk-margin uk-form-controls">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="card_description"> Opis</label>
+          </div>
+          <div class="uk-margin uk-form-controls">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="card_priority"> Prioriteta</label>
+          </div>
+          <div class="uk-margin uk-form-controls">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="card_dificulty"> Ocena zahtevnosti</label>
+          </div>
+          <div class="uk-margin uk-form-controls">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="card_deadline"> Rok za dokončanje</label>
+          </div>
+          <div class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
+            <button class="uk-button uk-button-primary" type="submit">Shrani</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>

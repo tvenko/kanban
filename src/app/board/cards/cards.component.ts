@@ -64,7 +64,7 @@ export class CardsComponent implements OnInit {
   isUserKanbanMaster_inGroup = false;
   isUserProductOwner_inGroup = false;
   canUserEdit = false;
-  canUserDelete = false;
+  canUserDelete=false;
   selectedReason: DeleteReason = null;
 
   constructor(private prioritySerive: PriorityService,
@@ -81,7 +81,6 @@ export class CardsComponent implements OnInit {
 
   ngOnInit() {
     this.canUserEdit = false;
-    this.canUserDelete = false;
     this.loadPriorities();
     const user = JSON.parse(localStorage.getItem('user'));
     this.currentUserId = user['id'];
@@ -159,9 +158,12 @@ export class CardsComponent implements OnInit {
 
   getBoard() {
     this.boardsService.getBoard(this.currectBoardId).subscribe(board => {
+      
       this.board = <Board>board[0];
       this.projects = this.board.projects;
+      
       this.getBoardUserData();
+      
 
     }, err => {
       // Board doesn't exist. Redirect the user?
@@ -196,6 +198,7 @@ export class CardsComponent implements OnInit {
         this.currentUserProjects.push(project);
       }
     });
+    
   }
 
   loadModal() {
@@ -362,7 +365,6 @@ export class CardsComponent implements OnInit {
 
 
   loadEditCardModal(cardDetails: CardDetailed) {
-      this.canUserDelete = this.canDelete();
       this.canUserEdit = this.canEdit();
       this.editCardForm.reset();
       this.projects = [];
@@ -475,23 +477,36 @@ export class CardsComponent implements OnInit {
     const columnIndex = this.boardsService.enumeratedColumns.get(this.selectedCard.column_id);
     //Preveri brisanje za vlogo Product Owner (lahko briše samo kartico, za katero se še ni pričel razvoj).
     if (columnIndex < leftColumnIndex && (isUserProductOwner) && onProject) {
-      return true;
+      console.log("User can delete");
+      //return true;
+      this.canUserDelete =  true;
     //Preveri brisanje za vlogo KanbanMaster (lahko briše kartico v kateremkoli stolpcu).
     } else if (isUserKanbanMaster && onProject) {
-      return true;
+      console.log("User can delete");
+      //return true;
+      this.canUserDelete =  true;
+      
+    }else{
+      console.log("User CANT delete");
+      //return true;
+      this.canUserDelete = false;
     }
-    return false;
+
+    this.ref.markForCheck();
+
   }
 
   onCardClick(card) {
+    this.selectedCard = card;
+    this.canDelete();
+    this.canUserEdit = this.canEdit();
     this.cardService.getDetailedCard(card.card_id).subscribe(res => {
-      this.selectedCard = card;
-      this.canUserDelete = this.canDelete();
+
       const cardDetails: CardDetailed = <CardDetailed>res;
       this.loadEditCardModal(cardDetails);
       UIkit.modal('#card-details-modal').show();
 
-      console.log("Can user delete: ", this.canUserDelete);
+      
     }, err => {
       console.log(err);
     });

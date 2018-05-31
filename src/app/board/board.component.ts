@@ -37,6 +37,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   dataTransfer = new Map();
   newColumnForm: FormGroup;
   changeWipForm: FormGroup;
+  editCardDisplayForm: FormGroup;
+
   error: string;
   newColumnOffset: number = null;
   newSubcolumnParent: number = null;
@@ -46,6 +48,11 @@ export class BoardComponent implements OnInit, OnDestroy {
   currentUser: User;
   currentUserGroups: number[];
   hiddenColumns = [];
+
+  showCardDescription:true;
+  showCardPriority: true;
+  showCardDificulty: true;
+  showCardDeadlien: true;
 
   showCriticalCards = false;
   criticalDays = 0;
@@ -81,10 +88,17 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (msg === 'showCritical') {
         this.showCritical();
       }
+      if (msg === 'editCardDisplay'){
+        this.editCardDisplay();
+      }
     });
   }
 
   ngOnInit() {
+    this.showCardDescription =true;
+    this.showCardPriority= true;
+    this.showCardDificulty= true;
+    this.showCardDeadlien= true;
     this.currentUser = JSON.parse(localStorage.getItem('user'));
     this.currentUserId = this.currentUser['id'];
     this.sub = this.route.params.subscribe(params => {
@@ -128,6 +142,14 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.changeWipForm = new FormGroup({
       wip: new FormControl(null, Validators.required),
     });
+
+    this.editCardDisplayForm = new FormGroup({
+      card_description: new FormControl(null),
+      card_priority: new FormControl(null),
+      card_dificulty: new FormControl(null),
+      card_deadline: new FormControl(null)
+    });
+
     this.getUsers();
     this.getUserGroups();
   }
@@ -512,6 +534,23 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  editCardDisplay(){
+    this.editCardDisplayForm.reset();
+    UIkit.modal('#edit-card-display-modal').show();
+  }
+
+  finishEditCardDisplay(){
+    this.showCardDescription = this.editCardDisplayForm.get('card_description').value;
+    this.showCardPriority = this.editCardDisplayForm.get('card_priority').value;
+    this.showCardDificulty = this.editCardDisplayForm.get('card_dificulty').value;
+    this.showCardDeadlien = this.editCardDisplayForm.get('card_deadline').value;
+    UIkit.modal('#edit-card-display-modal').hide();
+    UIkit.notification('Prikaz prilagojen.', {status: 'success', timeout: 2000}
+    );
+    
+  }
+  
   getDiferenceInDays(theDate): number {
 
     if (theDate != null) {
