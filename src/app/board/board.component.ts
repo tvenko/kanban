@@ -274,20 +274,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.delColumn = column;
   }
 
-  getColumnById(columnId: number) {
-    for (const column of this.board.columns) {
-      for (const subcolumn of column.subcolumns) {
-        if (subcolumn.id === columnId) {
-          return subcolumn;
-        }
-      }
-      if (column.id === columnId) {
-        return column;
-      }
-    }
-    return null;
-  }
-
   deleteColumn() {
     if (this.delColumn !== null) {
       const specialText = this.showSpecialColumn(this.delColumn.id);
@@ -359,6 +345,12 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
       column.column_cards.push(card);
       card.column_id = column.id;
+      if (this.board.type_left_border_column_id === column.id && card.started_at === null) {
+        console.log(new Date().toISOString());
+        card.started_at = new Date().toISOString();
+      } else if (this.board.type_right_border_column_id === column.id) {
+        card.completed_at = new Date().toISOString();
+      }
       this.cardService.updateCard(card).subscribe(res => {
         this.getBoard();
       }, err => console.log(err));
@@ -486,7 +478,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     } else {
       for (const card of column.column_cards) {
         if (card.active) {
-          console.log('check');
           wip++;
         }
       }
