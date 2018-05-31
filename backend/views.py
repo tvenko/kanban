@@ -1015,9 +1015,13 @@ class CardTime2(generics.ListCreateAPIView):
             for key2, item2 in item.items():
                 column_day_dict[key2].append(item2)
 
-        previous = sorted(column_day_dict.items())[0][1]
 
-        for key, value in sorted(column_day_dict.items())[1:]:
+        tmp = sorted(column_day_dict.items(), key=lambda pair: request.data["columns"].index(pair[0]))
+
+        previous = tmp[0][1]
+        column_day_dict[tmp[0][0]] = previous
+
+        for key, value in tmp[1:]:
             tmp = list(map(add, value, previous))
             column_day_dict[key] = tmp
             previous = tmp
