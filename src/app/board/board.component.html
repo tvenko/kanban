@@ -83,17 +83,19 @@
                       <span>#{{ card.number }}</span><span style="float: right">{{ getUserName(card?.assigned_user_id) }}</span>
                     </div>
                     <div class="card-body" [ngStyle]="{'background-color': (showCriticalCards && criticalDays > getDiferenceInDays(card.deadline) && getDiferenceInDays(card.deadline) != -99999999) ? 'LightCoral ' : ''}">
-                        <!-- <p *ngIf="card.card_priority_id==5" [hidden]="!showCardPriority"><span class="uk-label uk-label-success">Could have</span></p>
-                        <p *ngIf="card.card_priority_id==4" [hidden]="!showCardPriority"><span class="uk-label uk-label-warning">Should have</span></p>
-                        <p *ngIf="card.card_priority_id==3" [hidden]="!showCardPriority"><span class="uk-label uk-label-danger">Must have</span></p> -->
-                      <h5 class="card-title">{{ card.title }}</h5>
-                      <p [hidden]="!showCardDescription" >{{ card.description }}</p>
+                      <h1 class="uk-card-title">{{ card.title }}</h1>
+                      <p class="uk-margin-small"[hidden]="!showCardDescription" >{{ card.description }}</p>
+                      <p class="uk-margin-small uk-text-meta"[hidden]="!showCardDeadlien " *ngIf="card.deadline == null" >Rok: /</p>
+                      <p class="uk-margin-small uk-text-meta"[hidden]="!showCardDeadlien"  *ngIf="card.deadline != null">Rok: {{ card.deadline | date: 'dd.MM.yyyy'}}</p>
                     </div>
-                    <div>
+                    <span>
+                        <span *ngIf="card.card_priority_id==5" [hidden]="!showCardPriority" class="uk-label uk-label-success" style="float: left;">Could have</span>
+                        <span *ngIf="card.card_priority_id==4" [hidden]="!showCardPriority" class="uk-label uk-label-warning" style="float: left;">Should have</span>
+                        <span *ngIf="card.card_priority_id==3" [hidden]="!showCardPriority" class="uk-label uk-label-danger" style="float: left;">Must have</span>
                       <div [hidden]="!showCardDificulty" class="card-tail">
                           {{ card.size }}
                       </div>
-                    </div>
+                    </span>
               </li>
           </span>
         </div>
