@@ -550,7 +550,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     );
     
   }
-  
+
   getDiferenceInDays(theDate): number {
 
     if (theDate != null) {
@@ -606,5 +606,10 @@ export class BoardComponent implements OnInit, OnDestroy {
         }
       }
     }
+  }
+
+  refreshBoard(){
+    this.getBoard();
+    this.loadProjects();
   }
 }

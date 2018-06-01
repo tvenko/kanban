@@ -1,4 +1,4 @@
-import { Component, OnInit, group, Output, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, group, Output, ChangeDetectorRef, NgZone, EventEmitter } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Project } from '../../shared/models/project.interface';
 import { ProjectsService } from '../../shared/services/projects.service';
@@ -30,6 +30,8 @@ declare var UIkit: any;
   styleUrls: ['./cards.component.css']
 })
 export class CardsComponent implements OnInit {
+  @Output() myEvent = new EventEmitter<string>();
+
   cardType: string;
   tasks: Task[];
   private sub: any;
@@ -314,6 +316,8 @@ export class CardsComponent implements OnInit {
     // Send request
     this.cardService.postCard(card).subscribe(res => {
       UIkit.modal('#new-card-modal').hide();
+      
+      this.myEvent.emit('eventDesc');
       UIkit.notification('Kartica dodana.', {status: 'success', timeout: 2000});
       UIkit.modal('#new-card-modal').hide();
     }, err => {
