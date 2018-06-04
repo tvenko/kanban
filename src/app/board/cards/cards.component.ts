@@ -325,6 +325,7 @@ export class CardsComponent implements OnInit {
         UIkit.notification('Kartica z najvišjo prioriteto že obstaja.', {status: 'danger', timeout: 2000});
       } else if (err.status === 409) {
         UIkit.notification('Kartica dodana, vendar je prišlo do kršitve omejitve WIP.', {status: 'warning', timeout: 2000});
+        this.myEvent.emit('eventDesc');
         UIkit.modal('#new-card-modal').hide();
       } else {
         UIkit.notification('Napaka pri dodajanju nove kartice.', {status: 'danger', timeout: 2000});
