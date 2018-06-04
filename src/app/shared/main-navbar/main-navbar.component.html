@@ -11,7 +11,7 @@
               <li *ngIf="isActiveRoute('/board') || isActiveRoute('/analytics')" [ngClass]="{'uk-active': isActiveRoute('/board')}">
                 <a [routerLink]="['/board', id]">[ Tabla {{id}} ]</a>
               </li>
-              <li *ngIf="isActiveRoute('/board') || isActiveRoute('/analytics')" [ngClass]="{'uk-active': isActiveRoute('/analytics')}">
+              <li *ngIf="(isActiveRoute('/board') || isActiveRoute('/analytics')) && isKanbanMaster()" [ngClass]="{'uk-active': isActiveRoute('/analytics')}">
                   <a [routerLink]="['/analytics', id]">[ Analitika ]</a>
               </li>
               <li [ngClass]="{'uk-active': isActiveRoute('/projects')}">

@@ -34,6 +34,11 @@ export class MainNavbarComponent implements OnInit {
     return user.roles.includes('admin');
   }
 
+  isKanbanMaster() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return user.roles.includes('kanban master');
+  }
+
   editBoard() {
     this.messageService.filter('editBoard');
     console.log('edit board');
