@@ -537,7 +537,15 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   editCardDisplay(){
     this.editCardDisplayForm.reset();
+    this.editCardDisplayForm.setValue({
+      card_description: this.showCardDescription, 
+      card_priority: this.showCardPriority,
+      card_dificulty: this.showCardDificulty,
+      card_deadline: this.showCardDeadlien
+    });
     UIkit.modal('#edit-card-display-modal').show();
+
+
   }
 
   finishEditCardDisplay(){
