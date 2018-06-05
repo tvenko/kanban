@@ -1,24 +1,29 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import {Router} from '@angular/router';
 import { BoardsListService } from '../shared/services/boards-list.service';
 import { BoardsService } from '../shared/services/boards.service';
 import { AnalyticsService } from '../shared/services/analytics.service';
 import { ActivatedRoute } from '@angular/router';
 declare var UIkit: any;
+import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 
 @Component({
   selector: 'app-analytics',
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.css']
 })
+
+
 export class AnalyticsComponent implements OnInit, OnDestroy {
+  @ViewChild("baseChart")
+  chart: BaseChartDirective
 
   chartOptions = {
     responsive: true
   };
 
-  chartData = [];
-  chartLabels = [];
+  chartData = [{ data:0, label:"" }];
+  chartLabels = [""];
 
   onChartClick(event) {
     console.log(event);
@@ -319,14 +324,21 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       sortedData.forEach((d) => {
         this.chartData.push({ data:d.data, label:d.label });
       });
+      console.log(this.chartData);
       
 
       this.chartLabels.length = 0;
       let currDate = new Date(this.startDate);
       while(currDate < this.endDate) {
+        //console.log(currDate);
         this.chartLabels.push(this.SIformatDate(currDate));
         currDate.setDate(currDate.getDate() + 1);
       }
+      console.log(this.chartLabels);
+      if (this.chart !== undefined) {
+      this.chart.ngOnDestroy();
+       this.chart.chart = this.chart.getChartBuilder(this.chart.ctx);
+     }
 
         }, err => {
           console.log('Napaka ' + err);

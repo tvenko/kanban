@@ -290,8 +290,9 @@
 									        <br>
 
 
-									        <canvas *ngIf="chartData.length > 0"
+									        <canvas
 											      baseChart
+											      #baseChart="base-chart"
 											      [chartType]="'line'"
 											      [datasets]="chartData"
 											      [labels]="chartLabels"
