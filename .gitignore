@@ -1,3 +1,4 @@
+
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
@@ -61,7 +62,5 @@ tests/report/
 *.pyc
 /.idea
 *.sqlite3
-.idea
-workplace.xml
-
 *.idea
+workplace.xml
