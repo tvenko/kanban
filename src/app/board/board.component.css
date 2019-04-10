@@ -1,0 +1,273 @@
+
+.my-container {
+  margin-left: 40px;
+  margin-right: 80px;
+  display: flex;
+  justify-content: center;
+}
+
+.board {
+  top: 10px;
+  margin: auto;
+  margin-top: 0;
+  position: relative;
+  display: flex;
+  flex-flow: row;
+  flex-wrap: nowrap;
+  list-style: none;
+  width: 100%;
+}
+
+.card {
+  position: relative;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 120px;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 5px 0;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  width: 100%;
+  min-width: 170px;
+  border-top: 0;
+}
+
+.card:hover {
+  color: midnightblue;
+  will-change: box-shadow;
+  cursor: pointer;
+  background: lightgray;
+  transition: box-shadow .2s cubic-bezier(.4, 0, 1, 1), background-color .2s cubic-bezier(.4, 0, .2, 1), color .2s cubic-bezier(.4, 0, .2, 1);
+  box-shadow: 0 5px 6px 0 rgba(0, 0, 0, .14), 0 3px 1px -6px rgba(0, 0, 0, .2), 2px 5px 3px 0 rgba(0, 0, 0, .12);
+}
+
+.card-header {
+  height: 20px;
+  background: orangered;
+  margin: 0;
+  color: white;
+  font-size: 12px;
+  padding: 0 5px;
+}
+
+.card-body {
+  padding: 5px;
+}
+
+.card-title {
+  padding: 0;
+}
+
+.card-tail {
+  background: orange;
+  color: white;
+  float: right;
+  padding: 3px;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  border-radius: 3px;
+}
+
+.coulmn-container {
+  flex-direction: row;
+  margin: auto;
+  display: flex;
+  width: 100%;
+}
+
+.column {
+  display: flex;
+  flex-flow: column;
+  margin: 12px;
+  width: 100%;
+  flex-grow: 5;
+}
+
+.hidden-column {
+  width: 100%;
+  max-width: 40px;
+  margin-left: 20px;
+  border-top: 5px solid grey;
+  vertical-align: top;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .12);
+  padding: 10px;
+  border-radius: 2px;
+  overflow: hidden;
+  height: 95vh;
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.coulmn-header {
+  border-top: 2px solid;
+  vertical-align: top;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .12);
+  padding: 10px;
+  padding-top: 5px;
+  border-radius: 2px;
+  overflow: hidden;
+  width: 100%;
+  min-width: 170px;
+  height: 65px;
+  border-top: 5px solid;
+  background: white;
+}
+
+.project-container {
+  display: flex;
+  flex-flow: column;
+}
+
+.project-name-column {
+  vertical-align: top;
+  height: 100vh;
+  margin: 2px;
+  width: 0;
+}
+
+.remove-project:hover {
+  color: red;
+  cursor: pointer;
+}
+
+.vertical-text {
+  transform: rotate(-90deg);
+  float: right;
+  margin-top: 30vh;
+  width: 300px;
+  margin-left: 100px;
+  margin-right: -120px;
+}
+
+.title {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.special-column-text {
+  font-style: italic;
+  color: grey;
+  font-size: 12px;
+  height: 15px;
+}
+
+.subcolumn-container {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-flow: row;
+  width: 100%;
+}
+
+.subcolumn {
+  width: 100%;
+  min-width: 170px;
+}
+
+.subcolumn-card-container {
+  display: flex;
+  flex-flow: column;
+  width: 100%;
+}
+
+.subcolumn-title {
+  cursor: pointer;
+  margin-right: 10px;
+  margin-bottom: 0;
+}
+
+.test {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.vertical-line {
+  border-left: 1px solid lightgray;
+  height: 83vh;
+  margin: 10px 10px;
+}
+
+.cards-container {
+  height: 85vh;
+  overflow-y: scroll;
+  box-shadow: 0 1px 5px 0 rgba(0, 0, 0, .12);
+  padding: 10px;
+  padding-top: 5px;
+  border-radius: 2px;
+  width: 100%;
+  min-width: 170px;
+}
+
+.cards-container::-webkit-scrollbar {
+  display: none !important
+}
+
+.add-column {
+  cursor: pointer;
+  width: 40px;
+  padding: 0;
+  flex-basis: 0;
+  margin-left: 12px;
+  margin-right: -10px;
+}
+
+.add-column-subcolmn {
+  cursor: pointer;
+  width: 40px;
+  margin-right: 10px;
+  padding: 0;
+  flex-basis: 0;
+}
+
+.add-column-last {
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.wip {
+  float: right;
+  margin-top: 7px;
+}
+
+.wip-subcolumn {
+  float: right;
+}
+
+.delete-column {
+  opacity: 0.1;
+  color: red;
+}
+
+.edit-column {
+  opacity: 0.1;
+  color: black;
+}
+
+.edit-column:hover, .delete-column:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.danger-input {
+  border: 1.5px solid  red;
+  border-radius: 5px;
+}
+
+.empty-board {
+  width: 400px;
+  font-size: 20px;
+}
+
+.change-type:hover {
+  cursor: pointer;
+  font-size: 16px;
+}
+.wip-input {
+  height: 30px;
+  width: 80px;
+}

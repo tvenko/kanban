@@ -1,0 +1,10 @@
+.newCardButton{
+    margin-top: 10px;
+    margin-bottom: -5px;
+    margin-right: 40px;
+  }
+
+  .danger-input {
+    border: 1.5px solid  red;
+    border-radius: 5px;
+  }

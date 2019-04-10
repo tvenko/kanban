@@ -1,0 +1,19 @@
+.placeholder {
+  text-align: center;
+  margin-top: 300px;
+}
+
+.placeholder p {
+  color: gray;
+}
+
+.newProjectButton{
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 40px;
+}
+
+.danger-input {
+  border: 1.5px solid  red;
+  border-radius: 5px;
+}

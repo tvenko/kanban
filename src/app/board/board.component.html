@@ -1,0 +1,382 @@
+<app-main-navbar></app-main-navbar>
+<app-cards (myEvent)="refreshBoard()"></app-cards>
+
+<div class="my-container">
+
+
+  <div *ngIf="board?.columns.length == 0">
+    <button class="uk-button uk-button-primary empty-board uk-position-center" uk-toggle="target: #new-column-modal" (click)="addColumn(0, null)">dodaj stolpec</button>
+  </div>
+
+  <div class="project-container">
+    <ol class="project-name-column" *ngFor="let project of board?.projects">
+      <span class="vertical-text"> {{ project.title }}
+        <span uk-icon="close" class="remove-project" (click)="removeProject(project)"></span>
+      </span>
+    </ol>
+  </div>
+
+  <div class="board">
+
+    <div class="coulmn-container" *ngFor="let column of board?.columns; let i = index">
+
+      <div
+        uk-icon="icon: plus-circle; ratio: 1.9"
+        class="add-column" uk-toggle="target: #new-column-modal"
+        *ngIf="editBoard"
+        (click)="addColumn(i, null)">
+      </div>
+
+      <div class="hidden-column" *ngIf="isHiddenColumn(column.id)" (click)="showColumn(column.id)" [ngStyle]="{'margin-top': adjustHiddenColumn()}">
+        <span style="text-orientation: upright; writing-mode: vertical-lr;">{{ column?.title }}</span>
+      </div>
+
+      <div class="column" *ngIf="column?.subcolumns.length == 0 && !isHiddenColumn(column.id)">
+        <div class="coulmn-header" [ngStyle]="{'border-top-color': colors[(i % 6)]}">
+
+          <h4 class="title">
+            <span (click)="hideColumn(column.id)">{{ column?.title }}</span>
+            <span
+              uk-icon="icon: plus-circle"
+              class="edit-column"
+              uk-toggle="target: #new-column-modal"
+              *ngIf="editBoard"
+              (click)="addColumn(column.subcolumns.length, column.id)">
+            </span>
+
+            <span class="edit-column" uk-icon="more-vertical" type="button"></span>
+            <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
+              <ul class="uk-nav uk-dropdown-nav">
+                <li class="change-type" (click)="setLeftColumn(column.id)" *ngIf="displayAddLeftColumnValidation(column)">levi mejni stolpec</li>
+                <li class="change-type" (click)="setRightColumn(column.id)" *ngIf="displayAddRightColumnValidation(column)">desni mejni stolpec</li>
+                <li class="change-type" (click)="setTestColumn(column.id)">testni stolpec</li>
+                <li class="change-type" (click)="setPriorityColumn(column.id)">stolpec z najvišjo prioriteto</li>
+                <li>
+                  <form (ngSubmit)="changeWip(column)" [formGroup]="changeWipForm">
+                    <label class="change-type">wip: </label>
+                    <input class="uk-input wip-input" type="number" value="{{ column.wip_restriction }}" formControlName="wip">
+                    <button class="uk-button uk-button-primary uk-button-small" type="submit">OK</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+
+            <span
+              uk-icon="icon: trash" class="delete-column"
+              uk-toggle="target: #delete-column-modal"
+              (click)="setDeleteColumn(column)"
+              *ngIf="column.subcolumns.length == 0 && column?.column_cards.length == 0 && editBoard">
+            </span>
+
+            <span class="uk-badge wip" *ngIf="column?.wip_restriction > 0"> {{ getColumnWip(column) }} / {{ column?.wip_restriction }} </span>
+            <br>
+          </h4>
+
+          <div class="special-column-text">{{ showSpecialColumn(column.id) }}</div>
+
+        </div>
+
+        <div class="cards-container" (drop)="onDrop($event, column, project)" (dragover)="allowDrop($event)" *ngFor="let project of board?.projects">
+          <span *ngFor="let card of column.column_cards">
+              <li draggable="true" (click)="cardsComponent.onCardClick(card)" (dragstart)="onDragStart($event, card, column, project)" class="card" *ngIf="card?.project_id == project?.id && card.active">
+                <div class="card-header" [ngStyle]="{'background': cardColors[card.card_priority_id-3]}">
+                      <span>#{{ card.number }}</span><span style="float: right">{{ getUserName(card?.assigned_user_id) }}</span>
+                    </div>
+                    <div class="card-body" [ngStyle]="{'background-color': (showCriticalCards && criticalDays > getDiferenceInDays(card.deadline) && getDiferenceInDays(card.deadline) != -99999999) ? 'LightCoral ' : ''}">
+                      <h1 class="uk-card-title">{{ card.title }}</h1>
+                      <p class="uk-margin-small"[hidden]="!showCardDescription" >{{ card.description }}</p>
+                      <p class="uk-margin-small uk-text-meta"[hidden]="!showCardDeadlien " *ngIf="card.deadline == null" >Rok: /</p>
+                      <p class="uk-margin-small uk-text-meta"[hidden]="!showCardDeadlien"  *ngIf="card.deadline != null">Rok: {{ card.deadline | date: 'dd.MM.yyyy'}}</p>
+                    </div>
+                    <span>
+                        <span *ngIf="card.card_priority_id==5" [hidden]="!showCardPriority" class="uk-label uk-label-success" style="float: left;">Could have</span>
+                        <span *ngIf="card.card_priority_id==4" [hidden]="!showCardPriority" class="uk-label uk-label-warning" style="float: left;">Should have</span>
+                        <span *ngIf="card.card_priority_id==3" [hidden]="!showCardPriority" class="uk-label uk-label-danger" style="float: left;">Must have</span>
+                      <div [hidden]="!showCardDificulty" class="card-tail">
+                          {{ card.size }}
+                      </div>
+                    </span>
+              </li>
+          </span>
+        </div>
+      </div>
+
+      <div class="column" *ngIf="column?.subcolumns.length > 0 && !isHiddenColumn(column.id)">
+        <div class="coulmn-header" [ngStyle]="{'border-top-color': colors[(i % 6)]}">
+          <h4 class="subcolumn-title">
+            <span (click)="hideColumn(column.id)">{{ column?.title }}</span>
+            <span class="edit-column" uk-icon="more-vertical" type="button"></span>
+            <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
+              <ul class="uk-nav uk-dropdown-nav">
+                <li class="change-type" (click)="setLeftColumn(column.id)" *ngIf="displayAddLeftColumnValidation(column)">levi mejni stolpec</li>
+                <li class="change-type" (click)="setRightColumn(column.id)" *ngIf="displayAddRightColumnValidation(column)">desni mejni stolpec</li>
+                <li class="change-type" (click)="setTestColumn(column.id)">testni stolpec</li>
+                <li class="change-type" (click)="setPriorityColumn(column.id)">stolpec z najvišjo prioriteto</li>
+                <li>
+                  <form (ngSubmit)="changeWip(column)" [formGroup]="changeWipForm">
+                    <label class="change-type">wip: </label>
+                    <input class="uk-input wip-input" type="number" value="{{ column.wip_restriction }}" formControlName="wip">
+                    <button class="uk-button uk-button-primary uk-button-small" type="submit">OK</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+            <span uk-icon="icon: trash" class="delete-column"
+                  uk-toggle="target: #delete-column-modal"
+                  (click)="setDeleteColumn(column)"
+                  *ngIf="column.subcolumns.length == 0 && editBoard">
+            </span>
+            <span class="uk-badge wip-subcolumn" *ngIf="column?.wip_restriction > 0"> {{ getColumnWip(column) }} /{{ column?.wip_restriction }} </span>
+          </h4>
+          <div class="special-column-text" *ngIf="showSpecialColumn(column.id) != null">{{ showSpecialColumn(column.id) }}</div>
+          <div class="subcolumn-container">
+            <div class="test" *ngFor="let subcolumn of column.subcolumns; let j = index">
+              <div
+                uk-icon="icon: plus-circle; ratio: 1.3"
+                class="add-column-subcolmn" uk-toggle="target: #new-column-modal"
+                *ngIf="editBoard"
+                (click)="addColumn(j, column.id)">
+              </div>
+              <div class="subcolumn">
+                <h6 class="subcolumn-title">
+                  {{ subcolumn?.title }}
+
+                  <span class="edit-column" uk-icon="more-vertical" type="button"></span>
+                  <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
+                    <ul class="uk-nav uk-dropdown-nav">
+                      <li class="change-type" (click)="setLeftColumn(subcolumn.id)" *ngIf="displayAddLeftColumnValidation(subcolumn)">levi mejni stolpec</li>
+                      <li class="change-type" (click)="setRightColumn(subcolumn.id)" *ngIf="displayAddRightColumnValidation(subcolumn)">desni mejni stolpec</li>
+                      <li class="change-type" (click)="setTestColumn(subcolumn.id)">testni stolpec</li>
+                      <li class="change-type" (click)="setPriorityColumn(subcolumn.id)">stolpec z najvišjo prioriteto</li>
+                      <li>
+                        <form (ngSubmit)="changeWip(subcolumn)" [formGroup]="changeWipForm">
+                          <label class="change-type">wip: </label>
+                          <input class="uk-input wip-input" type="number" value="{{ subcolumn.wip_restriction }}" formControlName="wip">
+                          <button class="uk-button uk-button-primary uk-button-small" type="submit">OK</button>
+                        </form>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <span
+                    uk-icon="icon: trash"
+                    class="delete-column"
+                    uk-toggle="target: #delete-column-modal"
+                    (click)="setDeleteColumn(subcolumn)"
+                    *ngIf=" subcolumn?.column_cards.length == 0 && editBoard">
+                  </span>
+
+                  <span class="uk-badge wip-subcolumn" *ngIf="subcolumn?.wip_restriction > 0"> {{ getColumnWip(subcolumn) }} / {{ subcolumn?.wip_restriction }}</span>
+
+                </h6>
+                <div class="special-column-text">{{ showSpecialColumn(subcolumn.id) }}</div>
+
+              </div>
+            </div>
+            <div
+              uk-icon="icon: plus-circle; ratio: 1.3"
+              class="add-column" uk-toggle="target: #new-column-modal"
+              *ngIf="editBoard"
+              (click)="addColumn(column.subcolumns.length, column.id)">
+            </div>
+          </div>
+        </div>
+
+        <div class="cards-container subcolumn-container" *ngFor="let project of board?.projects">
+          <div class="subcolumn-container" (drop)="onDrop($event, subcolumn, project)" (dragover)="allowDrop($event)" *ngFor="let subcolumn of column.subcolumns; let j = index">
+            <div class="subcolumn-card-container">
+              <div class="subcolumn-card-container" *ngFor="let card of subcolumn.column_cards">
+                  <li draggable="true" (click)="cardsComponent.onCardClick(card)" (dragstart)="onDragStart($event, card, subcolumn, project)" class="card" *ngIf="card?.project_id == project?.id && card.active">
+                    <div class="card-header" [ngStyle]="{'background': cardColors[card.card_priority_id-3]}">
+                      <span>#{{ card.number }}</span><span style="float: right">{{ getUserName(card?.assigned_user_id) }}</span>
+                    </div>
+                    <div class="card-body" [ngStyle]="{'background-color': (showCriticalCards && criticalDays > getDiferenceInDays(card.deadline) && getDiferenceInDays(card.deadline) != -99999999) ? 'LightCoral ' : ''}">
+                      <h1 class="uk-card-title">{{ card.title }}</h1>
+                      <p class="uk-margin-small"[hidden]="!showCardDescription" >{{ card.description }}</p>
+                      <p class="uk-margin-small uk-text-meta"[hidden]="!showCardDeadlien " *ngIf="card.deadline == null" >Rok: /</p>
+                      <p class="uk-margin-small uk-text-meta"[hidden]="!showCardDeadlien"  *ngIf="card.deadline != null">Rok: {{ card.deadline | date: 'dd.MM.yyyy'}}</p>
+                    </div>
+                    <span>
+                      <span *ngIf="card.card_priority_id==5" [hidden]="!showCardPriority" class="uk-label uk-label-success" style="float: left;">Could have</span>
+                      <span *ngIf="card.card_priority_id==4" [hidden]="!showCardPriority" class="uk-label uk-label-warning" style="float: left;">Should have</span>
+                      <span *ngIf="card.card_priority_id==3" [hidden]="!showCardPriority" class="uk-label uk-label-danger" style="float: left;">Must have</span>
+                    <div [hidden]="!showCardDificulty" class="card-tail">
+                        {{ card.size }}
+                    </div>
+                  </span>
+                  </li>
+              </div>
+            </div>
+            <div class="vertical-line" *ngIf="j < column?.subcolumns.length-1"></div>
+          </div>
+        </div>
+
+    </div>
+    </div>
+    <div >
+      <div  uk-icon="icon: plus-circle; ratio: 1.9"
+            class="add-column-last"
+            uk-toggle="target: #new-column-modal"
+            *ngIf="editBoard"
+            (click)="addColumn(board?.columns.length, null)">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add column modal -->
+<div id="new-column-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" uk-close (click)="closeModal()"></button>
+    <h2 class="uk-modal-title">Dodaj stolpec</h2>
+    <!-- add column form -->
+    <form (ngSubmit)="postColumn()" [formGroup]="newColumnForm">
+      <fieldset class="uk-fieldset">
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="new-name">Ime stolpca</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="new-name" type="text" placeholder="Ime stolpca" formControlName="name"
+                   [ngClass]="{'danger-input uk-animation-shake' : !newColumnForm.get('name').valid && newColumnForm.get('name').touched}">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+        *ngIf="!newColumnForm.get('name').valid && newColumnForm.get('name').touched">
+        Ime stolpca je obezno polje.</span>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="new-surname">WIP omejitev</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="new-surname" type="number" placeholder="wip omejitev" formControlName="wip"
+                   [ngClass]="{'danger-input uk-animation-shake' : !newColumnForm.get('wip').valid && newColumnForm.get('wip').touched}">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newColumnForm.get('wip').valid && newColumnForm.get('wip').touched">
+        Wip omejitev stolpca je obvezno polje.</span>
+
+        <div>
+          <p><label class="uk-form-label">Vloge stolpca</label></p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="leftColumn"> Levi mejni stolpec</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="rightColumn"> Desni mejni stolpec</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="highPriority"> Stolpec z najvišjo prioriteto</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="testColumn"> Stolpec za testiranje</label>
+          </p>
+        </div>
+
+        <div *ngIf="error != null">
+          <div class="uk-alert-danger" uk-alert>
+            <p>{{ error }}</p>
+          </div>
+        </div>
+
+        <div class="uk-text-right">
+          <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
+          <button class="uk-button uk-button-primary" type="submit" [disabled]="!newColumnForm.valid">Shrani</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+<!-- add project to board modal -->
+<div id="delete-column-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" uk-close (click)="closeDeleteModal()"></button>
+    <h3>Ste prepričani, da želite izbirsati stolpec?</h3>
+    <p class="uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeDeleteModal()">prekliči</button>
+      <button class="uk-button uk-button-danger" type="button" (click)="deleteColumn()">Izbriši</button>
+    </p>
+
+    <div *ngIf="error != null">
+      <div class="uk-alert-danger" uk-alert>
+        <p>{{ error }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- warning if adding the project on board that group is not the same as previous one -->
+<div id="different-groups-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <h3>Skupini na projektih se razlikujeta. Ste prepričani, da želite projekt dodati na tablo?</h3>
+    <p class="uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close" type="button">prekliči</button>
+      <button class="uk-button uk-button-danger" type="button" (click)="postAddedProject()">dodaj</button>
+    </p>
+  </div>
+</div>
+
+<!-- add project modal -->
+<div id="add-project-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" (click)="closeProjectModal()" uk-close></button>
+    <h2 class="uk-modal-title">Dodaj projekt na tablo</h2>
+    <!-- Projects form -->
+    <form (ngSubmit)="addProject()" [formGroup]="addProjectForm">
+      <fieldset class="uk-fieldset">
+        <!-- Show all projects -->
+        <div class="uk-form-controls  uk-margin">
+          <label class="uk-form-label" for="add-project-group">Izberi projekt</label>
+          <select class="uk-select" id="add-project-group" formControlName="project">
+              <ng-container *ngFor="let project of projects">
+                  <option [ngValue]="project"  >{{project.title}}</option>
+              </ng-container>
+          </select>
+        </div>
+        <div class="uk-text-right">
+          <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeProjectModal()">Prekliči</button>
+          <button class="uk-button uk-button-primary" type="submit" [disabled]="!addProjectForm.valid">Shrani</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+<!-- edit cards display modal-->
+<div id="edit-card-display-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+      <button class="uk-modal-close-default" type="button" uk-close ></button>
+      <h3>Prilagodi prikaz kartic na tabli</h3>
+      <form (ngSubmit)="finishEditCardDisplay()" [formGroup]="editCardDisplayForm">
+        <fieldset class="uk-fieldset">
+          <div class="uk-margin">
+            <label><input class="uk-checkbox" type="checkbox" checked disabled> ID kartice</label>
+          </div>
+          <div class="uk-margin">
+            <label><input class="uk-checkbox" type="checkbox" checked disabled> Naziv zgodbe</label>
+          </div>
+          <div class="uk-margin">
+            <label><input class="uk-checkbox" type="checkbox" checked disabled> Odgovorna oseba</label>
+          </div>
+          <div class="uk-margin uk-form-controls">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="card_description"> Opis</label>
+          </div>
+          <div class="uk-margin uk-form-controls">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="card_priority"> Prioriteta</label>
+          </div>
+          <div class="uk-margin uk-form-controls">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="card_dificulty"> Ocena zahtevnosti</label>
+          </div>
+          <div class="uk-margin uk-form-controls">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="card_deadline"> Rok za dokončanje</label>
+          </div>
+          <div class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Prekliči</button>
+            <button class="uk-button uk-button-primary" type="submit">Shrani</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>

@@ -1,0 +1,65 @@
+  <div uk-sticky="sel-target: .uk-navbar-container; cls-inactive: uk-navbar-transparent;">
+    <div class="uk-navbar-container uk-light">
+      <div class="uk-container">
+        <div class="uk-navbar">
+          <div class="uk-navbar-left">
+            <a routerLink="/boards-list" class="uk-navbar-item uk-logo">Kanbafake</a>
+            <ul class="uk-navbar-nav uk-dropdown-navbar">
+              <li [ngClass]="{'uk-active': isActiveRoute('/boards-list')}">
+                <a routerLink="/boards-list">Table</a>
+              </li>
+              <li *ngIf="isActiveRoute('/board') || isActiveRoute('/analytics')" [ngClass]="{'uk-active': isActiveRoute('/board')}">
+                <a [routerLink]="['/board', id]">[ Tabla {{id}} ]</a>
+              </li>
+              <li *ngIf="(isActiveRoute('/board') || isActiveRoute('/analytics')) && isKanbanMaster()" [ngClass]="{'uk-active': isActiveRoute('/analytics')}">
+                  <a [routerLink]="['/analytics', id]">[ Analitika ]</a>
+              </li>
+              <li [ngClass]="{'uk-active': isActiveRoute('/projects')}">
+                <a routerLink="/projects">Projekti</a>
+              </li>
+              <li [ngClass]="{'uk-active': isActiveRoute('/groups')}">
+                <a routerLink="/groups">Skupine</a>
+              </li>
+              <!-- <li [ngClass]="{'uk-active': isActiveRoute('#')}">
+                <a routerLink="#">Projekti</a>
+              </li>
+              <li [ngClass]="{'uk-active': isActiveRoute('/board')}">
+                <a routerLink="/board">Tabla &nbsp; <i>dev</i></a>
+              </li>-->
+              <li *ngIf="isAdmin()" [ngClass]="{'uk-active': isActiveRoute('/users')}">
+                <a routerLink="/users">Uporabniki</a>
+              </li>
+              <li [ngClass]="{'uk-active': isActiveRoute('/documentation')}">
+                <a routerLink="/documentation">Pomoč</a>
+              </li>
+            </ul>
+          </div>
+          <div class="uk-navbar-right">
+            <ul class="uk-navbar-nav">
+              <li><p>{{username}}</p></li>
+              <li><a routerLink="/login">Odjava</a></li>
+            </ul>
+            <div class="settings-button" *ngIf="isActiveRoute('/board')">
+              <span uk-icon="icon: thumbnails; ratio: 2" type="button"></span>
+              <div uk-dropdown="mode: click; animation: uk-animation-slide-top-small; duration: 300">
+                <ul class="uk-nav uk-dropdown-nav">
+                  <li class="settings-text">
+                    Urejaj tablo
+                    <label class="switch">
+                      <input type="checkbox">
+                      <span class="slider round" (click)="editBoard()"></span>
+                    </label>
+                  </li>
+                  <li class="settings-text" (click)="addProjectToBoard()">Dodaj projekt</li>
+                  <li class="settings-text" (click)="copyBoard()">Kopiraj tablo</li>
+                  <li class="settings-text" (click)="showCritical()">Prikaži kritične kartice</li>
+                  <li class="settings-text" (click)="editCardDisplay()">Prilagodi prikaz kartice</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+

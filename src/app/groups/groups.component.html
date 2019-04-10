@@ -1,0 +1,113 @@
+<app-main-navbar></app-main-navbar>
+<div class="uk-container">
+    <!-- New group modal toggle button -->
+    <div *ngIf="isCurrentUserKanbanMaster">
+        <button class="uk-button uk-button-primary newGroupButton" (click)="loadModal()" uk-toggle="target: #new-group-modal">Nova skupina</button>
+    </div>
+    <br>
+    <!-- Groups display -->
+    <div uk-height-match="target: > div > .uk-card" class="uk-grid-small" uk-grid >
+        <div class="uk-card uk-card-default uk-card-body uk-card-hover groupCard" *ngFor="let group of groups">
+            <div *ngIf="isCurrentUserKanbanMaster" class="uk-card-badge">
+                <button class="uk-icon-link uk-dark" uk-icon="pencil"  (click)="editGroup(group)" uk-toggle="target: #new-group-modal"></button>
+                <button class="uk-icon-link uk-dark" uk-icon="trash"  (click)="deleteGroup(group)"></button>
+            </div>
+            <h3 class="uk-text-center uk-card-title" >{{group.title}}</h3>
+            <span *ngFor="let member of group.users" >
+                <!-- Inactive members -->
+                <ng-container *ngIf="!member.group_active" >
+                        <span class="uk-text-muted">{{member.name + " " + member.surname}} (neaktiven):</span>             
+                        <span *ngFor="let role of member.allowed_group_roles">
+                            <span class="uk-label uk-label-success" *ngIf="role == 2"> Product owner</span>
+                            <span class="uk-label uk-label-warning" *ngIf="role == 3"> Kanban master</span>
+                            <span class="uk-label" *ngIf="role == 1"> Razvijalec</span>
+                        </span>   
+                </ng-container>
+                <!-- Active members -->
+                <ng-container *ngIf="member.group_active" class="uk-text-muted"> 
+                    <span class="uk-text-primary">{{member.name + " " + member.surname}}</span>
+                    <span *ngFor="let role of member.allowed_group_roles">
+                        <span class="uk-label uk-label-success" *ngIf="role == 2"> Product owner</span>
+                        <span class="uk-label uk-label-warning" *ngIf="role == 3"> Kanban master</span>
+                        <span class="uk-label" *ngIf="role == 1"> Razvijalec</span>
+                    </span> 
+                </ng-container> 
+                <br> 
+            </span>
+        </div>
+    </div>
+
+    <!-- New group modal -->
+    <div id="new-group-modal" uk-modal="esc-close: false; bg-close: false;">
+        <div class="uk-modal-dialog uk-modal-body uk-overflow-auto ">
+            <button class="uk-modal-close-default" type="button" (click)="cancelGroup()" uk-close></button>
+            <h2 class="uk-modal-title">{{groupModalTitle}}</h2>
+            <!-- New group form --> 
+            <form>
+                <fieldset class="uk-fieldset">   
+                    <!-- Group name input -->               
+                    <div class="uk-margin">  
+                        <input class="uk-input" [formControl]="groupNameInput" type="text" placeholder="Ime skupine" [(ngModel)]="groupName" name="groupNameInput">
+                    </div>
+                    Člani
+                    <!-- Show all users --> 
+                    <hr>
+                    <div class="uk-form-controls  uk-margin">
+                        <!-- Show all users. -->
+                        <select class="uk-select" id="userSelectDropdown" [(ngModel)]="selectedUser" (change)="resetRoles()" name="userSelect">
+                            <option selected disabled value='null' id="nullSelection"></option>
+                            <ng-container *ngFor="let user of users">
+                                <option disabled *ngIf="!user.is_active" [ngValue]="user">{{user.name + " " + user.surname }} (neaktiven)</option>
+                                <option disabled *ngIf="user.is_active && (user.roles.length == 1 && user.roles[0] == 'admin')" [ngValue]="user">{{user.name + " " + user.surname }} (admin)</option>
+                                <option *ngIf="user.is_active && !(user.roles.length == 1 && user.roles[0] == 'admin')" [ngValue]="user">{{user.name + " " + user.surname}}</option>
+                            </ng-container>    
+                        </select>
+                    </div>
+                    <!-- Show all roles for selected user if user is selected. If option is selected, save selection in roles array. -->
+                    <div *ngIf="selectedUser" class="uk-margin uk-grid-small uk-child-width-auto uk-grid"> 
+                            <!-- [(ngModel)]="roles[vloga].checked"> -->
+                        <ng-container *ngFor="let role of selectedUser.roles">
+                                <label *ngIf="role == 'product owner'"><input class="uk-checkbox" type="checkbox" [(ngModel)]="roles[2]" name="selectedRoleOption1"  > Product owner</label>
+                                <label *ngIf="role == 'kanban master'"><input class="uk-checkbox" type="checkbox" [(ngModel)]="roles[3]" name="selectedRoleOption2"> Kanban master</label>
+                                <label *ngIf="role == 'developer'"><input class="uk-checkbox" type="checkbox" [(ngModel)]="roles[1]" name="selectedRoleOption0"> Razvijalec</label>
+                        </ng-container>
+                    </div>    
+                    <!-- Save new member -->
+                    <button class="uk-button uk-button-default" type="button" (click)="addMemberToGroup()">Dodaj člana</button>
+                    <!-- Show all selected users and selected roles -->
+                    <hr>
+                    <span *ngFor="let member of members">  
+                        <!-- Inactive members -->
+                        <ng-container *ngIf="!member.group_active" class="uk-text-muted">
+                            <span>{{member.name + " " + member.surname}}  (neaktiven)</span>             
+                            <span *ngFor="let role of member.allowed_group_roles">
+                                <span class="uk-label uk-label-success" *ngIf="role == 2"> Product owner</span>
+                                <span class="uk-label uk-label-warning" *ngIf="role == 3"> Kanban master</span>
+                                <span class="uk-label" *ngIf="role == 1"> Razvijalec</span>
+                            </span>   
+                            <!-- Remove member from group -->
+                            <button (click)="addMemberBackToGroup($event,member)" class="uk-icon-link uk-dark" type="button" uk-icon="unlock" ></button>
+                        </ng-container>
+                        <!-- Active members -->
+                        <ng-container *ngIf="member.group_active" class="uk-text-muted">
+                            <span class="uk-text-primary">{{member.name+ " " + member.surname}}</span>             
+                            <span *ngFor="let role of member.allowed_group_roles">
+                                    <span class="uk-label uk-label-success" *ngIf="role == 2">Product owner</span>
+                                    <span class="uk-label uk-label-warning" *ngIf="role == 3">Kanban master</span>
+                                    <span class="uk-label" *ngIf="role == 1">Razvijalec</span>
+                            </span> 
+                            <!-- Remove member from group -->
+                            <button (click)="removeMemberfromGroup($event,member)" class="uk-icon-link uk-dark" type="button" uk-icon="close" ></button>
+                        </ng-container>
+                        <br>
+                    </span>
+                </fieldset>
+            </form>
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="cancelGroup()">Prekliči</button>
+                <!-- Save group -->
+                <button class="uk-button uk-button-primary" type="button" (click)="saveGroup()" >Shrani</button>
+            </p>
+        </div>
+    </div>
+</div>

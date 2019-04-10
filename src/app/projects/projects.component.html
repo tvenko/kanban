@@ -1,0 +1,217 @@
+<app-main-navbar></app-main-navbar>
+<div class="uk-container">
+  <!-- New project modal toggle button -->
+  <div *ngIf="isCurrentUserKanbanMaster">
+      <button class="uk-button uk-button-primary newProjectButton" (click)="loadModal()" uk-toggle="target: #new-project-modal">Nov projekt</button>
+  </div>
+
+  <!-- Projects display -->
+  <div class="uk-child-width-1-3@s uk-grid-match uk-margin-top" uk-grid>
+     <div *ngFor="let project of projects" class="cards">
+      <div class="uk-card uk-card-default uk-card-body uk-card-hover projectCard uk-padding-remove-bottom" >
+          <div class="uk-card-badge" *ngIf="isCurrentUserKanbanMaster">
+              <button class="uk-icon-link uk-dark" uk-icon="pencil" (click)="editProject(project)" uk-toggle="target: #edit-project-modal"></button>
+              <button class="uk-icon-link uk-dark" uk-icon="unlock" *ngIf="!project.active" (click)="unlockProject(project)"></button>
+              <button class="uk-icon-link uk-dark" uk-icon="trash"  *ngIf="project.active" (click)="deleteProject(project)"></button>
+          </div>
+          <h3 class="uk-card-title uk-margin-remove-bottom" >{{project.title}}</h3>
+          <p class="uk-text-meta uk-margin-remove-top">{{project.id_project}}</p>
+          <div class="uk-margin uk-margin-remove-bottom">Skupina: <span  >{{project.group_data.title}} </span></div>
+          <div class="uk-margin uk-margin-remove-bottom uk-margin-remove-top">Naročnik: <span  >{{project.subscriber_name}} </span></div>
+          <div class="uk-margin uk-margin-remove-top">Status: 
+            <span class="uk-label uk-label-success" *ngIf="project.card_active && project.active">V teku</span>
+            <span class="uk-label" *ngIf="!project.card_active && project.active">Brez kartic</span>
+            <span class="uk-label uk-label-warning" *ngIf="!project.active">Neaktiven</span>
+            <span class="uk-label uk-label-danger" *ngIf="project.active && dateDifference(project) < 5">Pozen</span>
+          </div> 
+          
+          <div class="uk-card-footer">
+              <p class="uk-text-meta uk-margin-remove-top" >{{project.started_at |  date:'dd.MM.yyyy'}} - {{project.ended_at |  date:'dd.MM.yyyy'}}</p>
+          </div>
+      </div>
+    </div>
+  </div>
+
+<!-- new project modal -->
+<div id="new-project-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+      <button class="uk-modal-close-default" type="button" (click)="cancelProject()" uk-close></button>
+      <h2 class="uk-modal-title">{{projectsModalTitle}}</h2>
+      <!-- Projects form -->
+      <form (ngSubmit)="saveProject()" [formGroup]="projectsForm">
+        <fieldset class="uk-fieldset">
+          <!-- Project code name -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-code-name">Šifra projekta</label>
+            <div class="uk-form-controls">
+              <input class="uk-input" id="edit-code-name" type="text" placeholder="Šifra projekta" formControlName="code-name" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('code-name').valid && projectsForm.get('code-name').touched}">
+            </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('code-name').valid && projectsForm.get('code-name').touched">
+            Vnesi šifro projekta
+          </span>
+
+          <!-- Project name -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-project-name">Naziv projekta</label>
+            <div class="uk-form-controls">
+              <input class="uk-input" id="edit-project-name" type="text" placeholder="Naziv projekta" formControlName="name"  [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('name').valid && projectsForm.get('name').touched}">
+            </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('name').valid && projectsForm.get('name').touched">
+            Vnesi naziv projekta
+          </span>
+
+          <!-- Buyers name -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-buyer">Ime naročnika</label>
+            <div class="uk-form-controls">
+              <input class="uk-input" id="edit-buyer" type="text" placeholder="Ime naročnika" formControlName="buyer" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('buyer').valid && projectsForm.get('buyer').touched}">
+            </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('buyer').valid && projectsForm.get('buyer').touched">
+            Vnesi naročnika
+          </span>
+
+          <!-- Start date -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-project-start-dates">Datum začetka</label>
+            <div class="uk-form-controls">
+              <p-calendar (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true"  [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"  readonlyInput="true"></p-calendar>
+            </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched &&  projectsForm.get('project-start-date').dirty">
+            Izberi datum začetka
+          </span>
+
+          <!-- End date -->
+          <div class="uk-margin">
+              <label class="uk-form-label" for="edit-project-end-dates">Predviden datum zaključka</label>
+              <div class="uk-form-controls">
+                <p-calendar readonlyInput="true"  id="edit-project-end-date" [locale]="sl" [minDate]="this.projectsForm.get('project-start-date').value" formControlName="project-end-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched}"></p-calendar>
+              </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched &&  projectsForm.get('project-end-date').dirty">
+            Izberi predviden datum zaključka
+          </span>
+          
+          <!-- Show all groups -->
+          <div class="uk-form-controls  uk-margin">
+            <label class="uk-form-label" for="edit-project-group">Razvojna skupina</label>
+            <select class="uk-select" id="edit-project-group" formControlName="project-group">
+                <ng-container *ngFor="let group of groups">
+                    <option [ngValue]="group"  >{{group.title}}</option>
+                </ng-container>    
+            </select>
+          </div>
+          <span class="uk-alert-danger"
+                *ngIf="!projectsForm.get('project-group').valid && projectsForm.get('project-group').touched">
+            Izberi skupino
+          </span>
+          <div class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
+            <button class="uk-button uk-button-primary" type="submit" [disabled]="!projectsForm.valid">Shrani</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+
+  
+<!-- edit project modal -->
+<div id="edit-project-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+      <button class="uk-modal-close-default" type="button" (click)="cancelProject()" uk-close></button>
+      <h2 class="uk-modal-title">{{projectsModalTitle}}</h2>
+      <!-- Projects form -->
+      <form (ngSubmit)="saveProject()" [formGroup]="projectsForm">
+        <fieldset class="uk-fieldset">
+          <!-- Project code name -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-code-name">Šifra projekta</label>
+            <div class="uk-form-controls">
+              <input [attr.disabled]="true" class="uk-input" id="edit-code-name" type="text" placeholder="Šifra projekta" formControlName="code-name" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('code-name').valid && projectsForm.get('code-name').touched}">
+            </div>
+          </div>
+
+          <!-- Project name -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-project-name">Naziv projekta</label>
+            <div class="uk-form-controls">
+              <input class="uk-input" id="edit-project-name" type="text" placeholder="Naziv projekta" formControlName="name"  [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('name').valid && projectsForm.get('name').touched}">
+            </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('name').valid && projectsForm.get('name').touched">
+            Vnesi naziv projekta
+          </span>
+
+          <!-- Buyers name -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-buyer">Ime naročnika</label>
+            <div class="uk-form-controls">
+              <input class="uk-input" id="edit-buyer" type="text" placeholder="Ime naročnika" formControlName="buyer" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('buyer').valid && projectsForm.get('buyer').touched}">
+            </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('buyer').valid && projectsForm.get('buyer').touched">
+            Vnesi naročnika
+          </span>
+
+          <!-- Start date -->
+          <div class="uk-margin">
+            <label class="uk-form-label" for="edit-project-start-dates">Datum začetka</label>
+            <!-- Project already started (disable start date change)-->
+            <div class="uk-form-controls" *ngIf="selectedProject?.card_active">
+              <p-calendar readonlyInput="true"disabled="true" (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
+            </div>
+            <!-- Project hasnt started (enable start date change)-->
+            <div class="uk-form-controls" *ngIf="!selectedProject?.card_active">
+              <p-calendar readonlyInput="true" (onSelect)="resetEndDate()" id="edit-project-start-date" [locale]="sl" [maxDate]="today" formControlName="project-start-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched}"></p-calendar>
+            </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('project-start-date').valid && projectsForm.get('project-start-date').touched &&  projectsForm.get('project-start-date').dirty">
+            Izberi datum začetka
+          </span>
+
+          <!-- End date -->
+          <div class="uk-margin">
+              <label class="uk-form-label" for="edit-project-end-dates">Predviden datum zaključka</label>
+              <div class="uk-form-controls">
+                <p-calendar readonlyInput="true" id="edit-project-end-date" [locale]="sl" [minDate]="this.projectsForm.get('project-start-date').value" formControlName="project-end-date" dateFormat="dd.mm.yy" showButtonBar="true" [ngClass]="{'danger-input uk-animation-shake' : !projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched}"></p-calendar>
+              </div>
+          </div>
+          <span class="uk-alert-danger"
+          *ngIf="!projectsForm.get('project-end-date').valid && projectsForm.get('project-end-date').touched &&  projectsForm.get('project-end-date').dirty">
+            Izberi predviden datum zaključka
+          </span>
+          
+          <!-- Show all groups -->
+          <div class="uk-form-controls  uk-margin">
+            <label class="uk-form-label" for="edit-project-group">Razvojna skupina</label>
+            <select class="uk-select" id="edit-project-group" formControlName="project-group">
+                <ng-container *ngFor="let group of groups">
+                    <option  [ngValue]="group.id" >{{group.title}}</option>
+                </ng-container>    
+            </select>
+          </div>
+          <span class="uk-alert-danger"
+                *ngIf="!projectsForm.get('project-group').valid && projectsForm.get('project-group').touched">
+            Izberi skupino
+          </span>
+          <div class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
+            <button class="uk-button uk-button-primary" type="submit" [disabled]="!projectsForm.valid">Shrani</button>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+.side {
+  text-align: center;
+  margin-top: 10%;
+  display: flex;
+  flex-flow: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+
+.text {
+  font-size: 20px;
+  margin-top: 20px;
+  margin-left: 50px;
+}
+
+.fourofour {
+  font-size: 60px;
+  font-weight: bold;
+}
+
+.cheer {
+  color: gray;
+  font-size: 12px;
+}
+
+.cry-image {
+  height: 400px;
+}

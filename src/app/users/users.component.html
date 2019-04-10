@@ -1,0 +1,240 @@
+<app-main-navbar></app-main-navbar>
+<div class="uk-container">
+
+  <div class="uk-align-left">
+    <button class="uk-button uk-button-primary add-user-button" uk-toggle="target: #new-user-modal">Dodaj uporabnika</button>
+  </div>
+
+  <!-- tabela uporabnikov -->
+  <div class="uk-position-top-center">
+    <table class="uk-table uk-table-hover uk-table-divider uk-table-justify">
+      <thead>
+        <tr>
+          <th class="uk-table-shrink">#</th>
+          <th>Ime</th>
+          <th>Priimek</th>
+          <th>Elektronski naslov</th>
+          <th class="uk-table-expand">Uporabniška vloge</th>
+          <th class="uk-width-small"></th>
+        </tr>
+      </thead>
+      <tbody *ngFor="let user of users; let i = index">
+        <tr [ngClass] = "{'table-locked': user.is_active == false}">
+          <td class="table-cell">{{ i+1 }}</td>
+          <td class="table-cell">{{ user?.name }}</td>
+          <td class="table-cell">{{ user?.surname }}</td>
+          <td class="table-cell">{{ user?.email }}</td>
+          <td class="table-cell">
+            <span *ngFor="let role of user?.roles">
+              <span class="uk-label" *ngIf="role == 'developer'">{{ role }}</span>
+              <span class="uk-label uk-label-success" *ngIf="role == 'product owner'">{{ role }}</span>
+              <span class="uk-label uk-label-warning" *ngIf="role == 'kanban master'">{{ role }}</span>
+              <span class="uk-label uk-label-danger" *ngIf="role == 'admin'">{{ role }}</span>
+            </span>
+          </td>
+          <td class="table-icons" *ngIf="user.is_active == true">
+            <span uk-icon="icon: pencil; ratio: 1.2" class="table-icons-edit" uk-toggle="target: #edit-user-modal" (click)="editUser(user)"></span> &nbsp;
+            <span uk-icon="icon: ban; ratio: 1.2" class="table-icons-ban" (click)="lockUser(user)"></span>
+          </td>
+          <td class="table-icons" *ngIf="user.is_active == false" (mouseenter)="hover[i] = true" (mouseleave)="hover[i] = false">
+            <span *ngIf="hover[i] == false"  uk-icon="icon: lock; ratio: 1.2" class="table-icons-locked"></span>
+            <span *ngIf="hover[i] == true"  uk-icon="icon: unlock; ratio: 1.2" class="table-icons-unlock table-icons-locked" (click)="unlockUser(user)"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Edit user modal -->
+<div id="edit-user-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" uk-close (click)="closeModal()"></button>
+    <h2 class="uk-modal-title">uporabnik {{ editedUser?.name }} {{ editedUser?.surname }}</h2>
+    <!-- Edit user form -->
+    <form (ngSubmit)="postEditUser()" [formGroup]="editUserForm">
+      <fieldset class="uk-fieldset">
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-name">Ime</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="edit-name" type="text" placeholder="Ime" formControlName="name"
+                   [ngClass]="{'danger-input uk-animation-shake' : !editUserForm.get('name').valid && editUserForm.get('name').touched && editUserForm.get('name').dirty}">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!editUserForm.get('name').valid && editUserForm.get('name').touched && editUserForm.get('name').dirty">
+          Ime uporabnika je obvezno polje.</span>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-surname">Priimek</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="edit-surname" type="text" placeholder="Priimek" formControlName="surname"
+                   [ngClass]="{'danger-input uk-animation-shake' : !editUserForm.get('surname').valid && editUserForm.get('surname').touched && editUserForm.get('surname').dirty}">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!editUserForm.get('surname').valid && editUserForm.get('surname').touched && editUserForm.get('surname').dirty">
+          Priimek uporabnika je obvezno polje.</span>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-email">Elektronski naslov</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="edit-email" type="email" placeholder="Email" formControlName="email"
+                   [ngClass]="{'danger-input uk-animation-shake' : !editUserForm.get('email').valid && editUserForm.get('email').touched && editUserForm.get('email').dirty}">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!editUserForm.get('email').valid && editUserForm.get('email').touched && editUserForm.get('email').dirty">
+          Elektronski naslov ni ustreznega formata oz. je neizpolnjen.</span>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-password">Geslo</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="edit-password" type="password" placeholder="Password" formControlName="password">
+          </div>
+        </div>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="edit-password-match">Ponovno vpiši geslo</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="edit-password-match" type="password" placeholder="Password" formControlName="passwordMatch">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!editUserForm.get('passwordMatch').valid && editUserForm.get('passwordMatch').touched && editUserForm.get('passwordMatch').dirty">
+          Gesli se ne ujemata</span>
+
+        <div>
+          <p><label class="uk-form-label">Uporabniške vloge</label></p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="developer"> Developer</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="productOwner"> Product owner</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="kanbanMaster"> Kanban Master</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="admin"> Admin</label>
+          </p>
+        </div>
+
+        <div *ngIf="error != null">
+          <div class="uk-alert-danger" uk-alert>
+            <p>{{ error }}</p>
+          </div>
+        </div>
+
+        <div class="uk-text-right">
+          <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
+          <button class="uk-button uk-button-primary" type="submit" [disabled]="!editUserForm.valid">Shrani</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+
+<!-- Add new user modal -->
+<div id="new-user-modal" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-overflow-auto">
+    <button class="uk-modal-close-default" type="button" uk-close (click)="closeModal()"></button>
+    <h2 class="uk-modal-title">Dodaj uporabnika</h2>
+    <!-- Edit user form -->
+    <form (ngSubmit)="postNewUser()" [formGroup]="newUserForm">
+      <fieldset class="uk-fieldset">
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="new-name">Ime</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="new-name" type="text" placeholder="Ime" formControlName="name"
+                   [ngClass]="{'danger-input uk-animation-shake' : !newUserForm.get('name').valid && newUserForm.get('name').touched}">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('name').valid && newUserForm.get('name').touched">
+          Ime uporabnika je obvezno polje</span>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="new-surname">Priimek</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="new-surname" type="text" placeholder="Priimek" formControlName="surname"
+                   [ngClass]="{'danger-input uk-animation-shake' : !newUserForm.get('surname').valid && newUserForm.get('surname').touched}">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('surname').valid && newUserForm.get('surname').touched">
+          Priimek uporabnika je obvezno polje</span>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="new-email">Elektronski naslov</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="new-email" type="email" placeholder="Email" formControlName="email"
+                   [ngClass]="{'danger-input uk-animation-shake' : !newUserForm.get('email').valid && newUserForm.get('email').touched}">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('email').valid && newUserForm.get('email').touched">
+          Elektronski naslov ni ustreznega formata oz. je neizpolnjen.</span>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="new-password">Geslo</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="new-password" type="password" placeholder="Password" formControlName="password">
+          </div>
+        </div>
+
+        <div class="uk-margin">
+          <label class="uk-form-label" for="new-password-match">Ponovno vpiši geslo</label>
+          <div class="uk-form-controls">
+            <input class="uk-input" id="new-password-match" type="password" placeholder="Password" formControlName="passwordMatch">
+          </div>
+        </div>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('password').valid && newUserForm.get('password').touched">
+          Geslo je obvezno polje</span>
+
+        <span class="uk-alert-danger"
+              *ngIf="!newUserForm.get('passwordMatch').valid && newUserForm.get('passwordMatch').touched && newUserForm.get('passwordMatch').dirty">
+          Gesli se ne ujemata</span>
+
+        <div>
+          <p><label class="uk-form-label">Uporabniške vloge</label></p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="developer"> Developer</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="productOwner"> Product owner</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="kanbanMaster"> Kanban Master</label>
+          </p>
+          <p class="uk-margin edit-user-checkboxes">
+            <label><input class="uk-checkbox" type="checkbox" formControlName="admin"> Admin</label>
+          </p>
+        </div>
+
+        <div *ngIf="error != null">
+          <div class="uk-alert-danger" uk-alert>
+            <p>{{ error }}</p>
+          </div>
+        </div>
+
+        <div class="uk-text-right">
+          <button class="uk-button uk-button-default uk-modal-close" type="button" (click)="closeModal()">Prekliči</button>
+          <button class="uk-button uk-button-primary" type="submit" [disabled]="!newUserForm.valid">Shrani</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>

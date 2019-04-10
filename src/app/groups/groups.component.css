@@ -1,0 +1,17 @@
+.placeholder {
+  text-align: center;
+  margin-top: 300px;
+}
+
+.placeholder p {
+  color: gray;
+}
+
+.newGroupButton{
+  margin-top: 20px;
+  margin-right: 40px;
+}
+
+.groupCard{
+  margin-right: 20px
+}
